@@ -6,34 +6,38 @@ const sqlite = require('sqlite');
 const env = require('dotenv');
 const path = require('path');
 const initMongo = require('./db/config');
-const moment = require('moment');
+const CronTask = require('cron').CronJob;
 const { user, emoji } = require('./modules');
+const Bank = require('./db/models/bank');
 
 env.config();
 const log = arg => console.log(arg);
-const client = new Commando.Client({
-  owner: process.env.OWNER_ID,
-});
+const CronJob = (pattern, fn) => new CronTask(pattern, fn, null, true, 'Europe/Paris');
+const client = new Commando.Client({ owner: process.env.OWNER_ID });
 
-client.on('ready', () => {
+client.on('ready', async () => {
   initMongo();
-  log('Bot is ready');
-  const tomorrowMidnight = moment()
-    .add(1, 'day')
-    .startOf('day');
-  let tstampLeft = tomorrowMidnight.diff(moment());
-
   emoji.setKebab(client.emojis.find('name', 'kebab').id);
 
-  setTimeout(async () => {
+  log('🚀  🚀  🚀');
+
+  // Give everytime at midnight
+  CronJob('0 0 * * *', async () => {
     await user.giveDaily();
-    tstampLeft = 1000 * 60 * 60 * 24;
-  }, tstampLeft);
+  });
+
+  // Update bank every 2 hours
+  CronJob('0 */2 * * *', async () => {
+    const banks = await Bank.find({});
+    banks.forEach((bank) => {
+      // eslint-disable-next-line
+      bank.amount = Math.floor(bank.amount + (bank.amount * (0.15 / 12)));
+      bank.save();
+    });
+  });
 });
 
-client.setProvider(
-  sqlite.open(path.join(__dirname, 'settings.sqlite3')).then(db => new Commando.SQLiteProvider(db))
-).catch(console.error);
+client.setProvider(sqlite.open(path.join(__dirname, 'settings.sqlite3')).then(db => new Commando.SQLiteProvider(db))).catch(console.error);
 
 client.registry
   .registerGroups([
