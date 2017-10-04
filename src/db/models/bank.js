@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 
 const Schema = mongoose.Schema;
-const { ObjectId } = Schema.Types;
+const { ObjectId } = Schema.Types;
 
 const bankSchema = new Schema({
   belongsTo: {
     type: ObjectId,
-    ref: 'user'
+    ref: 'user',
   },
   amount: {
     type: Number,

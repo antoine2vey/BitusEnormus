@@ -9,7 +9,7 @@ module.exports = class BankSaveCommand extends Commando.Command {
       group: 'bank',
       memberName: 'save',
       description: 'Information banquaires',
-      details: 'Rajouter de l\'argent dans ton compte avec interet par jour',
+      details: "Rajouter de l'argent dans ton compte avec interet par jour",
       examples: ['!bank-save 100'],
       argsCount: 0,
       args: [
@@ -19,15 +19,26 @@ module.exports = class BankSaveCommand extends Commando.Command {
           prompt: 'Nombre de kebabs',
           type: 'string',
         },
-      ]
+      ],
     });
   }
 
   async run(msg, { value }) {
     const { id } = msg.author;
-    const client = await user.get(id);
-    const notEnoughMoney = await user.controlMoney(id, value);
-    const allowed = await user.allowedTo('push', id, new Date())
+    const guildId = msg.guild.id;
+    const client = await user.get(id, guildId);
+
+    if (!client.bank) {
+      message.addError({
+        name: 'Banque',
+        value: 'Pas de banque..',
+      });
+
+      return message.send(msg);
+    }
+
+    const notEnoughMoney = await user.controlMoney(id, guildId, value);
+    const allowed = await user.allowedTo('push', id, guildId, new Date());
 
     if (!number.isValid(value)) {
       message.addError({
@@ -39,28 +50,32 @@ module.exports = class BankSaveCommand extends Commando.Command {
     if (notEnoughMoney) {
       message.addError({
         name: 'Banque',
-        value: 'Tu n\'as pas assez d\'argent pour déposer autant',
+        value: "Tu n'as pas assez d'argent pour déposer autant",
       });
     }
 
     if (!allowed) {
       message.addError({
         name: 'Banque',
-        value: 'Tu ne peut envoyer qu\'une fois tout les 24h',
-      })
+        value: "Tu ne peut envoyer qu'une fois tout les 24h",
+      });
     }
 
-    if (!number.isValid(value) || notEnoughMoney || !allowed) {
+    if (!number.isValid(value) || notEnoughMoney || !allowed || !client.bank) {
       return message.send(msg);
     }
 
-    await user.updateBank('push', id, value, ({ amount }) => {
-      message.addValid({
-        name: 'Banque',
-        value: `Tu possèdes maintenant ${amount} ${emoji.kebab} dans ta banque`,
-      });
+    try {
+      await user.updateBank('push', id, guildId, value, ({ amount }) => {
+        message.addValid({
+          name: 'Banque',
+          value: `Tu possèdes maintenant ${amount} ${emoji.kebab} dans ta banque`,
+        });
 
-      message.send(msg);
-    });
+        message.send(msg);
+      });
+    } catch (e) {
+      console.log(`err@update for ${msg.author.id}`, e);
+    }
   }
 };
