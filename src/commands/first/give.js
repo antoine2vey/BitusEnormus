@@ -32,8 +32,9 @@ module.exports = class GiveCommand extends Commando.Command {
   async run(msg, args) {
     const id = args.userId.replace(/<@/, '').replace('!', '');
     const userId = id.replace(/>/, '');
+    const guildId = msg.guild.id;
     const isValidAmount = args.kebabs > 0;
-    const notValidUser = (message_, uid) => !message_.guild.members.exists('id', uid);
+    const notValidUser = (message_, uid) => !message_.guild.members.has(uid);
 
     if (!isValidAmount) {
       message.addError({
@@ -60,7 +61,7 @@ module.exports = class GiveCommand extends Commando.Command {
       return message.send(msg);
     }
 
-    const hasGiven = await user.giveTo(msg.author.id, userId, args.kebabs);
+    const hasGiven = await user.giveTo(msg.author.id, userId, guildId, args.kebabs);
 
     if (!hasGiven) {
       message.addError({

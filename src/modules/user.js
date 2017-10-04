@@ -6,7 +6,7 @@ class User {
   constructor() {
     this.ratio = 3;
     this.defaultGive = 500;
-    this.firstGive = this.defaultGive * this.ratio;
+    this.firstGive = 10000;
   }
 
   async get(userId, guildId) {
@@ -18,9 +18,13 @@ class User {
   }
 
   userQuery(userId, guildId, amount) {
-    setImmediate(async () => {
-      return await Client.findOneAndUpdate({ userId, guildId }, { $inc: { kebabs: amount } }, { upsert: true });
-    });
+    setImmediate(async () =>
+      await Client.findOneAndUpdate(
+        { userId, guildId },
+        { $inc: { kebabs: amount } },
+        { upsert: true },
+      ),
+    );
   }
 
   async updateBank(method, userId, guildId, amount, cb) {
@@ -163,12 +167,12 @@ class User {
     });
   }
 
-  async giveTo(initiator, userId, amount) {
-    const client = await Client.findOne({ userId: initiator });
+  async giveTo(initiator, userId, guildId, amount) {
+    const client = await Client.findOne({ userId: initiator, guildId });
 
-    if (client.kebabs > amount) {
-      await this.userQuery(userId, +amount);
-      await this.userQuery(initiator, -amount);
+    if (client.kebabs >= amount) {
+      await this.userQuery(userId, guildId, +amount);
+      await this.userQuery(initiator, guildId, -amount);
 
       // Everything went well
       return true;
