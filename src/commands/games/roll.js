@@ -33,11 +33,8 @@ module.exports = class RollCommands extends Commando.Command {
   }
 
   getRandomIntInclusive(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min +1)) + min;
+    return Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min);
   }
-
 
   get randomNumber() {
     return this.getRandomIntInclusive(0, 100);
@@ -58,7 +55,9 @@ module.exports = class RollCommands extends Commando.Command {
        */
       return Math.floor(15000 * (1 / 100) * value);
     }
-    return Math.floor(((1 / (this.max - this.min)) * 100) * value);
+
+    // eslint-disable-next-line
+    return Math.floor(1 / (this.max - this.min) * value * 100);
   }
 
   isSpaceValid(min, max) {
@@ -68,40 +67,56 @@ module.exports = class RollCommands extends Commando.Command {
   async run(msg, { value, stack }) {
     // Safe to use since we control in validStack method
     const [min, max] = stack.split('-');
+    const guildId = msg.guild.id;
+    const { username } = msg.author;
+    const userId = msg.author.id;
     this.min = min;
     this.max = max;
-    const notEnoughMoney = await user.controlMoney(msg.author.id, value);
 
-    if(!this.isSpaceValid(min, max)) {
+    if (!this.isSpaceValid(min, max)) {
       message.addError({
         name: 'Kebabs',
-        value: `Il te faut un écart de plus de 20% (0-80 minimum)`,
+        value: 'Il te faut un écart de plus de 20% (0-80 minimum)',
       });
 
       return message.send(msg);
     }
 
-    if (notEnoughMoney) {
-      message.addError({
-        name: 'Kebabs',
-        value: `Pas assez de ${emoji.kebab}`,
-      });
+    try {
+      const _user = await user.get(userId, guildId);
+      if (value > _user.kebabs) {
+        message.addError({
+          name: 'Attention',
+          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${value - _user.kebabs}!`,
+        });
 
-      return message.send(msg);
+        return message.send(msg);
+      }
+    } catch (e) {
+      const client = await user.create(userId, guildId, username);
+
+      if (value > client.kebabs) {
+        message.addError({
+          name: 'Attention',
+          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${value - client.kebabs}!`,
+        });
+
+        return message.send(msg);
+      }
     }
 
     if (number.isValid(value) && number.isValidStack(stack)) {
       const randomNumber = this.randomNumber;
       if (this.hasWon(randomNumber)) {
         const amountWon = this.getAmountByThreshold(value);
-        await user.updateMoney(msg.author.id, amountWon - value);
+        await user.updateMoney(userId, guildId, username, (amountWon - value));
 
         message.addValid({
           name: `Gagné! (${randomNumber})`,
           value: `Tu as gagné ${amountWon} ${emoji.kebab} !`,
         });
       } else {
-        await user.updateMoney(msg.author.id, -value);
+        await user.updateMoney(userId, guildId, username, -value);
 
         message.addError({
           name: `Perdu... (${randomNumber})`,
@@ -115,6 +130,6 @@ module.exports = class RollCommands extends Commando.Command {
       });
     }
 
-    message.send(msg);
+    return message.send(msg);
   }
 };

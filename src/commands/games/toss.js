@@ -49,7 +49,8 @@ module.exports = class TossCommand extends Commando.Command {
     const valid = normalize(value) === 'pile' || normalize(value) === 'face';
     const randomValue = this.randomNumber();
     const userId = msg.author.id;
-    const _user = await user.get(userId);
+    const { username } = msg.author;
+    const guildId = msg.guild.id;
     const validNumber = number.isValid(kebabs);
 
     if (!valid) {
@@ -83,23 +84,37 @@ module.exports = class TossCommand extends Commando.Command {
     /**
      * If not enough money, we cut the flow
      */
-    if (kebabs > _user.kebabs) {
-      message.addError({
-        name: 'Attention',
-        value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - _user.kebabs}!`,
-      });
+    try {
+      const _user = await user.get(userId, guildId);
+      if (kebabs > _user.kebabs) {
+        message.addError({
+          name: 'Attention',
+          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - _user.kebabs}!`,
+        });
 
-      return message.send(msg);
+        return message.send(msg);
+      }
+    } catch (e) {
+      const client = await user.create(userId, guildId, username);
+
+      if (kebabs > client.kebabs) {
+        message.addError({
+          name: 'Attention',
+          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - client.kebabs}!`,
+        });
+
+        return message.send(msg);
+      }
     }
 
     if (this.hasWon(randomValue, value)) {
-      user.updateMoney(userId, kebabs);
+      await user.updateMoney(userId, guildId, username, kebabs);
       message.addValid({
         name: 'Gagné',
         value: `Tu as gagné ${kebabs} ${emoji.kebab}`,
       });
     } else {
-      user.updateMoney(userId, -kebabs);
+      await user.updateMoney(userId, guildId, username, -kebabs);
       message.addError({
         name: 'Perdu',
         value: `Tu as perdu ${kebabs} ${emoji.kebab}`,

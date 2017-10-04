@@ -16,15 +16,27 @@ module.exports = class LadderCommand extends Commando.Command {
   }
 
   async run(msg) {
-    const users = await user.users;
+    const guild = msg.guild.id;
+    const users = await user.users(guild);
+
+    if (!users.length) {
+      message.addError({
+        name: 'Ladderboard',
+        value: 'Pas d\'utilisateurs',
+      });
+
+      message.send(msg);
+    }
 
     message.addValid({
       name: 'Ladderboard',
-      value: users.map((_user, i) => {
-        const profile = msg.guild.members.find('id', _user.userId).user.username;
+      value: users
+        .map((_user, i) => {
+          const profile = msg.guild.members.find('id', _user.userId).user.username;
 
-        return `${i + 1} - ${profile} : ${_user.kebabs} ${emoji.kebab}`;
-      }).join('\n'),
+          return `${i + 1} - ${profile} : ${_user.kebabs} ${emoji.kebab}`;
+        })
+        .join('\n'),
     });
 
     message.send(msg);

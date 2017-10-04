@@ -9,24 +9,22 @@ class User {
     this.firstGive = this.defaultGive * this.ratio;
   }
 
-  get(userId) {
-    return Client.findOne({ userId });
+  async get(userId, guildId) {
+    return await Client.findOne({ userId, guildId }).populate('bank');
   }
 
-  get users() {
-    return Client.find({}).sort('-kebabs');
+  users(guildId) {
+    return Client.find({ guildId }).sort('-kebabs');
   }
 
-  userQuery(userId, amount) {
-    return Client.findOneAndUpdate(
-      { userId },
-      { $inc: { kebabs: amount } },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
-    );
+  userQuery(userId, guildId, amount) {
+    setImmediate(async () => {
+      return await Client.findOneAndUpdate({ userId, guildId }, { $inc: { kebabs: amount } }, { upsert: true });
+    });
   }
 
-  async updateBank(method, userId, amount, cb) {
-    const client = await Client.findOne({ userId }).populate('bank');
+  async updateBank(method, userId, guildId, amount, cb) {
+    const client = await Client.findOne({ userId, guildId }).populate('bank');
 
     if (!client.bank) {
       const newBank = new Bank({
@@ -39,8 +37,16 @@ class User {
           return console.log(err);
         }
 
-        await Client.findByIdAndUpdate(client.id, { bank: newBank._id, $inc: { kebabs: -amount }});
-        const updatedBank = await Bank.findByIdAndUpdate(newBank.id, { $inc: { amount }}, { new: true });
+        await Client.findOneAndUpdate(
+          { userId: client.id, guildId },
+          { bank: newBank._id, $inc: { kebabs: -amount } },
+        );
+        // eslint-disable-next-line
+        const updatedBank = await Bank.findByIdAndUpdate(
+          newBank.id,
+          { $inc: { amount } },
+          { new: true },
+        );
 
         return cb(updatedBank);
       });
@@ -50,40 +56,42 @@ class User {
     if (method === 'get') {
       query = {
         $inc: { amount },
-        lastGet: new Date()
-      }
+        lastGet: new Date(),
+      };
     } else {
       query = {
         $inc: { amount },
-        lastSet: new Date()
-      }
+        lastSet: new Date(),
+      };
     }
 
-    await Client.findByIdAndUpdate(client.id, { $inc: { kebabs: -amount }});
+    await Client.findOneAndUpdate({ userId, guildId }, { $inc: { kebabs: -amount } });
     const updatedBank = await Bank.findByIdAndUpdate(client.bank.id, query, { new: true });
 
     return cb(updatedBank);
   }
 
-  async allowedTo(method, userId, date) {
-    const user = await this.get(userId).populate('bank');
-
+  async allowedTo(method, userId, guildId, date) {
+    const user = await this.get(userId, guildId);
     if (!user.bank) {
       return true;
     }
 
-    if (method === 'get' && !user.bank.lastGet) {
+    if ((method === 'get' && !user.bank.lastGet) || !user.bank.lastSet) {
       return true;
     }
 
-    const dayAfter = moment(method === 'push' ? user.bank.lastSet : user.bank.lastGet).add(1, 'day');
+    const dayAfter = moment(method === 'push' ? user.bank.lastSet : user.bank.lastGet).add(
+      1,
+      'day',
+    );
     const date_ = moment(date);
 
     return dayAfter.isBefore(date_);
   }
 
-  async controlMoney(userId, amount) {
-    const client = await Client.findOne({ userId });
+  async controlMoney(userId, guildId, amount) {
+    const client = await Client.findOne({ userId, guildId });
 
     if (client.kebabs >= amount) {
       return false;
@@ -92,9 +100,9 @@ class User {
     return true;
   }
 
-  async controlMoneyInBank(userId, amount) {
+  async controlMoneyInBank(userId, guildId, amount) {
     try {
-      const client = await Client.findOne({ userId }).populate('bank');
+      const client = await this.get(userId, guildId);
 
       if (amount > client.bank.amount) {
         return false;
@@ -106,12 +114,12 @@ class User {
     }
   }
 
-  async register(userId) {
+  async register(userId, guildId) {
     try {
-      const clientExists = await Client.findOne({ userId });
+      const clientExists = await Client.findOne({ userId, guildId });
 
       if (!clientExists) {
-        const client = new Client({ userId });
+        const client = new Client({ userId, guildId });
         client.save();
         return false;
       }
@@ -123,15 +131,36 @@ class User {
   }
 
   async giveDaily() {
-    await Client.update({}, { $inc: { kebabs: this.defaultGive * 2 } }, { multi: true });
+    await Client.update({}, { $inc: { kebabs: this.defaultGive * 4 } }, { multi: true });
   }
 
-  async didFirst(userId) {
-    await this.userQuery(userId, this.firstGive);
+  async didFirst(userId, guildId) {
+    await this.userQuery(userId, guildId, this.firstGive);
   }
 
-  async updateMoney(userId, amount) {
-    await this.userQuery(userId, amount);
+  async updateMoney(userId, guildId, username, amount) {
+    setImmediate(async () => {
+      const client = await Client.findOneAndUpdate(
+        { userId, guildId },
+        { $inc: { kebabs: amount }, $set: { username } },
+        { new: true, upsert: true },
+      ).populate('bank');
+
+      if (!client.bank) {
+        const newBank = new Bank({ belongsTo: client._id });
+
+        return newBank.save(async (err) => {
+          if (err) {
+            return console.log(err);
+          }
+
+          return await Client.findOneAndUpdate(
+            { userId, guildId },
+            { bank: newBank._id, $set: { username } },
+          );
+        });
+      }
+    });
   }
 
   async giveTo(initiator, userId, amount) {
@@ -147,6 +176,13 @@ class User {
 
     // Not enough money
     return false;
+  }
+
+  async create(userId, guildId, username) {
+    const client = new Client({ userId, guildId, username });
+    client.save();
+
+    return await client;
   }
 }
 
