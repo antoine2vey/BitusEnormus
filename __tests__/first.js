@@ -1,34 +1,55 @@
 /* eslint-env node, jest */
-const first = require('../src/modules/first');
+const ServerFirst = require('../src/modules/first');
+const FirstModel = require('../src/db/models/first');
+const mongoose = require('mongoose');
 
-describe('Test for first command', () => {
-  it('should be false at the start', () => {
-    expect(first.first).toBe(false);
+beforeAll(() => {
+  mongoose.Promise = Promise;
+  mongoose.connect('mongodb://localhost/mappabot', { useMongoClient: true });
+});
+
+beforeEach((done) => {
+  const s = new FirstModel({ guildId: 1 });
+  s.save(() => done());
+});
+
+afterEach(async () => {
+  await FirstModel.remove({ guildId: 1 });
+});
+
+afterAll((done) => {
+  mongoose.disconnect(done);
+});
+
+describe('Test for first command', async () => {
+  it('should be true when initd', async () => {
+    const { hasDoneFirst } = await FirstModel.findOne({ guildId: 1 });
+
+    expect(hasDoneFirst).toBe(true);
   });
 
-  it('should throw because no one did first', () => {
-    expect(first.hasBeenDone()).toBe(false);
+  it('should reset all guilds', async () => {
+    const servers = await FirstModel.find();
+    await ServerFirst.resetServers();
+    const newServers = await FirstModel.find({});
+
+    expect(servers.length).toEqual(newServers.length);
+    expect(newServers.map(s => s.hasDoneFirst)).toEqual([false]);
   });
 
-  it('should have no timer if no first', () => {
-    expect(first.timer).toBe(undefined);
-  });
+  it('should do first after midnight', async () => {
+    // Before
+    const startServer = await FirstModel.findOne({ guildId: 1 });
+    // Reset
+    await ServerFirst.resetServers();
+    const afterReset = await FirstModel.findOne({ guildId: 1 });
+    // Do
+    await ServerFirst.do(1, () => {});
+    const end = await FirstModel.findOne({ guildId: 1 });
 
-  it('should do first the first time', () => {
-    first.do(() => {
-      expect(first.first).toBe(true);
-    });
-  });
 
-  it('should do it for only one instance', () => {
-    expect(first.first).toBe(true);
-  });
-
-  it('should not throw because someone firsted', () => {
-    expect(first.hasBeenDone()).toBe(true);
-  });
-
-  it('should launch if first has been done', () => {
-    expect(first.timer).toBeDefined();
+    expect(startServer.hasDoneFirst).toEqual(true);
+    expect(afterReset.hasDoneFirst).toEqual(false);
+    expect(end.hasDoneFirst).toEqual(true);
   });
 });
