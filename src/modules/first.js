@@ -1,25 +1,23 @@
-const moment = require('moment');
+const ServerFirst = require('../db/models/first');
 
 class First {
-  constructor() {
-    this.first = false;
-    this.timer = undefined;
+  async do(guildId, callback) {
+    const server = await ServerFirst.findOne({ guildId });
+
+    if (!server) {
+      const newServer = new ServerFirst({ guildId });
+      return await newServer.save(() => callback());
+    }
+
+    return await ServerFirst.update({ guildId }, { hasDoneFirst: true }, callback());
   }
 
-  do(callback) {
-    const tomorrowMidnight = moment().add(1, 'day').startOf('day');
-    const tstampLeft = tomorrowMidnight.diff(moment());
-
-    this.first = true;
-    this.timer = setTimeout(() => {
-      this.first = false;
-    }, tstampLeft);
-
-    callback();
+  async hasBeenDone(guildId) {
+    return await ServerFirst.findOne({ guildId }) || false;
   }
 
-  hasBeenDone() {
-    return this.first === true;
+  async resetServers() {
+    return await ServerFirst.update({}, { hasDoneFirst: false });
   }
 }
 

@@ -15,8 +15,11 @@ module.exports = class FirstCommand extends Commando.Command {
     });
   }
 
-  run(msg) {
-    if (first.hasBeenDone()) {
+  async run(msg) {
+    const guildId = msg.guild.id;
+    const thisServer = await first.hasBeenDone(guildId);
+
+    if (thisServer.hasDoneFirst) {
       message.addError({
         name: 'Trop tard',
         value: 'Le first à déjà été pris :weary:',
@@ -25,8 +28,8 @@ module.exports = class FirstCommand extends Commando.Command {
       return message.send(msg);
     }
 
-    return first.do(() => {
-      user.didFirst(msg.author.id);
+    first.do(guildId, () => {
+      user.didFirst(msg.author.id, guildId);
 
       message.addValid({
         name: 'FIRST',

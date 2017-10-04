@@ -7,7 +7,7 @@ const env = require('dotenv');
 const path = require('path');
 const initMongo = require('./db/config');
 const CronTask = require('cron').CronJob;
-const { user, emoji } = require('./modules');
+const { user, emoji, first } = require('./modules');
 const Bank = require('./db/models/bank');
 
 env.config();
@@ -21,11 +21,11 @@ client.on('ready', async () => {
 
   log('🚀  🚀  🚀');
 
-  // Give everytime at midnight
+  // Everytime at midnight
   CronJob('0 0 * * *', async () => {
     await user.giveDaily();
+    await first.resetServers();
   });
-
   // Update bank every 2 hours
   CronJob('0 */2 * * *', async () => {
     const banks = await Bank.find({});
