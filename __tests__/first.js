@@ -34,7 +34,7 @@ describe('Test for first command', async () => {
     const newServers = await FirstModel.find({});
 
     expect(servers.length).toEqual(newServers.length);
-    expect(newServers.map(s => s.hasDoneFirst)).toEqual([false]);
+    expect(newServers.map(s => s.hasDoneFirst)).toEqual(newServers.map(() => false));
   });
 
   it('should do first after midnight', async () => {
@@ -46,7 +46,6 @@ describe('Test for first command', async () => {
     // Do
     await ServerFirst.do(1, () => {});
     const end = await FirstModel.findOne({ guildId: 1 });
-
 
     expect(startServer.hasDoneFirst).toEqual(true);
     expect(afterReset.hasDoneFirst).toEqual(false);
