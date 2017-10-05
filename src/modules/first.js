@@ -17,7 +17,7 @@ class First {
   }
 
   async resetServers() {
-    return await ServerFirst.update({}, { hasDoneFirst: false });
+    return await ServerFirst.update({}, { hasDoneFirst: false }, { multi: true });
   }
 }
 
