@@ -16,7 +16,7 @@ module.exports = class FirstCommand extends Commando.Command {
   }
 
   async run(msg) {
-    const userId = msg.guild.id
+    const userId = msg.author.id;
     const guildId = msg.guild.id;
     const thisServer = await first.hasBeenDone(guildId);
 
