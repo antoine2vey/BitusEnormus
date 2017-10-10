@@ -1,8 +1,10 @@
 const ServerFirst = require('../db/models/first');
+const User = require('../db/models/user');
 
 class First {
-  async do(guildId, callback) {
+  async do(userId, guildId, callback) {
     const server = await ServerFirst.findOne({ guildId });
+    await this.increaseFirst(userId, guildId);
 
     if (!server) {
       const newServer = new ServerFirst({ guildId });
@@ -17,7 +19,14 @@ class First {
   }
 
   async resetServers() {
-    return await ServerFirst.update({}, { hasDoneFirst: false });
+    return await ServerFirst.update({}, { hasDoneFirst: false }, { multi: true });
+  }
+
+  increaseFirst(userId, guildId) {
+    return User.findOneAndUpdate(
+      { userId, guildId },
+      { $inc: { firstCount: 1 } },
+    );
   }
 }
 

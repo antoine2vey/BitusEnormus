@@ -89,11 +89,11 @@ describe('Get amount by a given threshold', () => {
 
 
 describe('Validate minimum space to prevent spam', () => {
-  it('throw if space is < 20', () => {
-    expect(roll.isSpaceValid(19, 100)).toBe(false);
+  it('throw if space is < 10', () => {
+    expect(roll.isSpaceValid(9, 100)).toBe(false);
   });
 
-  it('validate is space >= 20', () => {
-    expect(roll.isSpaceValid(0, 80)).toBe(true);
+  it('validate is space >= 10', () => {
+    expect(roll.isSpaceValid(0, 90)).toBe(true);
   });
 });

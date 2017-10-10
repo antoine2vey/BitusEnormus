@@ -4,6 +4,7 @@ const user = require('../../src/modules/user');
 const User = require('../../src/db/models/user');
 
 const DEFAULT_MONEY_USER = User.schema.obj.kebabs.default;
+jest.useFakeTimers();
 
 beforeAll(() => {
   mongoose.Promise = Promise;
@@ -85,21 +86,21 @@ describe('Test for user command', () => {
     const firstUser = await user.get(1, 1);
     const secondUser = await user.get(2, 1);
 
-    const toGive = DEFAULT_MONEY_USER + (user.defaultGive * 4);
+    const toGive = DEFAULT_MONEY_USER + user.defaultGive * 4;
 
     expect([firstUser.kebabs, secondUser.kebabs]).toEqual([toGive, toGive]);
   });
 
   it('should give to one and remove for one if enough money', async () => {
     expect.assertions(1);
-    const hasGiven = await user.giveTo(1, 2, 10);
+    const hasGiven = await user.giveTo(1, 2, 1, 10);
 
     expect(hasGiven).toBe(true);
   });
 
   it('should throw if trying to give too much money', async () => {
     expect.assertions(1);
-    const hasGiven = await user.giveTo(1, 2, DEFAULT_MONEY_USER * 2);
+    const hasGiven = await user.giveTo(1, 2, 1, DEFAULT_MONEY_USER * 2);
 
     expect(hasGiven).toBe(false);
   });

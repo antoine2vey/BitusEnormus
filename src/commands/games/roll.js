@@ -61,7 +61,7 @@ module.exports = class RollCommands extends Commando.Command {
   }
 
   isSpaceValid(min, max) {
-    return max - min <= 80;
+    return max - min <= 90;
   }
 
   async run(msg, { value, stack }) {

@@ -16,6 +16,7 @@ module.exports = class FirstCommand extends Commando.Command {
   }
 
   async run(msg) {
+    const userId = msg.author.id;
     const guildId = msg.guild.id;
     const thisServer = await first.hasBeenDone(guildId);
 
@@ -28,7 +29,7 @@ module.exports = class FirstCommand extends Commando.Command {
       return message.send(msg);
     }
 
-    first.do(guildId, () => {
+    first.do(userId, guildId, () => {
       user.didFirst(msg.author.id, guildId);
 
       message.addValid({
