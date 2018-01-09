@@ -15,17 +15,42 @@ class First {
   }
 
   async hasBeenDone(guildId) {
-    return await ServerFirst.findOne({ guildId }) || false;
+    return (await ServerFirst.findOne({ guildId })) || false;
   }
 
-  async resetServers() {
-    return await ServerFirst.update({}, { hasDoneFirst: false }, { multi: true });
+  /**
+   * Reset all servers
+   */
+  resetServers() {
+    return new Promise((resolve, reject) =>
+      ServerFirst.update({}, { hasDoneFirst: false }, { multi: true }, (err, didUpdate) => {
+        if (err || !didUpdate) {
+          return reject('Server error');
+        }
+
+        resolve(true);
+      }),
+    );
   }
 
+  /**
+   * Increase first count by one for a given user
+   * @param {userId} user id
+   * @param {guildId} guild id
+   */
   increaseFirst(userId, guildId) {
-    return User.findOneAndUpdate(
-      { userId, guildId },
-      { $inc: { firstCount: 1 } },
+    return new Promise((resolve, reject) =>
+      User.findOneAndUpdate({ userId, guildId }, { $inc: { firstCount: 1 } }, (err, user) => {
+        if (err) {
+          return reject('Server error');
+        }
+
+        if (!user) {
+          return reject('No user found');
+        }
+
+        return resolve({ user });
+      }),
     );
   }
 }

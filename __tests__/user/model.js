@@ -39,12 +39,12 @@ describe('Test for user command', () => {
     expect(__user__.kebabs).toEqual(DEFAULT_MONEY_USER);
   });
 
-  it.skip('should update user', async () => {
-    expect.assertions(1);
+  it('should update user', async () => {
     const GIVEN_MONEY = 50;
-    const user_ = await user.userQuery(1, 1, GIVEN_MONEY);
+    const __user__ = await user.get(1, 1);
+    await user.userQuery(1, 1, GIVEN_MONEY);
 
-    expect(user_.kebabs).toEqual(DEFAULT_MONEY_USER + GIVEN_MONEY);
+    expect(__user__.kebabs).toEqual(DEFAULT_MONEY_USER + GIVEN_MONEY);
   });
 
   it.skip('should upsert new user', async () => {
@@ -57,7 +57,7 @@ describe('Test for user command', () => {
 
   it.skip('should give money when first', async () => {
     expect.assertions(1);
-    user.didFirst(1, 1);
+    await user.didFirst(1, 1);
     const __user__ = await User.findOne({ userId: 1, guildId: 1 });
 
     expect(__user__.kebabs).toEqual(DEFAULT_MONEY_USER + user.firstGive);

@@ -89,7 +89,8 @@ module.exports = class TossCommand extends Commando.Command {
       if (kebabs > _user.kebabs) {
         message.addError({
           name: 'Attention',
-          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - _user.kebabs}!`,
+          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs -
+            _user.kebabs}!`,
         });
 
         return message.send(msg);
@@ -100,7 +101,8 @@ module.exports = class TossCommand extends Commando.Command {
       if (kebabs > client.kebabs) {
         message.addError({
           name: 'Attention',
-          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - client.kebabs}!`,
+          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs -
+            client.kebabs}!`,
         });
 
         return message.send(msg);

@@ -1,5 +1,5 @@
 const Commando = require('discord.js-commando');
-const { user, message, emoji, first } = require('../../modules');
+const { user, message, emoji } = require('../../modules');
 
 module.exports = class BankInfoCommand extends Commando.Command {
   constructor(client) {
@@ -28,7 +28,8 @@ module.exports = class BankInfoCommand extends Commando.Command {
       } else {
         message.addValid({
           name: 'Banque',
-          value: `Tu possèdes ${client.bank.amount} ${emoji.kebab} dans ta banque`,
+          value: `Tu possèdes ${client.bank
+            .amount} ${emoji.kebab} dans ta banque`,
         });
       }
     } catch (e) {

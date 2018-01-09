@@ -22,7 +22,7 @@ module.exports = class LadderCommand extends Commando.Command {
     if (!users.length) {
       message.addError({
         name: 'Ladderboard',
-        value: 'Pas d\'utilisateurs',
+        value: "Pas d'utilisateurs",
       });
 
       message.send(msg);
@@ -32,7 +32,8 @@ module.exports = class LadderCommand extends Commando.Command {
       name: 'Ladderboard',
       value: users
         .map((_user, i) => {
-          const profile = msg.guild.members.find('id', _user.userId).user.username;
+          const profile = msg.guild.members.find('id', _user.userId).user
+            .username;
 
           return `${i + 1} - ${profile} : ${_user.kebabs} ${emoji.kebab}`;
         })

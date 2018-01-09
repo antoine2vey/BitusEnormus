@@ -33,7 +33,10 @@ module.exports = class RollCommands extends Commando.Command {
   }
 
   getRandomIntInclusive(min, max) {
-    return Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min);
+    return (
+      Math.floor(Math.random() * ((Math.floor(max) - Math.ceil(min)) + 1)) +
+      Math.ceil(min)
+    );
   }
 
   get randomNumber() {
@@ -87,7 +90,8 @@ module.exports = class RollCommands extends Commando.Command {
       if (value > _user.kebabs) {
         message.addError({
           name: 'Attention',
-          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${value - _user.kebabs}!`,
+          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${value -
+            _user.kebabs}!`,
         });
 
         return message.send(msg);
@@ -98,7 +102,8 @@ module.exports = class RollCommands extends Commando.Command {
       if (value > client.kebabs) {
         message.addError({
           name: 'Attention',
-          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${value - client.kebabs}!`,
+          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${value -
+            client.kebabs}!`,
         });
 
         return message.send(msg);
@@ -109,7 +114,7 @@ module.exports = class RollCommands extends Commando.Command {
       const randomNumber = this.randomNumber;
       if (this.hasWon(randomNumber)) {
         const amountWon = this.getAmountByThreshold(value);
-        await user.updateMoney(userId, guildId, username, (amountWon - value));
+        await user.updateMoney(userId, guildId, username, amountWon - value);
 
         message.addValid({
           name: `Gagné! (${randomNumber})`,

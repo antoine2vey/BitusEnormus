@@ -17,9 +17,11 @@ module.exports = class AddFileCommand extends Commando.Command {
     });
   }
 
-  async run(message, args) {
+  async run(message) {
     if (!message.attachments.first()) {
-      message.channel.send(':rotating_light: Tu n\'as pas envoyé de fichier :rotating_light:');
+      message.channel.send(
+        ":rotating_light: Tu n'as pas envoyé de fichier :rotating_light:",
+      );
     }
 
     const hasMP3Extension = (file) => {
@@ -30,14 +32,22 @@ module.exports = class AddFileCommand extends Commando.Command {
     const { filename, url } = message.attachments.first();
 
     if (!hasMP3Extension(filename)) {
-      return message.channel.send(':rotating_light: Envoie un MP3 :rotating_light:');
+      return message.channel.send(
+        ':rotating_light: Envoie un MP3 :rotating_light:',
+      );
     }
 
     request
       .get(url)
       .on('error', () => {
-        message.channel.send(':rotating_light: Erreur dans le téléchargement :rotating_light:');
+        message.channel.send(
+          ':rotating_light: Erreur dans le téléchargement :rotating_light:',
+        );
       })
-      .pipe(fs.createWriteStream(path.join(__dirname, '..', 'sounds', 'sounds', filename)));
+      .pipe(
+        fs.createWriteStream(
+          path.join(__dirname, '..', 'sounds', 'sounds', filename),
+        ),
+      );
   }
 };

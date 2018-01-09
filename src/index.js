@@ -12,7 +12,8 @@ const Bank = require('./db/models/bank');
 
 env.config();
 const log = arg => console.log(arg);
-const CronJob = (pattern, fn) => new CronTask(pattern, fn, null, true, 'Europe/Paris');
+const CronJob = (pattern, fn) =>
+  new CronTask(pattern, fn, null, true, 'Europe/Paris');
 const client = new Commando.Client({ owner: process.env.OWNER_ID });
 
 client.on('ready', async () => {
@@ -29,15 +30,21 @@ client.on('ready', async () => {
   // Update bank every 2 hours
   CronJob('0 */2 * * *', async () => {
     const banks = await Bank.find({});
-    banks.forEach((bank) => {
+    banks.forEach(bank => {
       // eslint-disable-next-line
-      bank.amount = Math.floor(bank.amount + (bank.amount * (0.15 / 12)));
+      bank.amount = Math.floor(bank.amount + bank.amount * (0.15 / 12));
       bank.save();
     });
   });
 });
 
-client.setProvider(sqlite.open(path.join(__dirname, 'settings.sqlite3')).then(db => new Commando.SQLiteProvider(db))).catch(console.error);
+client
+  .setProvider(
+    sqlite
+      .open(path.join(__dirname, 'settings.sqlite3'))
+      .then(db => new Commando.SQLiteProvider(db)),
+  )
+  .catch(console.error);
 
 client.registry
   .registerGroups([

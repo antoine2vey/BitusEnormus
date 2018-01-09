@@ -24,8 +24,8 @@ describe('Test for album command', () => {
   });
 
   it('should return a random photo', async () => {
-    expect.assertions(1);
-    const photo = await album.getRandomPhoto();
+    const rand = Math.floor(Math.random() * 10);
+    const photo = await album.getRandomPhoto(rand);
 
     expect(photo).toBeTruthy();
   });

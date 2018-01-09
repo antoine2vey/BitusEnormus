@@ -9,27 +9,26 @@ module.exports = class AlbumCommand extends Commando.Command {
       aliases: ['mappa', 'album'],
       group: 'album',
       memberName: 'add',
-      description: 'Affiche une image au hasard de l\'album',
-      details: 'Affiche une image au hasard de l\'album',
+      description: "Affiche une image au hasard de l'album",
+      details: "Affiche une image au hasard de l'album",
       examples: ['!mappa'],
       argsCount: 0,
     });
-
-    this.random = null;
   }
 
   getPhotosLength() {
     return Photos.count();
   }
 
-  async getRandomPhoto() {
-    return Photos.findOne().skip(this.random);
+  getRandomPhoto(index) {
+    return Photos.findOne().skip(index);
   }
 
   async run(msg) {
     const len = await this.getPhotosLength();
-    this.random = Math.floor(Math.random() * len);
-    const photo = await this.getRandomPhoto();
+    const rand = Math.floor(Math.random() * len);
+
+    const photo = await this.getRandomPhoto(rand);
 
     message.sendImage(msg, photo.link);
   }

@@ -17,7 +17,7 @@ class NumberValidation {
 
   isValid(val) {
     const value = parseInt(val, 10);
-    return value >= 0 && Number.isFinite(value) && (typeof value === 'number');
+    return value >= 0 && Number.isFinite(value) && typeof value === 'number';
   }
 
   isValidStack(str) {

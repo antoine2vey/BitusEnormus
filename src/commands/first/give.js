@@ -53,15 +53,24 @@ module.exports = class GiveCommand extends Commando.Command {
     if (notValidUser(msg, userId)) {
       message.addError({
         name: 'Donation',
-        value: 'Cet utilisateur n\'existe pas',
+        value: "Cet utilisateur n'existe pas",
       });
     }
 
-    if (!isValidAmount || msg.author.id === userId || notValidUser(msg, userId)) {
+    if (
+      !isValidAmount ||
+      msg.author.id === userId ||
+      notValidUser(msg, userId)
+    ) {
       return message.send(msg);
     }
 
-    const hasGiven = await user.giveTo(msg.author.id, userId, guildId, args.kebabs);
+    const hasGiven = await user.giveTo(
+      msg.author.id,
+      userId,
+      guildId,
+      args.kebabs,
+    );
 
     if (!hasGiven) {
       message.addError({

@@ -59,7 +59,12 @@ module.exports = class BankGetCommand extends Commando.Command {
       });
     }
 
-    if (!number.isValid(value) || !enoughMoneyInBank || !allowed || !client.bank) {
+    if (
+      !number.isValid(value) ||
+      !enoughMoneyInBank ||
+      !allowed ||
+      !client.bank
+    ) {
       return message.send(msg);
     }
 
