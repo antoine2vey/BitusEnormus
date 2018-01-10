@@ -1,5 +1,6 @@
 const Client = require('../db/models/user');
 const Bank = require('../db/models/bank');
+const { bank } = require('./Bank');
 const moment = require('moment');
 const Payment = require('./Payment');
 
@@ -182,6 +183,60 @@ class User extends Payment {
   }
 
   /**
+   * Create bank for a given user
+   * @param {*} userId
+   * @param {*} guildId
+   * @param {*} bankId
+   * @param {*} amount
+   */
+  createBankForUser(userId, guildId, bankId, amount) {
+    return new Promise((resolve, reject) => {
+      Client.findOneAndUpdate(
+        { userId, guildId },
+        { bank: bank.id, $inc: { kebabs: -amount } },
+      ).exec((err, newBank) => {
+        if (err) {
+          return reject('Server error');
+        }
+
+        return resolve({ newBank });
+      });
+    });
+  }
+
+  /**
+   * Update an user bank, accepts two methods:
+   * `push` to retrieve, `push` to add funds
+   * @param {*} method (push|get)
+   * @param {*} userId
+   * @param {*} guildId
+   * @param {*} amount
+   */
+  async updateBank(method, userId, guildId, amount) {
+    if (method !== 'get' || method !== 'push') {
+      throw new Error('Bank method must be either `push` or `get`');
+    }
+
+    const client = await this.get(userId, guildId);
+    if (!client.bank) {
+      bank
+        .create(client)
+        .then(async (newBank) => {
+          // Create bank for user and withdraw him money
+          await this.createBankForUser(client.id, guildId, newBank.id, -amount);
+          // Update that created bank to add user's money
+          await bank.update(newBank.id, { $inc: { amount } });
+        })
+        .catch(err => console.error(err));
+    }
+
+    const query = bank.getQuery(method, amount);
+
+    await this.withdraw(userId, guildId, amount);
+    await bank.update(client.bank.id, query);
+  }
+
+  /**
    * TODO REFRACTOR ALL METHODS BEHIND
    */
 
@@ -222,56 +277,6 @@ class User extends Payment {
     } catch (e) {
       return false;
     }
-  }
-
-  async updateBank(method, userId, guildId, amount, cb) {
-    const client = await Client.findOne({ userId, guildId }).populate('bank');
-
-    if (!client.bank) {
-      const newBank = new Bank({
-        belongsTo: client._id,
-        lastSet: new Date(),
-      });
-
-      return newBank.save(async (err) => {
-        if (err) {
-          return console.log(err);
-        }
-
-        await Client.findOneAndUpdate(
-          { userId: client.id, guildId },
-          { bank: newBank._id, $inc: { kebabs: -amount } },
-        );
-        // eslint-disable-next-line
-        const updatedBank = await Bank.findByIdAndUpdate(
-          newBank.id,
-          { $inc: { amount } },
-          { new: true },
-        );
-
-        return cb(updatedBank);
-      });
-    }
-
-    let query;
-    if (method === 'get') {
-      query = {
-        $inc: { amount },
-        lastGet: new Date(),
-      };
-    } else {
-      query = {
-        $inc: { amount },
-        lastSet: new Date(),
-      };
-    }
-
-    await Client.findOneAndUpdate({ userId, guildId }, { $inc: { kebabs: -amount } });
-    const updatedBank = await Bank.findByIdAndUpdate(client.bank.id, query, {
-      new: true,
-    });
-
-    return cb(updatedBank);
   }
 
   async allowedTo(method, userId, guildId, date) {

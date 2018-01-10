@@ -11,7 +11,6 @@ const bankSchema = new Schema({
   amount: {
     type: Number,
     required: true,
-    default: 500,
   },
   lastSet: Date,
   lastGet: Date,
