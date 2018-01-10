@@ -103,11 +103,6 @@ class User extends Payment {
       try {
         const { client } = await this.get(userId, guildId);
 
-        if (!client) {
-          const newClient = await this.create(userId, guildId, username);
-          return resolve({ client: newClient });
-        }
-
         return resolve({ client });
       } catch (e) {
         const { client } = await this.create(userId, guildId, username);

@@ -18,7 +18,8 @@ module.exports = class RegisterCommand extends Commando.Command {
   async run(msg) {
     const userId = msg.author.id;
     const guildId = msg.guild.id;
-    const { fresh } = await user.register(userId, guildId);
+    const { username } = msg.author;
+    const { fresh } = await user.register(userId, guildId, username);
 
     if (!fresh) {
       message.addError({
