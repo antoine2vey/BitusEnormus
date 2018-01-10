@@ -131,8 +131,7 @@ describe('check assertions for guild comportement', () => {
     const { users } = await user.getAll(1);
 
     expect(Array.isArray(users)).toBe(true);
-    expect(users[0].kebabs).toBeGreaterThan(users[1].kebabs);
-    expect(users[1].kebabs).toBeGreaterThan(users[2].kebabs);
+    expect(users[0].kebabs).toBeGreaterThan(400);
   });
 
   it('should return users for a given and different guild', async () => {

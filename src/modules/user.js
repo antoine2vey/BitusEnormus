@@ -103,7 +103,7 @@ class User extends Payment {
   register(userId, guildId, username) {
     return new Promise(async (resolve, reject) => {
       try {
-        const { client } = await this.get(userId, guildId);
+        const { client } = await this.get(userId, guildId, username);
 
         return resolve({ client });
       } catch (e) {
