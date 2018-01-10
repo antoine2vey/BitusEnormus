@@ -1,10 +1,10 @@
 /* eslint-env node, jest */
 const mongoose = require('mongoose');
-const user = require('../../src/modules/user');
+const expect = require('expect');
+const user = require('../../src/modules/User');
 const User = require('../../src/db/models/user');
 
-const DEFAULT_MONEY_USER = User.schema.obj.kebabs.default;
-jest.useFakeTimers();
+const DEFAULT_MONEY_USER = user.defaultGive;
 
 beforeAll(() => {
   mongoose.Promise = Promise;
@@ -13,7 +13,7 @@ beforeAll(() => {
   });
 });
 beforeEach(async (done) => {
-  const mockUser = new User({ userId: 1, guildId: 1 });
+  const mockUser = new User({ userId: 1, guildId: 1, username: 'Antoine' });
   await mockUser.save(() => done());
 });
 afterEach(async () => {
@@ -26,83 +26,90 @@ afterAll((done) => {
 
 describe('Test for user command', () => {
   it('should get an user by its id', async () => {
-    expect.assertions(1);
-    const __user__ = await user.get(1, 1);
+    const { client } = await user.get(1, 1);
 
-    expect(__user__).toBeTruthy();
+    expect(client).toBeTruthy();
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER);
+    expect(client.userId).toEqual('1');
   });
 
-  it('should get defaulted to 50 kebabs', async () => {
-    expect.assertions(1);
-    const __user__ = await user.get(1, 1);
+  it(`should get defaulted to ${DEFAULT_MONEY_USER} kebabs`, async () => {
+    const { client } = await user.get(1, 1);
 
-    expect(__user__.kebabs).toEqual(DEFAULT_MONEY_USER);
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER);
   });
 
-  it('should update user', async () => {
-    const GIVEN_MONEY = 50;
-    const __user__ = await user.get(1, 1);
-    await user.userQuery(1, 1, GIVEN_MONEY);
+  it('should pay an user', async () => {
+    const money = 50;
+    await user.pay(1, 1, money);
+    const { client } = await user.get(1, 1);
 
-    expect(__user__.kebabs).toEqual(DEFAULT_MONEY_USER + GIVEN_MONEY);
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER + money);
+    expect(typeof client.kebabs).toBe('number');
   });
 
-  it.skip('should upsert new user', async () => {
-    expect.assertions(1);
+  it('should withdraw an user', async () => {
+    const money = 50;
+    await user.withdraw(1, 1, money);
+    const { client } = await user.get(1, 1);
 
-    const __user__ = await user.userQuery(2, 1, 50);
-
-    expect(__user__.kebabs).toEqual(50);
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER - money);
+    expect(typeof client.kebabs).toBe('number');
   });
 
-  it.skip('should give money when first', async () => {
-    expect.assertions(1);
+  it('should upsert new user', async () => {
+    const { client } = await user.pay(2, 1, 50);
+
+    expect(client.kebabs).toEqual(50);
+    expect(typeof client.kebabs).toBe('number');
+  });
+
+  it('should give money when first', async () => {
     await user.didFirst(1, 1);
-    const __user__ = await User.findOne({ userId: 1, guildId: 1 });
+    const { client } = await user.get(1, 1);
 
-    expect(__user__.kebabs).toEqual(DEFAULT_MONEY_USER + user.firstGive);
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER + user.firstGive);
+    expect(typeof client.kebabs).toBe('number');
   });
 
   it('should create new user if not here in database', async () => {
-    expect.assertions(1);
-    const registered = await user.register(1, 1);
+    const { client } = await user.register(1, 1, 'Antoine');
 
-    expect(registered).toBe(true);
+    expect(client).toBeTruthy();
+    expect(client.username).toEqual('Antoine');
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER);
   });
 
   it('should not create new user if here in database', async () => {
-    expect.assertions(1);
-    const registered = await user.register(2, 1);
+    const { client } = await user.register(2, 1, 'John');
 
-    expect(registered).toBe(false);
+    expect(client).toBeTruthy();
+    expect(client.username).toEqual('John');
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER);
   });
 
   it('should update all user for n kebabs', async () => {
-    expect.assertions(1);
-    const newUser = new User({ userId: 2, guildId: 1 });
-    newUser.save();
+    await user.payAll();
+    const { client } = await user.get(1, 1);
 
-    await user.giveDaily();
-    const firstUser = await user.get(1, 1);
-    const secondUser = await user.get(2, 1);
-
-    const toGive = DEFAULT_MONEY_USER + user.defaultGive * 4;
-
-    expect([firstUser.kebabs, secondUser.kebabs]).toEqual([toGive, toGive]);
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER + user.defaultGive * 4);
   });
 
   it('should give to one and remove for one if enough money', async () => {
-    expect.assertions(1);
-    const hasGiven = await user.giveTo(1, 2, 1, 10);
+    const givenMoney = 100;
+    const hasGiven = await user.giveTo(1, 2, 1, givenMoney);
+    const { client } = await user.get(1, 1);
 
     expect(hasGiven).toBe(true);
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER - givenMoney);
   });
 
   it('should throw if trying to give too much money', async () => {
-    expect.assertions(1);
     const hasGiven = await user.giveTo(1, 2, 1, DEFAULT_MONEY_USER * 2);
+    const { client } = await user.get(1, 1);
 
     expect(hasGiven).toBe(false);
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER);
   });
 });
 
@@ -115,15 +122,21 @@ describe('check assertions for guild comportement', () => {
     await User.remove({ userId: 2 });
   });
 
-  it('should return an array of users for a certain guild', async () => {
-    expect.assertions(1);
-    const users = await user.users(1);
-
+  it('should return an array of users for a certain guild (unordered)', async () => {
+    const { users } = await user.getAll(1, false);
     expect(Array.isArray(users)).toBe(true);
   });
 
+  it('should return an array of users ordered by kebabs', async () => {
+    const { users } = await user.getAll(1);
+
+    expect(Array.isArray(users)).toBe(true);
+    expect(users[0].kebabs).toBeGreaterThan(users[1].kebabs);
+    expect(users[1].kebabs).toBeGreaterThan(users[2].kebabs);
+  });
+
   it('should return users for a given and different guild', async () => {
-    const users = await user.users(2);
+    const { users } = await user.getAll(2);
 
     expect(Array.isArray(users)).toBe(true);
     expect(users[0].guildId).toEqual('2');

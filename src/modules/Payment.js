@@ -26,12 +26,12 @@ class Payment {
         { userId, guildId },
         { $inc: { kebabs: parseInt(amount, 10) } },
         { upsert: true, new: true },
-      ).exec((err, user) => {
+      ).exec((err, client) => {
         if (err) {
           return reject('Server error');
         }
 
-        return resolve({ user });
+        return resolve({ client });
       });
     });
   }
@@ -55,12 +55,12 @@ class Payment {
         { userId, guildId },
         { $inc: { kebabs: parseInt(amount, 10) } },
         { upsert: true, new: true },
-      ).exec((err, user) => {
+      ).exec((err, client) => {
         if (err) {
           return reject('Server error');
         }
 
-        return resolve({ user });
+        return resolve({ client });
       });
     });
   }
@@ -86,11 +86,17 @@ class Payment {
     });
   }
 
+  /**
+   * Can this user pay for a given amount ?
+   * @param {*} userId
+   * @param {*} guildId
+   * @param {*} amount
+   */
   async canPay(userId, guildId, amount) {
     try {
       const client = await Client.findOne({ userId, guildId });
 
-      return new Promise(async (resolve, reject) => {
+      return new Promise((resolve, reject) => {
         if (client.kebabs >= amount) {
           return reject(false);
         }

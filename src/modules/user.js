@@ -1,7 +1,5 @@
 const Client = require('../db/models/user');
-const Bank = require('../db/models/bank');
 const { bank } = require('./Bank');
-const moment = require('moment');
 const Payment = require('./Payment');
 
 class User extends Payment {
@@ -81,7 +79,8 @@ class User extends Payment {
    * @param {*} amount
    */
   withdraw(userId, guildId, amount) {
-    return this.withdrawUser(userId, guildId, amount);
+    // TRANSFORM IT INTO NEGATIVE HERE!
+    return this.withdrawUser(userId, guildId, -amount);
   }
 
   /**
@@ -99,25 +98,20 @@ class User extends Payment {
    * @param {*} userId
    * @param {*} guildId
    */
-  register(userId, guildId) {
+  register(userId, guildId, username) {
     return new Promise(async (resolve, reject) => {
       try {
         const { client } = await this.get(userId, guildId);
 
         if (!client) {
-          const newClient = new Client({ userId, guildId });
-          newClient.save((err) => {
-            if (err) {
-              return reject('Server error');
-            }
-
-            return resolve(true);
-          });
+          const newClient = await this.create(userId, guildId, username);
+          return resolve({ client: newClient });
         }
 
-        return resolve(true);
+        return resolve({ client });
       } catch (e) {
-        return reject('Server error');
+        const { client } = await this.create(userId, guildId, username);
+        return resolve({ client });
       }
     });
   }
@@ -151,14 +145,14 @@ class User extends Payment {
 
       if (client.kebabs >= amount) {
         await this.pay(userId, guildId, amount);
-        await this.widthdraw(initiator, guildId, -amount);
+        await this.withdraw(initiator, guildId, amount);
 
         // Everything went well
         return resolve(true);
       }
 
       // Not enough money
-      return reject(false);
+      return resolve(false);
     });
   }
 
@@ -177,7 +171,7 @@ class User extends Payment {
           return reject('Server error');
         }
 
-        return resolve(true);
+        return resolve({ client });
       });
     });
   }
@@ -237,65 +231,46 @@ class User extends Payment {
   }
 
   /**
-   * TODO REFRACTOR ALL METHODS BEHIND
+   * Checks if an user can withdraw money
+   * @param {*} userId
+   * @param {*} guildId
+   * @param {*} amount
    */
+  canWithdrawFromBank(userId, guildId, amount) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const canWithdraw = await bank.canWithdraw(userId, guildId, amount);
 
-  async updateMoney(userId, guildId, username, amount) {
-    setImmediate(async () => {
-      const client = await Client.findOneAndUpdate(
-        { userId, guildId },
-        { $inc: { kebabs: amount }, $set: { username } },
-        { new: true, upsert: true },
-      ).populate('bank');
-
-      if (!client.bank) {
-        const newBank = new Bank({ belongsTo: client._id });
-
-        return newBank.save(async (err) => {
-          if (err) {
-            return console.log(err);
-          }
-
-          return await Client.findOneAndUpdate(
-            { userId, guildId },
-            { bank: newBank._id, $set: { username } },
-          );
-        });
+        return resolve(canWithdraw);
+      } catch (e) {
+        return reject(false);
       }
     });
   }
 
-  async controlMoneyInBank(userId, guildId, amount) {
-    try {
-      const client = await this.get(userId, guildId);
+  /**
+   * Is user allowed to push money or get money from
+   * his bank account (push or get method)
+   * @param {*} method (push|get)
+   * @param {*} userId
+   * @param {*} guildId
+   * @param {*} date
+   */
+  allowedTo(method, userId, guildId, date) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const user = await this.get(userId, guildId);
+        const isAllowed = await bank.allow(method, date, user);
 
-      if (amount > client.bank.amount) {
-        return false;
+        if (!user.bank) {
+          return resolve(true);
+        }
+
+        return resolve(isAllowed);
+      } catch (e) {
+        return reject(false);
       }
-
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  async allowedTo(method, userId, guildId, date) {
-    const user = await this.get(userId, guildId);
-    if (!user.bank) {
-      return true;
-    }
-
-    if ((method === 'get' && !user.bank.lastGet) || !user.bank.lastSet) {
-      return true;
-    }
-
-    const dayAfter = moment(method === 'push' ? user.bank.lastSet : user.bank.lastGet).add(
-      1,
-      'day',
-    );
-    const date_ = moment(date);
-
-    return dayAfter.isBefore(date_);
+    });
   }
 }
 
