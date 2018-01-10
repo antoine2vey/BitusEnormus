@@ -15,17 +15,19 @@ class User extends Payment {
    * @param {*} userId
    * @param {*} guildId
    */
-  get(userId, guildId) {
+  get(userId, guildId, username) {
     return new Promise((resolve, reject) => {
       Client.findOne({ userId, guildId })
         .populate('bank')
-        .exec((err, client) => {
+        .exec(async (err, client) => {
           if (err) {
             return reject('Server error');
           }
 
           if (!client) {
-            return reject("Cet utilisateur n'existe pas");
+            const newClient = await this.create(userId, guildId, username);
+
+            return resolve({ client: newClient.client });
           }
 
           return resolve({ client });

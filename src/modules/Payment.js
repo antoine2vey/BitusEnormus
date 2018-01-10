@@ -88,24 +88,19 @@ class Payment {
 
   /**
    * Can this user pay for a given amount ?
+   * Returns true if the user can pay
    * @param {*} userId
    * @param {*} guildId
    * @param {*} amount
    */
-  async canPay(userId, guildId, amount) {
-    try {
-      const client = await Client.findOne({ userId, guildId });
-
-      return new Promise((resolve, reject) => {
-        if (client.kebabs >= amount) {
-          return reject(false);
-        }
-
+  async canPay({ kebabs }, amount) {
+    return new Promise((resolve) => {
+      if (kebabs >= amount) {
         return resolve(true);
-      });
-    } catch (e) {
-      return false;
-    }
+      }
+
+      return resolve(false);
+    });
   }
 }
 
