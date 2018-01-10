@@ -86,16 +86,6 @@ class User extends Payment {
   }
 
   /**
-   * Check if user has enough money
-   * @param {*} userId
-   * @param {*} guildId
-   * @param {*} amount
-   */
-  controlMoney(userId, guildId, amount) {
-    return this.canPay(userId, guildId, amount);
-  }
-
-  /**
    * Register a new user in database, returns the `fresh`
    * property if client is a created one
    * @param {*} userId
@@ -186,12 +176,12 @@ class User extends Payment {
       Client.findOneAndUpdate(
         { userId, guildId },
         { bank: bankId, $inc: { kebabs: -amount } },
-      ).exec((err, newBank) => {
+      ).exec((err, user) => {
         if (err) {
           return reject('Server error');
         }
 
-        return resolve({ newBank });
+        return resolve({ user });
       });
     });
   }
@@ -204,28 +194,23 @@ class User extends Payment {
    * @param {*} guildId
    * @param {*} amount
    */
-  async updateBank(method, userId, guildId, amount) {
-    if (method !== 'get' || method !== 'push') {
+  async updateBank(method, userId, guildId, amount, client) {
+    if (method !== 'get' && method !== 'push') {
       throw new Error('Bank method must be either `push` or `get`');
     }
 
-    const client = await this.get(userId, guildId);
-    if (!client.bank) {
-      bank
-        .create(client)
-        .then(async (newBank) => {
-          // Create bank for user and withdraw him money
-          await this.createBankForUser(client.id, guildId, newBank.id, -amount);
-          // Update that created bank to add user's money
-          await bank.update(newBank.id, { $inc: { amount } });
-        })
-        .catch(err => console.error(err));
-    }
+    return new Promise(async (resolve, reject) => {
+      const query = bank.getQuery(method, amount);
 
-    const query = bank.getQuery(method, amount);
+      try {
+        await this.withdraw(userId, guildId, amount);
+        const updatedBank = await bank.update(client.bank.id, query);
 
-    await this.withdraw(userId, guildId, amount);
-    await bank.update(client.bank.id, query);
+        return resolve({ bank: updatedBank.bank });
+      } catch (e) {
+        return reject(false);
+      }
+    });
   }
 
   /**
@@ -254,18 +239,13 @@ class User extends Payment {
    * @param {*} guildId
    * @param {*} date
    */
-  allowedTo(method, userId, guildId, date) {
+  allowedTo(method, userId, guildId, date, user) {
     return new Promise(async (resolve, reject) => {
       try {
-        const user = await this.get(userId, guildId);
         const isAllowed = await bank.allow(method, date, user);
-
-        if (!user.bank) {
-          return resolve(true);
-        }
-
         return resolve(isAllowed);
       } catch (e) {
+        console.log(`Throwed because ${e}`);
         return reject(false);
       }
     });

@@ -4,13 +4,13 @@ const moment = require('moment');
 
 class Bank {
   /**
-   * Create bank that belongs to an user
+   * Create bank that belongs to an user and returns user
    * @param {*} belongsTo
    */
-  create(client) {
+  create({ _id, userId, guildId, username }) {
     return new Promise((resolve, reject) => {
       const bank = new BankModel({
-        belongsTo: client._id,
+        belongsTo: _id,
       });
 
       return bank.save(async (err) => {
@@ -18,8 +18,10 @@ class Bank {
           return reject('Server error');
         }
 
-        const { newBank } = await user.createBankForUser(client.userId, client.guildId, bank.id);
-        return resolve({ bank: newBank });
+        await user.createBankForUser(userId, guildId, bank.id);
+        const { client } = await user.get(userId, guildId, username);
+
+        return resolve({ client });
       });
     });
   }
@@ -55,7 +57,7 @@ class Bank {
           return reject('Server error');
         }
 
-        return resolve(bank);
+        return resolve({ bank });
       });
     });
   }
@@ -90,19 +92,19 @@ class Bank {
    * @param {*} guildId
    * @param {*} date
    */
-  allow(method, date, user) {
-    if (method !== 'get' || method !== 'push') {
+  allow(method, date, client) {
+    if (method !== 'get' && method !== 'push') {
       throw new Error('Bank method must be either `push` or `get`');
     }
 
     // If you are trying to withdraw money but never set or never get
     // you can withdraw
-    if ((method === 'get' && !user.bank.lastGet) || !user.bank.lastSet) {
+    if ((method === 'get' && !client.bank.lastGet) || !client.bank.lastSet) {
       return true;
     }
 
     // Add one day to selected getter or setter
-    const dayAfter = moment(method === 'push' ? user.bank.lastSet : user.bank.lastGet).add(
+    const dayAfter = moment(method === 'push' ? client.bank.lastSet : client.bank.lastGet).add(
       1,
       'day',
     );
