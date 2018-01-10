@@ -111,7 +111,7 @@ class User extends Payment {
         return resolve({ client });
       } catch (e) {
         const { client } = await this.create(userId, guildId, username);
-        return resolve({ client });
+        return resolve({ client, fresh: true });
       }
     });
   }

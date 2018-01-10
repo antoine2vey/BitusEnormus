@@ -18,9 +18,9 @@ module.exports = class RegisterCommand extends Commando.Command {
   async run(msg) {
     const userId = msg.author.id;
     const guildId = msg.guild.id;
-    const registered = await user.register(userId, guildId);
+    const { fresh } = await user.register(userId, guildId);
 
-    if (registered) {
+    if (!fresh) {
       message.addError({
         name: 'Enregistrement',
         value: `<@${userId}> à déjà été enregistré ...`,
