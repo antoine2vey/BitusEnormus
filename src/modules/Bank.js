@@ -1,4 +1,5 @@
 const BankModel = require('../db/models/bank');
+const user = require('./User');
 const moment = require('moment');
 
 class Bank {
@@ -6,19 +7,19 @@ class Bank {
    * Create bank that belongs to an user
    * @param {*} belongsTo
    */
-  create(belongsTo) {
+  create(client) {
     return new Promise((resolve, reject) => {
       const bank = new BankModel({
-        belongsTo: belongsTo._id,
-        lastSet: new Date(),
+        belongsTo: client._id,
       });
 
-      return bank.save((err) => {
+      return bank.save(async (err) => {
         if (err) {
           return reject('Server error');
         }
 
-        return resolve(bank);
+        const { newBank } = await user.createBankForUser(client.userId, client.guildId, bank.id);
+        return resolve({ bank: newBank });
       });
     });
   }

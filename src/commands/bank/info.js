@@ -1,4 +1,5 @@
 const Commando = require('discord.js-commando');
+const { bank } = require('../../modules/Bank');
 const { user, message, emoji } = require('../../modules');
 
 module.exports = class BankInfoCommand extends Commando.Command {
@@ -16,26 +17,21 @@ module.exports = class BankInfoCommand extends Commando.Command {
   }
 
   async run(msg) {
-    const { id } = msg.author;
+    const { id, username } = msg.author;
     const guildId = msg.guild.id;
-    try {
-      const client = await user.get(id, guildId);
-      if (!client.bank) {
-        message.addError({
-          name: 'Banque',
-          value: "Tu n'as pas de banque ...",
-        });
-      } else {
-        message.addValid({
-          name: 'Banque',
-          value: `Tu possèdes ${client.bank
-            .amount} ${emoji.kebab} dans ta banque`,
-        });
-      }
-    } catch (e) {
+
+    const { client } = await user.get(id, guildId, username);
+
+    if (!client.bank) {
+      await bank.create(client);
       message.addError({
         name: 'Banque',
-        value: "Tu n'as pas de banque ...",
+        value: "Tu n'as pas de banque ... Je t'en ai crée une ! .. :robot: (refait `!bank`)",
+      });
+    } else {
+      message.addValid({
+        name: 'Banque',
+        value: `Tu possèdes ${client.bank.amount} ${emoji.kebab} dans ta banque`,
       });
     }
 

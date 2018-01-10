@@ -181,11 +181,11 @@ class User extends Payment {
    * @param {*} bankId
    * @param {*} amount
    */
-  createBankForUser(userId, guildId, bankId, amount) {
+  createBankForUser(userId, guildId, bankId, amount = 0) {
     return new Promise((resolve, reject) => {
       Client.findOneAndUpdate(
         { userId, guildId },
-        { bank: bank.id, $inc: { kebabs: -amount } },
+        { bank: bankId, $inc: { kebabs: -amount } },
       ).exec((err, newBank) => {
         if (err) {
           return reject('Server error');
