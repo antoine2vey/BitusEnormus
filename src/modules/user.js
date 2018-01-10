@@ -96,12 +96,13 @@ class User extends Payment {
   }
 
   /**
-   * Register a new user in database
+   * Register a new user in database, returns the `fresh`
+   * property if client is a created one
    * @param {*} userId
    * @param {*} guildId
    */
   register(userId, guildId, username) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       try {
         const { client } = await this.get(userId, guildId, username);
 
@@ -137,7 +138,7 @@ class User extends Payment {
    * @param {*} amount
    */
   giveTo(initiator, userId, guildId, amount) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       const client = await Client.findOne({ userId: initiator, guildId });
 
       if (client.kebabs >= amount) {
