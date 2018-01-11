@@ -18,10 +18,14 @@ class Bank {
           return reject('Server error');
         }
 
-        await user.createBankForUser(userId, guildId, bank.id);
-        const { client } = await user.get(userId, guildId, username);
+        try {
+          await user.createBankForUser(userId, guildId, bank.id);
+          const { client } = await user.get(userId, guildId, username);
 
-        return resolve({ client });
+          return resolve({ client });
+        } catch (e) {
+          return resolve(e);
+        }
       });
     });
   }
@@ -34,7 +38,7 @@ class Bank {
   getQuery(method, amount) {
     if (method === 'get') {
       return {
-        $inc: { amount },
+        $inc: { amount: -amount },
         lastGet: new Date(),
       };
     }

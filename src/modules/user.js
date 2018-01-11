@@ -117,7 +117,7 @@ class User extends Payment {
    * @param {*} guildId
    */
   didFirst(userId, guildId) {
-    this.pay(userId, guildId, this.firstGive);
+    return this.pay(userId, guildId, this.firstGive);
   }
 
   /**
@@ -129,7 +129,7 @@ class User extends Payment {
    */
   giveTo(initiator, userId, guildId, amount) {
     return new Promise(async (resolve) => {
-      const client = await Client.findOne({ userId: initiator, guildId });
+      const { client } = await this.get(initiator, guildId);
 
       if (client.kebabs >= amount) {
         await this.pay(userId, guildId, amount);
@@ -190,11 +190,10 @@ class User extends Payment {
    * Update an user bank, accepts two methods:
    * `push` to retrieve, `push` to add funds
    * @param {*} method (push|get)
-   * @param {*} userId
-   * @param {*} guildId
    * @param {*} amount
+   * @param {*} client
    */
-  async updateBank(method, userId, guildId, amount, client) {
+  async updateBank(method, amount, client) {
     if (method !== 'get' && method !== 'push') {
       throw new Error('Bank method must be either `push` or `get`');
     }
@@ -203,7 +202,14 @@ class User extends Payment {
       const query = bank.getQuery(method, amount);
 
       try {
-        await this.withdraw(userId, guildId, amount);
+        // If we push money, withdraw user, else give him that money
+        if (method === 'push') {
+          await this.withdraw(client.userId, client.guildId, amount);
+        } else {
+          await this.pay(client.userId, client.guildId, amount);
+        }
+
+        // Query handles method variation
         const updatedBank = await bank.update(client.bank.id, query);
 
         return resolve({ bank: updatedBank.bank });

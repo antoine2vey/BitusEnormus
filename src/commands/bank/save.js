@@ -73,7 +73,7 @@ module.exports = class BankSaveCommand extends Commando.Command {
       return message.send(msg);
     }
 
-    const updatedBank = await user.updateBank('push', id, guildId, value, client);
+    const updatedBank = await user.updateBank('push', value, client);
     message.addValid({
       name: 'Banque',
       value: `Tu possèdes maintenant ${updatedBank.bank.amount} ${emoji.kebab} dans ta banque`,
