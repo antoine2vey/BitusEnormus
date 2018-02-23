@@ -45,8 +45,8 @@ module.exports = class BankGetCommand extends Commando.Command {
       client = updatedClient.client;
     }
 
-    const canWithdraw = await user.canWithdrawFromBank(id, guildId, value);
-    const allowed = await user.allowedTo('get', id, guildId, new Date(), client);
+    const canWithdraw = await user.canWithdrawFromBank(client, value);
+    const allowed = await user.allowedTo('get', new Date(), client);
 
     if (!number.isValid(value)) {
       message.addError({

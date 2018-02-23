@@ -73,19 +73,13 @@ class Bank {
    * @param {*} guildId
    * @param {*} amount
    */
-  canWithdraw(userId, guildId, amount) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const client = await this.get(userId, guildId);
-
-        if (amount > client.bank.amount) {
-          return reject(false);
-        }
-
-        return resolve(true);
-      } catch (e) {
-        return reject(false);
+  canWithdraw({ bank }, amount) {
+    return new Promise(async (resolve) => {
+      if (amount > bank.amount) {
+        return resolve(false);
       }
+
+      return resolve(true);
     });
   }
 

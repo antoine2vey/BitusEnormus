@@ -76,13 +76,13 @@ class Payment {
     };
 
     return new Promise((resolve, reject) => {
-      Client.update({}, query, { multi: true }).exec((err) => {
-        if (err) {
-          return reject('Server error');
-        }
-
-        return resolve(true);
-      });
+      Client.update({}, query, { multi: true })
+        .then(() => {
+          resolve(true);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 

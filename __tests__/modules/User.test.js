@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const expect = require('expect');
 const user = require('../../src/modules/User');
 const User = require('../../src/db/models/user');
-const { bank } = require('../../src/modules/Bank');
+// const { bank } = require('../../src/modules/Bank');
 
 const DEFAULT_MONEY_USER = user.defaultGive;
 
@@ -17,12 +17,16 @@ beforeEach(async (done) => {
   const mockUser = new User({ userId: 1, guildId: 1, username: 'Antoine' });
   await mockUser.save(() => done());
 });
-afterEach(async () => {
-  await User.remove({ userId: 1 });
-  await User.remove({ userId: 2 });
-  await User.remove({ userId: 10 });
+afterEach(async (done) => {
+  await User.remove({ userId: '1' });
+  await User.remove({ userId: '2' });
+  await User.remove({ userId: '10' });
+  await done();
 });
-afterAll((done) => {
+afterAll(async (done) => {
+  await User.remove({ userId: '1' });
+  await User.remove({ userId: '2' });
+  await User.remove({ userId: '10' });
   mongoose.disconnect(done);
 });
 
@@ -83,7 +87,7 @@ describe('Checking all User methods', () => {
     const { users } = await user.getAll(1);
 
     expect(Array.isArray(users)).toBe(true);
-    expect(users[0].kebabs).toEqual(DEFAULT_MONEY_USER + user.defaultGive * 4);
+    expect(users[0].kebabs).toEqual(DEFAULT_MONEY_USER + (user.defaultGive * 4));
   });
 
   it('Should do first and pay someone and returns it', async () => {
@@ -125,12 +129,5 @@ describe('Checking all User methods', () => {
     expect(client).toBeTruthy();
     expect(client.kebabs).toEqual(DEFAULT_MONEY_USER);
     expect(client.username).toEqual('Carry');
-  });
-
-  it.skip('Create bank for an user', async () => {
-    const Carry = await user.get(10, 1, 'Carry');
-    const { client } = await bank.create(Carry.client);
-
-    expect(client).toBeTruthy();
   });
 });

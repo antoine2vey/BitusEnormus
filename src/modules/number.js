@@ -21,11 +21,7 @@ class NumberValidation {
   }
 
   isValidStack(str) {
-    if (this._validateStack(str)) {
-      return true;
-    }
-
-    return false;
+    return this._validateStack(str);
   }
 }
 

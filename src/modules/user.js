@@ -108,7 +108,7 @@ class User extends Payment {
    * Give money to everyone
    */
   giveDaily() {
-    this.payAll();
+    return this.payAll();
   }
 
   /**
@@ -153,7 +153,6 @@ class User extends Payment {
   create(userId, guildId, username) {
     return new Promise((resolve, reject) => {
       const client = new Client({ userId, guildId, username });
-
       return client.save((err) => {
         if (err) {
           return reject('Server error');
@@ -193,7 +192,7 @@ class User extends Payment {
    * @param {*} amount
    * @param {*} client
    */
-  async updateBank(method, amount, client) {
+  updateBank(method, amount, client) {
     if (method !== 'get' && method !== 'push') {
       throw new Error('Bank method must be either `push` or `get`');
     }
@@ -225,15 +224,11 @@ class User extends Payment {
    * @param {*} guildId
    * @param {*} amount
    */
-  canWithdrawFromBank(userId, guildId, amount) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const canWithdraw = await bank.canWithdraw(userId, guildId, amount);
+  canWithdrawFromBank(client, amount) {
+    return new Promise(async (resolve) => {
+      const canWithdraw = await bank.canWithdraw(client, amount);
 
-        return resolve(canWithdraw);
-      } catch (e) {
-        return reject(false);
-      }
+      return resolve(canWithdraw);
     });
   }
 
@@ -245,7 +240,7 @@ class User extends Payment {
    * @param {*} guildId
    * @param {*} date
    */
-  allowedTo(method, userId, guildId, date, user) {
+  allowedTo(method, date, user) {
     return new Promise(async (resolve, reject) => {
       try {
         const isAllowed = await bank.allow(method, date, user);

@@ -17,10 +17,12 @@ beforeEach(async (done) => {
   await mockUser.save(() => done());
 });
 afterEach(async () => {
-  await User.remove({ userId: 1 });
-  await User.remove({ userId: 2 });
+  await User.remove({ userId: '1' });
+  await User.remove({ userId: '2' });
 });
-afterAll((done) => {
+afterAll(async (done) => {
+  await User.remove({ userId: '1' });
+  await User.remove({ userId: '2' });
   mongoose.disconnect(done);
 });
 
@@ -92,7 +94,7 @@ describe('Test for user command', () => {
     await user.payAll();
     const { client } = await user.get(1, 1);
 
-    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER + user.defaultGive * 4);
+    expect(client.kebabs).toEqual(DEFAULT_MONEY_USER + (user.defaultGive * 4));
   });
 
   it('should give to one and remove for one if enough money', async () => {

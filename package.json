@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest --watch --env=node --verbose"
+    "test": "jest --watch --env=node",
+    "prettier": "prettier-eslint --write \"src/**/*.ts\""
   },
   "license": "ISC",
   "devDependencies": {
@@ -14,7 +15,9 @@
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-plugin-import": "^2.2.0",
     "mocha": "^3.0.1",
-    "nodemon": "^1.10.0"
+    "nodemon": "^1.10.0",
+    "prettier-eslint-cli": "^4.7.0",
+    "snekfetch": "^3.6.4"
   },
   "dependencies": {
     "bufferutil": "^3.0.2",
@@ -30,6 +33,7 @@
     "node-opus": "^0.2.6",
     "opusscript": "0.0.3",
     "request": "^2.81.0",
-    "sqlite": "^2.8.0"
+    "sqlite": "^2.8.0",
+    "sqlite3": "^3.1.13"
   }
 }

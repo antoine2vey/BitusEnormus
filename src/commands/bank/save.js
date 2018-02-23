@@ -46,7 +46,7 @@ module.exports = class BankSaveCommand extends Commando.Command {
     }
 
     const canPay = await user.canPay(client, value);
-    const allowed = await user.allowedTo('push', id, guildId, new Date(), client);
+    const allowed = await user.allowedTo('push', new Date(), client);
 
     if (!number.isValid(value)) {
       message.addError({
