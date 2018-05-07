@@ -59,4 +59,8 @@ describe('Check if stack given is valid', () => {
   it('should validate if stack is correct', () => {
     expect(stack('0-100')).toBe(true);
   });
+
+  it('checks for negative numbers', () => {
+    expect(stack('-1-100')).toBe(false);
+  });
 });

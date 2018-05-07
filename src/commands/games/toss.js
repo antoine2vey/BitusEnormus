@@ -1,5 +1,5 @@
-const Commando = require('discord.js-commando');
-const { user, message, emoji, number } = require('../../modules');
+const Commando = require('discord.js-commando')
+const { user, message, emoji, number } = require('../../modules')
 
 module.exports = class TossCommand extends Commando.Command {
   constructor(client) {
@@ -26,101 +26,91 @@ module.exports = class TossCommand extends Commando.Command {
           type: 'string',
         },
       ],
-    });
+    })
   }
 
   randomNumber() {
-    return Math.random();
+    return Math.random()
   }
 
   hasWon(val, choice) {
-    const faceWon = val < 0.5 && choice === 'face';
-    const pileWon = val > 0.5 && choice === 'pile';
+    const faceWon = val <= 0.5 && choice === 'face'
+    const pileWon = val > 0.5 && choice === 'pile'
 
     if (faceWon || pileWon) {
-      return true;
+      return true
     }
 
-    return false;
+    return false
   }
 
   async run(msg, { value, kebabs }) {
-    const normalize = str => str.toLowerCase().trim();
-    const valid = normalize(value) === 'pile' || normalize(value) === 'face';
-    const randomValue = this.randomNumber();
-    const userId = msg.author.id;
-    const { username } = msg.author;
-    const guildId = msg.guild.id;
-    const validNumber = number.isValid(kebabs);
+    const normalize = str => str.toLowerCase().trim()
+    const valid = normalize(value) === 'pile' || normalize(value) === 'face'
+    const randomValue = this.randomNumber()
+    const userId = msg.author.id
+    const { username } = msg.author
+    const guildId = msg.guild.id
+    const validNumber = number.isValid(kebabs)
 
     if (!valid) {
       message.addError({
         name: 'Invalide',
         value: 'Utilise sois `pile` ou `face`',
-      });
+      })
     }
 
-    if (kebabs < 0) {
+    if (kebabs <= 0) {
       message.addError({
         name: 'Kebabs',
         value: `Tu dois mettre un nombre de ${emoji.kebab} positif`,
-      });
+      })
     }
 
     if (!validNumber) {
       message.addError({
         name: 'Kebab',
         value: 'Tu dois mettre un chiffre valide..',
-      });
+      })
     }
 
     /**
-     * Cut the flow, otherwise max call size exception
+     * Send error message if one of them isn't satisfied
      */
-    if (!valid || kebabs < 0 || !validNumber) {
-      return message.send(msg);
+    if (!valid || kebabs <= 0 || !validNumber) {
+      return message.send(msg)
     }
 
-    /**
-     * If not enough money, we cut the flow
-     */
-    try {
-      const _user = await user.get(userId, guildId);
-      if (kebabs > _user.kebabs) {
-        message.addError({
-          name: 'Attention',
-          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - _user.kebabs}!`,
-        });
+    // Get the user and pass it into canPay() method to check
+    const { client } = await user.get(userId, guildId, username)
+    const canPay = await user.canPay(client, kebabs)
 
-        return message.send(msg);
-      }
-    } catch (e) {
-      const client = await user.create(userId, guildId, username);
+    if (!canPay) {
+      // User cannot pay, we throw an error
+      message.addError({
+        name: 'Attention',
+        value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - client.kebabs}!`,
+      })
 
-      if (kebabs > client.kebabs) {
-        message.addError({
-          name: 'Attention',
-          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - client.kebabs}!`,
-        });
-
-        return message.send(msg);
-      }
+      return message.send(msg)
     }
 
     if (this.hasWon(randomValue, value)) {
-      await user.updateMoney(userId, guildId, username, kebabs);
+      // If user has won
+      await user.pay(userId, guildId, kebabs)
       message.addValid({
         name: 'Gagné',
         value: `Tu as gagné ${kebabs} ${emoji.kebab}`,
-      });
+      })
     } else {
-      await user.updateMoney(userId, guildId, username, -kebabs);
+      // If user has lost
+      await user.withdraw(userId, guildId, kebabs)
       message.addError({
         name: 'Perdu',
         value: `Tu as perdu ${kebabs} ${emoji.kebab}`,
-      });
+      })
     }
 
-    return message.send(msg);
+    return message.send(msg)
   }
-};
+}

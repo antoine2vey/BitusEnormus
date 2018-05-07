@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 const firstSchema = new Schema({
   guildId: String,
@@ -8,6 +8,6 @@ const firstSchema = new Schema({
     type: Boolean,
     default: true,
   },
-});
+})
 
-module.exports = mongoose.model('first', firstSchema);
+module.exports = mongoose.model('first', firstSchema)

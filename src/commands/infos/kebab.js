@@ -1,5 +1,5 @@
-const Commando = require('discord.js-commando');
-const { user, message, emoji } = require('../../modules');
+const Commando = require('discord.js-commando')
+const { user, message, emoji } = require('../../modules')
 
 module.exports = class KebabCommand extends Commando.Command {
   constructor(client) {
@@ -12,26 +12,26 @@ module.exports = class KebabCommand extends Commando.Command {
       details: 'Savoir son nombre de kebab',
       examples: ['!kebab'],
       argsCount: 0,
-    });
+    })
   }
 
   async run(msg) {
-    const userId = msg.author.id;
-    const guildId = msg.guild.id;
+    const { id, username } = msg.author
+    const guildId = msg.guild.id
     try {
-      const client = await user.get(userId, guildId);
+      const { client } = await user.get(id, guildId, username)
 
       message.addValid({
         name: 'Nombre de kebabs',
         value: `${client.kebabs} ${emoji.kebab} !`,
-      });
+      })
     } catch (e) {
       message.addError({
         name: 'Kebabs',
         value: `Tu n'as pas de ${emoji.kebab} ..`,
-      });
+      })
     }
 
-    message.send(msg);
+    message.send(msg)
   }
-};
+}

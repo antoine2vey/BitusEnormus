@@ -1,5 +1,5 @@
-const Commando = require('discord.js-commando');
-const { user, message } = require('../../modules');
+const Commando = require('discord.js-commando')
+const { user, message } = require('../../modules')
 
 module.exports = class RegisterCommand extends Commando.Command {
   constructor(client) {
@@ -9,29 +9,30 @@ module.exports = class RegisterCommand extends Commando.Command {
       group: 'infos',
       memberName: 'register',
       description: 'Register',
-      details: 'S\'enregistrer pour pourvoir gagner des kebabs',
+      details: "S'enregistrer pour pourvoir gagner des kebabs",
       examples: ['!register'],
       argsCount: 0,
-    });
+    })
   }
 
   async run(msg) {
-    const userId = msg.author.id;
-    const guildId = msg.guild.id;
-    const registered = await user.register(userId, guildId);
+    const userId = msg.author.id
+    const guildId = msg.guild.id
+    const { username } = msg.author
+    const { fresh } = await user.register(userId, guildId, username)
 
-    if (registered) {
+    if (!fresh) {
       message.addError({
         name: 'Enregistrement',
         value: `<@${userId}> à déjà été enregistré ...`,
-      });
+      })
     } else {
       message.addValid({
         name: 'Enregistrement',
         value: `<@${userId}> à bien été enregistré !`,
-      });
+      })
     }
 
-    message.send(msg);
+    message.send(msg)
   }
-};
+}

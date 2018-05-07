@@ -1,6 +1,6 @@
-const Commando = require('discord.js-commando');
-const Photos = require('../../db/models/album');
-const { message } = require('../../modules');
+const Commando = require('discord.js-commando')
+const Photos = require('../../db/models/album')
+const { message } = require('../../modules')
 
 module.exports = class AlbumCommand extends Commando.Command {
   constructor(client) {
@@ -9,28 +9,27 @@ module.exports = class AlbumCommand extends Commando.Command {
       aliases: ['mappa', 'album'],
       group: 'album',
       memberName: 'add',
-      description: 'Affiche une image au hasard de l\'album',
-      details: 'Affiche une image au hasard de l\'album',
+      description: "Affiche une image au hasard de l'album",
+      details: "Affiche une image au hasard de l'album",
       examples: ['!mappa'],
       argsCount: 0,
-    });
-
-    this.random = null;
+    })
   }
 
   getPhotosLength() {
-    return Photos.count();
+    return Photos.count()
   }
 
-  async getRandomPhoto() {
-    return Photos.findOne().skip(this.random);
+  getRandomPhoto(index) {
+    return Photos.findOne().skip(index)
   }
 
   async run(msg) {
-    const len = await this.getPhotosLength();
-    this.random = Math.floor(Math.random() * len);
-    const photo = await this.getRandomPhoto();
+    const len = await this.getPhotosLength()
+    const rand = Math.floor(Math.random() * len)
 
-    message.sendImage(msg, photo.link);
+    const photo = await this.getRandomPhoto(rand)
+
+    message.sendImage(msg, photo.link)
   }
-};
+}
