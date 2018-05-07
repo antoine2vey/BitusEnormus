@@ -1,29 +1,29 @@
-const ServerFirst = require('../db/models/first');
-const User = require('../db/models/user');
+const ServerFirst = require('../db/models/first')
+const User = require('../db/models/user')
 
 class First {
   do(userId, guildId) {
     return new Promise(async (resolve, reject) => {
-      const server = await ServerFirst.findOne({ guildId });
-      await this.increaseFirst(userId, guildId);
+      const server = await ServerFirst.findOne({ guildId })
+      await this.increaseFirst(userId, guildId)
 
       if (!server) {
-        const newServer = new ServerFirst({ guildId });
+        const newServer = new ServerFirst({ guildId })
         return await newServer.save((err) => {
           if (err) {
-            return reject(err);
+            return reject(err)
           }
 
-          return resolve(true);
-        });
+          return resolve(true)
+        })
       }
 
       return ServerFirst.update({ guildId }, { hasDoneFirst: true })
         .then(() => {
-          resolve(true);
+          resolve(true)
         })
-        .catch(err => reject(err));
-    });
+        .catch(err => reject(err))
+    })
   }
 
   /**
@@ -35,15 +35,15 @@ class First {
       ServerFirst.findById(guildId)
         .then((guild) => {
           if (guild.hasDoneFirst) {
-            return resolve(true);
+            return resolve(true)
           }
 
-          return reject(false);
+          return reject(false)
         })
         .catch((err) => {
-          reject(err);
-        });
-    });
+          reject(err)
+        })
+    })
   }
 
   /**
@@ -53,12 +53,12 @@ class First {
     return new Promise((resolve, reject) =>
       ServerFirst.update({}, { hasDoneFirst: false }, { multi: true }, (err, didUpdate) => {
         if (err || !didUpdate) {
-          return reject('Server error');
+          return reject('Server error')
         }
 
-        return resolve(true);
+        return resolve(true)
       }),
-    );
+    )
   }
 
   /**
@@ -74,18 +74,18 @@ class First {
         { new: true, upsert: true },
         (err, user) => {
           if (err) {
-            return reject('Server error');
+            return reject('Server error')
           }
 
           if (!user) {
-            return reject('No user found');
+            return reject('No user found')
           }
 
-          return resolve({ user });
+          return resolve({ user })
         },
       ),
-    );
+    )
   }
 }
 
-module.exports = new First();
+module.exports = new First()

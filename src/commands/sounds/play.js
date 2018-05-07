@@ -1,6 +1,6 @@
-const Commando = require('discord.js-commando');
-const path = require('path');
-const fs = require('fs');
+const Commando = require('discord.js-commando')
+const path = require('path')
+const fs = require('fs')
 
 module.exports = class PlayCommand extends Commando.Command {
   constructor(client) {
@@ -21,23 +21,23 @@ module.exports = class PlayCommand extends Commando.Command {
           type: 'string',
         },
       ],
-    });
+    })
   }
 
   async run(message, args) {
-    const { voiceChannel } = message.member;
-    const { soundKey } = args;
+    const { voiceChannel } = message.member
+    const { soundKey } = args
 
     // Commands are based on striped filenames minus mp3 extension
     const availableCommands = fs
       .readdirSync(path.join(__dirname, 'sounds'))
-      .map(sound => sound.slice(0, -4));
+      .map(sound => sound.slice(0, -4))
 
     /**
      * @description If not in a voice channel
      */
     if (!voiceChannel) {
-      return await message.reply('tu dois rejoindre un channel :triumph:');
+      return await message.reply('tu dois rejoindre un channel :triumph:')
     }
 
     /**
@@ -48,7 +48,7 @@ module.exports = class PlayCommand extends Commando.Command {
         `ce son n'existe pas, mais voici ceux disponibles :
         ${availableCommands.map(command => `\n**${command}**`)}
       `,
-      );
+      )
     }
 
     /**
@@ -56,15 +56,13 @@ module.exports = class PlayCommand extends Commando.Command {
      */
     voiceChannel
       .join()
-      .then(connection => {
-        const dispatcher = connection.playFile(
-          path.join(__dirname, 'sounds', `${soundKey}.mp3`),
-        );
-        dispatcher.setVolume(0.5);
+      .then((connection) => {
+        const dispatcher = connection.playFile(path.join(__dirname, 'sounds', `${soundKey}.mp3`))
+        dispatcher.setVolume(0.5)
         dispatcher.on('end', () => {
-          voiceChannel.leave();
-        });
+          voiceChannel.leave()
+        })
       })
-      .catch(console.error);
+      .catch(console.error)
   }
-};
+}

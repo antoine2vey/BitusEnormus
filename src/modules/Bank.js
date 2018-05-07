@@ -1,6 +1,6 @@
-const BankModel = require('../db/models/bank');
-const user = require('./User');
-const moment = require('moment');
+const BankModel = require('../db/models/bank')
+const user = require('./User')
+const moment = require('moment')
 
 class Bank {
   /**
@@ -11,23 +11,23 @@ class Bank {
     return new Promise((resolve, reject) => {
       const bank = new BankModel({
         belongsTo: _id,
-      });
+      })
 
       return bank.save(async (err) => {
         if (err) {
-          return reject('Server error');
+          return reject('Server error')
         }
 
         try {
-          await user.createBankForUser(userId, guildId, bank.id);
-          const { client } = await user.get(userId, guildId, username);
+          await user.createBankForUser(userId, guildId, bank.id)
+          const { client } = await user.get(userId, guildId, username)
 
-          return resolve({ client });
+          return resolve({ client })
         } catch (e) {
-          return resolve(e);
+          return resolve(e)
         }
-      });
-    });
+      })
+    })
   }
 
   /**
@@ -40,13 +40,13 @@ class Bank {
       return {
         $inc: { amount: -amount },
         lastGet: new Date(),
-      };
+      }
     }
 
     return {
       $inc: { amount },
       lastSet: new Date(),
-    };
+    }
   }
 
   /**
@@ -58,12 +58,12 @@ class Bank {
     return new Promise((resolve, reject) => {
       BankModel.findByIdAndUpdate(bankId, query, { new: true }).exec((err, bank) => {
         if (err) {
-          return reject('Server error');
+          return reject('Server error')
         }
 
-        return resolve({ bank });
-      });
-    });
+        return resolve({ bank })
+      })
+    })
   }
 
   /**
@@ -76,11 +76,11 @@ class Bank {
   canWithdraw({ bank }, amount) {
     return new Promise(async (resolve) => {
       if (amount > bank.amount) {
-        return resolve(false);
+        return resolve(false)
       }
 
-      return resolve(true);
-    });
+      return resolve(true)
+    })
   }
 
   /**
@@ -92,29 +92,29 @@ class Bank {
    */
   allow(method, date, client) {
     if (method !== 'get' && method !== 'push') {
-      throw new Error('Bank method must be either `push` or `get`');
+      throw new Error('Bank method must be either `push` or `get`')
     }
 
     // If you are trying to withdraw money but never set or never get
     // you can withdraw
     if ((method === 'get' && !client.bank.lastGet) || !client.bank.lastSet) {
-      return true;
+      return true
     }
 
     // Add one day to selected getter or setter
     const dayAfter = moment(method === 'push' ? client.bank.lastSet : client.bank.lastGet).add(
       1,
       'day',
-    );
+    )
 
     // Convert date in moment format
-    const date_ = moment(date);
+    const date_ = moment(date)
 
     // Return true if you can push/get money
-    return dayAfter.isBefore(date_);
+    return dayAfter.isBefore(date_)
   }
 }
 
 module.exports = {
   bank: new Bank(),
-};
+}

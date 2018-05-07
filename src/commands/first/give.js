@@ -1,5 +1,5 @@
-const Commando = require('discord.js-commando');
-const { user, message, emoji } = require('../../modules');
+const Commando = require('discord.js-commando')
+const { user, message, emoji } = require('../../modules')
 
 module.exports = class GiveCommand extends Commando.Command {
   constructor(client) {
@@ -26,64 +26,55 @@ module.exports = class GiveCommand extends Commando.Command {
           type: 'string',
         },
       ],
-    });
+    })
   }
 
   async run(msg, args) {
-    const id = args.userId.replace(/<@/, '').replace('!', '');
-    const userId = id.replace(/>/, '');
-    const guildId = msg.guild.id;
-    const isValidAmount = args.kebabs > 0;
-    const notValidUser = (message_, uid) => !message_.guild.members.has(uid);
+    const id = args.userId.replace(/<@/, '').replace('!', '')
+    const userId = id.replace(/>/, '')
+    const guildId = msg.guild.id
+    const isValidAmount = args.kebabs > 0
+    const notValidUser = (message_, uid) => !message_.guild.members.has(uid)
 
     if (!isValidAmount) {
       message.addError({
         name: 'Donation',
         value: `Ton nombre de ${emoji.kebab} est invalide`,
-      });
+      })
     }
 
     if (msg.author.id === userId) {
       message.addError({
         name: 'Donation',
         value: 'Tu ne peut pas te donner à toi même...',
-      });
+      })
     }
 
     if (notValidUser(msg, userId)) {
       message.addError({
         name: 'Donation',
         value: "Cet utilisateur n'existe pas",
-      });
+      })
     }
 
-    if (
-      !isValidAmount ||
-      msg.author.id === userId ||
-      notValidUser(msg, userId)
-    ) {
-      return message.send(msg);
+    if (!isValidAmount || msg.author.id === userId || notValidUser(msg, userId)) {
+      return message.send(msg)
     }
 
-    const hasGiven = await user.giveTo(
-      msg.author.id,
-      userId,
-      guildId,
-      args.kebabs,
-    );
+    const hasGiven = await user.giveTo(msg.author.id, userId, guildId, args.kebabs)
 
     if (!hasGiven) {
       message.addError({
         name: 'Donation',
         value: `Tu n'as pas assez de ${emoji.kebab}`,
-      });
+      })
     } else {
       message.addValid({
         name: 'Donation',
         value: `Tu as donné ${args.kebabs} ${emoji.kebab}`,
-      });
+      })
     }
 
-    return message.send(msg);
+    return message.send(msg)
   }
-};
+}

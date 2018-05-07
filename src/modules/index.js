@@ -1,9 +1,10 @@
 /* eslint global-require: "off" */
-const emoji = require('./emoji');
-const first = require('./first');
-const number = require('./number');
-const message = require('./sweetMessages');
-const user = require('./User');
+const emoji = require('./emoji')
+const first = require('./first')
+const number = require('./number')
+const message = require('./sweetMessages')
+const user = require('./User')
+const rob = require('./rob')
 
 module.exports = {
   emoji,
@@ -11,4 +12,5 @@ module.exports = {
   number,
   message,
   user,
-};
+  rob,
+}

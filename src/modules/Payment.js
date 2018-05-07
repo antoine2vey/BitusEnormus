@@ -1,4 +1,4 @@
-const Client = require('../db/models/user');
+const Client = require('../db/models/user')
 
 /**
  * creditUser and withdrawUser are the same methods,
@@ -19,7 +19,7 @@ class Payment {
       if (amount < 0) {
         throw new Error(
           'creditUser method must have a positive integer. Check withdrawUser for negative',
-        );
+        )
       }
 
       Client.findOneAndUpdate(
@@ -28,12 +28,12 @@ class Payment {
         { upsert: true, new: true },
       ).exec((err, client) => {
         if (err) {
-          return reject('Server error');
+          return reject('Server error')
         }
 
-        return resolve({ client });
-      });
-    });
+        return resolve({ client })
+      })
+    })
   }
 
   /**
@@ -48,7 +48,7 @@ class Payment {
       if (amount > 0) {
         throw new Error(
           'creditUser method must have a negative integer. Check creditUser for negative',
-        );
+        )
       }
 
       Client.findOneAndUpdate(
@@ -57,12 +57,12 @@ class Payment {
         { upsert: true, new: true },
       ).exec((err, client) => {
         if (err) {
-          return reject('Server error');
+          return reject('Server error')
         }
 
-        return resolve({ client });
-      });
-    });
+        return resolve({ client })
+      })
+    })
   }
 
   /**
@@ -73,17 +73,17 @@ class Payment {
       $inc: {
         kebabs: this.defaultGive * 4,
       },
-    };
+    }
 
     return new Promise((resolve, reject) => {
       Client.update({}, query, { multi: true })
         .then(() => {
-          resolve(true);
+          resolve(true)
         })
         .catch((err) => {
-          reject(err);
-        });
-    });
+          reject(err)
+        })
+    })
   }
 
   /**
@@ -93,15 +93,15 @@ class Payment {
    * @param {*} guildId
    * @param {*} amount
    */
-  async canPay({ kebabs }, amount) {
+  canPay({ kebabs }, amount) {
     return new Promise((resolve) => {
       if (kebabs >= amount) {
-        return resolve(true);
+        return resolve(true)
       }
 
-      return resolve(false);
-    });
+      return resolve(false)
+    })
   }
 }
 
-module.exports = Payment;
+module.exports = Payment

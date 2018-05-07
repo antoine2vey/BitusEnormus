@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema;
-const { ObjectId } = Schema.Types;
+const Schema = mongoose.Schema
+const { ObjectId } = Schema.Types
 
 const bankSchema = new Schema({
   belongsTo: {
@@ -15,6 +15,6 @@ const bankSchema = new Schema({
   },
   lastSet: Date,
   lastGet: Date,
-});
+})
 
-module.exports = mongoose.model('bank', bankSchema);
+module.exports = mongoose.model('bank', bankSchema)
