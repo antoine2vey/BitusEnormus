@@ -26,4 +26,4 @@ class NumberValidation {
   }
 }
 
-module.exports = new NumberValidation()
+module.exports = NumberValidation

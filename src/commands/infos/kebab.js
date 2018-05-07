@@ -1,5 +1,4 @@
 const Commando = require('discord.js-commando')
-const { user, message, emoji } = require('../../modules')
 
 module.exports = class KebabCommand extends Commando.Command {
   constructor(client) {
@@ -15,23 +14,6 @@ module.exports = class KebabCommand extends Commando.Command {
     })
   }
 
-  async run(msg) {
-    const { id, username } = msg.author
-    const guildId = msg.guild.id
-    try {
-      const { client } = await user.get(id, guildId, username)
-
-      message.addValid({
-        name: 'Nombre de kebabs',
-        value: `${client.kebabs} ${emoji.kebab} !`,
-      })
-    } catch (e) {
-      message.addError({
-        name: 'Kebabs',
-        value: `Tu n'as pas de ${emoji.kebab} ..`,
-      })
-    }
-
-    message.send(msg)
+  async run() {
   }
 }
