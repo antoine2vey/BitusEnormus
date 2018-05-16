@@ -1,7 +1,9 @@
+// @flow
+
 const Commando = require('discord.js-commando')
 
 module.exports = class RegisterCommand extends Commando.Command {
-  constructor(client) {
+  constructor(client: any) {
     super(client, {
       name: 'register',
       aliases: ['register'],
@@ -14,6 +16,7 @@ module.exports = class RegisterCommand extends Commando.Command {
     })
   }
 
-  async run() {
+  async run(message) {
+    console.log(message)
   }
 }

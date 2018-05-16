@@ -1,5 +1,5 @@
 // @flow
-import type { Snowflake, DiscordEmote } from '../types'
+import type { Snowflake, Emoji } from 'discord.js'
 
 const { CronJob } = require('cron')
 const mongoose = require('mongoose')
@@ -15,7 +15,7 @@ class Helpers {
     new CronJob(pattern, fn, null, true, 'Europe/Paris')
   }
 
-  setNewEmote(emote: DiscordEmote): void {
+  setNewEmote(emote: Emoji): void {
     this.kebabId = emote.id
   }
 

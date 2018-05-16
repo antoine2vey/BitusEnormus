@@ -1,14 +1,13 @@
 {
   "name": "mappab-to",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Mappa bot discord",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "babel src/ --out-dir dist/ --no-babelrc --presets=flow --ignore spec.js ",
-    "dev": "concurrently \"npm run build -- --watch\" \"nodemon dist/index.js\"",
-    "start": "npm run flow:build && node ./lib/",
-    "test": "jest --watch --env=node",
-    "prettier": "prettier-eslint --write \"src/**/*.js\""
+    "build": "babel src/ -d lib/",
+    "dev": "concurrently \"npm run build -- --watch\" \"nodemon lib/index.js\"",
+    "start": "npm run build && node ./lib/",
+    "test": "jest --watch --env=node"
   },
   "license": "ISC",
   "devDependencies": {
@@ -21,8 +20,8 @@
     "eslint-plugin-flowtype": "^2.46.3",
     "eslint-plugin-import": "^2.2.0",
     "flow-bin": "^0.71.0",
-    "flow-remove-types": "^1.2.3",
     "flow-typed": "^2.4.0",
+    "jest": "^22.4.3",
     "mocha": "^3.0.1",
     "nodemon": "^1.10.0",
     "prettier-eslint-cli": "^4.7.0",

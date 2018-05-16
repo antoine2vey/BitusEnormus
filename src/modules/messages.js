@@ -1,10 +1,10 @@
 // @flow
-import type { DiscordMessage, QueueValue } from '../types'
+import type { Message } from 'discord.js'
 
 class Messages {
   queue: {
-    errors: Array<QueueValue>,
-    valid: Array<QueueValue>
+    errors: Array<any>,
+    valid: Array<any>
   }
 
   constructor(): void {
@@ -14,11 +14,11 @@ class Messages {
     }
   }
 
-  addError({ name, value }: QueueValue): void {
+  addError({ name, value }: any): void {
     this.queue.errors = [...this.queue.errors, { name, value }]
   }
 
-  addValid({ name, value }: QueueValue): void {
+  addValid({ name, value }: any): void {
     this.queue.valid = [...this.queue.valid, { name, value }]
   }
 
@@ -33,7 +33,7 @@ class Messages {
     return this.queue.errors.length > 0
   }
 
-  message(message: DiscordMessage, fields: Array<QueueValue>, isError: boolean) {
+  message(message: Message, fields: Array<any>, isError: boolean): void {
     message.channel.send({
       embed: {
         color: isError ? 16711680 : 65280,
@@ -51,8 +51,8 @@ class Messages {
     })
   }
 
-  sendImage(message: DiscordMessage, link: string) {
-    return message.channel.send({
+  sendImage(message: Message, link: string): void {
+    message.channel.send({
       embed: {
         color: 65280,
         author: {
@@ -68,14 +68,14 @@ class Messages {
     })
   }
 
-  send(message: DiscordMessage) {
+  send(message: Message): void {
     if (this.shouldThrow()) {
       this.message(message, this.queue.errors, true)
-      return this.clearQueue()
+    } else {
+      this.message(message, this.queue.valid, false)
     }
 
-    this.message(message, this.queue.valid, false)
-    return this.clearQueue()
+    this.clearQueue()
   }
 }
 

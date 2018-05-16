@@ -12,6 +12,8 @@
         "no-undef": "off",
         "no-new": "off",
         "flowtype/define-flow-type": 1,
-        "flowtype/use-flow-type": 1
+        "flowtype/use-flow-type": 1,
+        "no-shadow": "off",
+        "comma-dangle": "off"
     }
 }

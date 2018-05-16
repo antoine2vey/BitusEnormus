@@ -1,8 +1,12 @@
+// @flow
+
+import type { Message } from 'discord.js'
+
 const Commando = require('discord.js-commando')
-const { user, message, emoji, first } = require('../../modules')
+const First = require('../../modules/first')
 
 module.exports = class FirstCommand extends Commando.Command {
-  constructor(client) {
+  constructor(client: any) {
     super(client, {
       name: 'first',
       aliases: ['first'],
@@ -15,6 +19,7 @@ module.exports = class FirstCommand extends Commando.Command {
     })
   }
 
-  async run() {
+  async run(message: Message) {
+    new First(message)
   }
 }

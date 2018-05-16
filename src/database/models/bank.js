@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const { ObjectId } = Schema.Types
 
 const bankSchema = new Schema({
-  belongsTo: {
+  belongs_to: {
     type: ObjectId,
     ref: 'user',
   },
@@ -13,8 +13,8 @@ const bankSchema = new Schema({
     required: true,
     default: 1000,
   },
-  lastSet: Date,
-  lastGet: Date,
+  last_set: Date,
+  last_get: Date,
 })
 
 module.exports = mongoose.model('bank', bankSchema)
