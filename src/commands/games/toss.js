@@ -1,5 +1,4 @@
-const Commando = require('discord.js-commando');
-const { user, message, emoji, number } = require('../../modules');
+const Commando = require('discord.js-commando')
 
 module.exports = class TossCommand extends Commando.Command {
   constructor(client) {
@@ -26,101 +25,9 @@ module.exports = class TossCommand extends Commando.Command {
           type: 'string',
         },
       ],
-    });
+    })
   }
 
-  randomNumber() {
-    return Math.random();
+  async run() {
   }
-
-  hasWon(val, choice) {
-    const faceWon = val < 0.5 && choice === 'face';
-    const pileWon = val > 0.5 && choice === 'pile';
-
-    if (faceWon || pileWon) {
-      return true;
-    }
-
-    return false;
-  }
-
-  async run(msg, { value, kebabs }) {
-    const normalize = str => str.toLowerCase().trim();
-    const valid = normalize(value) === 'pile' || normalize(value) === 'face';
-    const randomValue = this.randomNumber();
-    const userId = msg.author.id;
-    const { username } = msg.author;
-    const guildId = msg.guild.id;
-    const validNumber = number.isValid(kebabs);
-
-    if (!valid) {
-      message.addError({
-        name: 'Invalide',
-        value: 'Utilise sois `pile` ou `face`',
-      });
-    }
-
-    if (kebabs < 0) {
-      message.addError({
-        name: 'Kebabs',
-        value: `Tu dois mettre un nombre de ${emoji.kebab} positif`,
-      });
-    }
-
-    if (!validNumber) {
-      message.addError({
-        name: 'Kebab',
-        value: 'Tu dois mettre un chiffre valide..',
-      });
-    }
-
-    /**
-     * Cut the flow, otherwise max call size exception
-     */
-    if (!valid || kebabs < 0 || !validNumber) {
-      return message.send(msg);
-    }
-
-    /**
-     * If not enough money, we cut the flow
-     */
-    try {
-      const _user = await user.get(userId, guildId);
-      if (kebabs > _user.kebabs) {
-        message.addError({
-          name: 'Attention',
-          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - _user.kebabs}!`,
-        });
-
-        return message.send(msg);
-      }
-    } catch (e) {
-      const client = await user.create(userId, guildId, username);
-
-      if (kebabs > client.kebabs) {
-        message.addError({
-          name: 'Attention',
-          value: `Tu n'as pas assez de ${emoji.kebab}, il t'en manque ${kebabs - client.kebabs}!`,
-        });
-
-        return message.send(msg);
-      }
-    }
-
-    if (this.hasWon(randomValue, value)) {
-      await user.updateMoney(userId, guildId, username, kebabs);
-      message.addValid({
-        name: 'Gagné',
-        value: `Tu as gagné ${kebabs} ${emoji.kebab}`,
-      });
-    } else {
-      await user.updateMoney(userId, guildId, username, -kebabs);
-      message.addError({
-        name: 'Perdu',
-        value: `Tu as perdu ${kebabs} ${emoji.kebab}`,
-      });
-    }
-
-    return message.send(msg);
-  }
-};
+}

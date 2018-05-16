@@ -1,5 +1,4 @@
-const Commando = require('discord.js-commando');
-const { user, message, emoji, first } = require('../../modules');
+const Commando = require('discord.js-commando')
 
 module.exports = class BankInfoCommand extends Commando.Command {
   constructor(client) {
@@ -12,32 +11,9 @@ module.exports = class BankInfoCommand extends Commando.Command {
       details: 'Toutes les infos de ta banque Mappa',
       examples: ['!bank', '!bank info'],
       argsCount: 0,
-    });
+    })
   }
 
-  async run(msg) {
-    const { id } = msg.author;
-    const guildId = msg.guild.id;
-    try {
-      const client = await user.get(id, guildId);
-      if (!client.bank) {
-        message.addError({
-          name: 'Banque',
-          value: "Tu n'as pas de banque ...",
-        });
-      } else {
-        message.addValid({
-          name: 'Banque',
-          value: `Tu possèdes ${client.bank.amount} ${emoji.kebab} dans ta banque`,
-        });
-      }
-    } catch (e) {
-      message.addError({
-        name: 'Banque',
-        value: "Tu n'as pas de banque ...",
-      });
-    }
-
-    message.send(msg);
+  async run() {
   }
-};
+}

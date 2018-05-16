@@ -1,33 +1,29 @@
-const ServerFirst = require('../db/models/first');
-const User = require('../db/models/user');
+// @flow
+import type { Message } from 'discord.js'
+import type { dFirst } from '../types/data'
 
-class First {
-  async do(userId, guildId, callback) {
-    const server = await ServerFirst.findOne({ guildId });
-    await this.increaseFirst(userId, guildId);
+const DiscordUser = require('./user')
+const Server = require('./server')
 
-    if (!server) {
-      const newServer = new ServerFirst({ guildId });
-      return await newServer.save(() => callback());
-    }
+const server = new Server()
 
-    return await ServerFirst.update({ guildId }, { hasDoneFirst: true }, callback());
+class ModuleFirst extends DiscordUser {
+  constructor(message: Message) {
+    super(message)
+
+    this.handle()
   }
 
-  async hasBeenDone(guildId) {
-    return await ServerFirst.findOne({ guildId }) || false;
-  }
-
-  async resetServers() {
-    return await ServerFirst.update({}, { hasDoneFirst: false }, { multi: true });
-  }
-
-  increaseFirst(userId, guildId) {
-    return User.findOneAndUpdate(
-      { userId, guildId },
-      { $inc: { firstCount: 1 } },
-    );
+  handle() {
+    server.getByGuildId(this.message.guild)
+      .then((guild) => {
+        console.log(guild)
+      })
+      .catch((err) => {
+        console.log(err)
+        this.send('err')
+      })
   }
 }
 
-module.exports = new First();
+module.exports = ModuleFirst
