@@ -1,0 +1,20 @@
+version: "3"
+services:
+  bot:
+    build: .
+    volumes:
+      - .:/usr/app
+    command: npm run dev
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
+    env_file:
+      - .env
+
+  mongodb:
+    image: mongo
+    volumes:
+      - ~/dump/:/data/db
+    ports:
+      - 27017:27017
