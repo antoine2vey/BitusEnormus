@@ -20,37 +20,48 @@ class DiscordUser extends Bank {
 
   get payload() {
     return {
-      guild_id: this.guild.id,
-      user_id: this.author.id
+      guildId: this.guild.id,
+      userId: this.author.id
     }
   }
 
-  get(): Promise<dUser> {
-    return user
-      .findOneAndUpdate(this.payload, {}, { upsert: true })
-      .populate('bank')
+  async pay(amount: number): Promise<dUser> {
+    await this.get()
+    return user.pay(this.payload, amount)
   }
 
-  getInGuild(): Promise<Array<dUser>> {
-    return user
-      .find({ guild_id: this.guild.id })
-      .populate('bank')
+  async withdraw(amount: number): Promise<dUser> {
+    const client = await this.get()
+    if (this.canWithdraw(amount, client.kebabs)) {
+      return user.withdraw(this.payload, amount)
+    }
+
+    return Promise.reject('Not enough money')
   }
 
-  hasDoneFirst(): Promise<dUser> {
-    return user
-      .findOneAndUpdate(this.payload, {
-        first_count: {
-          $inc: 1
-        }
-      }, {
-        upsert: true,
-        new: true
+  async get(): Promise<dUser> {
+    return this.checkBankExists()
+      .then(() => {
+        return user.findByDiscordId(this.payload)
       })
+  }
+
+  async getInGuild(): Promise<Array<dUser>> {
+    await this.get()
+
+    return user.findByGuild(this.guild.id)
+  }
+
+  async hasDoneFirst(): Promise<dUser> {
+    return user.didFirst(this.payload)
   }
 
   send(message: any) {
     return this.message.channel.send(message)
+  }
+
+  canWithdraw(amount: number, available: number): boolean {
+    return available > amount
   }
 }
 

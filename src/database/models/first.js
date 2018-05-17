@@ -12,14 +12,21 @@ const FirstSchema = new Schema({
 
 FirstSchema.statics = {
   findByGuildId(guildId) {
-    return this.findOne({ guild_id: guildId })
+    return this.findOneAndUpdate(
+      { guild_id: guildId },
+      {},
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    )
   },
   setFirst(guildId) {
     return this.findOneAndUpdate(
       { guild_id: guildId },
       { has_done_first: true },
-      { upsert: true, setDefaultsOnInsert: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     )
+  },
+  resetAll() {
+    return this.update({}, { has_done_first: false }, { multi: true, new: true })
   }
 }
 

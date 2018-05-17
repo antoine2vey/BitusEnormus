@@ -3,7 +3,7 @@ node_modules
 src/commands/sounds/sounds/*
 src/settings.sqlite3
 mappa.json
-.env
+*.env
 .DS_Store
 **/.DS_Store
 src/.swp

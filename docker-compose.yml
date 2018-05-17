@@ -10,7 +10,7 @@ services:
     links:
       - mongodb
     env_file:
-      - .env
+      - developement.env
 
   mongodb:
     image: mongo

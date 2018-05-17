@@ -26,4 +26,49 @@ const userSchema = new Schema({
   },
 }, { timestamps: true })
 
+userSchema.statics = {
+  findByDiscordId({ userId, guildId }) {
+    return this.findOneAndUpdate(
+      { guild_id: guildId, user_id: userId },
+      {},
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).populate('bank')
+  },
+  findByGuild(guildId) {
+    return this.find({ guild_id: guildId })
+  },
+  updateByDiscordId({ userId, guildId }, query) {
+    return this.findOneAndUpdate(
+      { guild_id: guildId, user_id: userId },
+      query,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).populate('bank')
+  },
+  pay({ userId, guildId }, amount) {
+    return this.findOneAndUpdate(
+      { guild_id: guildId, user_id: userId },
+      { $inc: {
+        kebabs: amount
+      } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).populate('bank')
+  },
+  withdraw({ userId, guildId }, amount) {
+    return this.findOneAndUpdate(
+      { guild_id: guildId, user_id: userId },
+      { $inc: {
+        kebabs: -amount
+      } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).populate('bank')
+  },
+  didFirst({ userId, guildId }) {
+    return this.findOneAndUpdate(
+      { guild_id: guildId, user_id: userId },
+      { $inc: { first_count: 1 } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    )
+  }
+}
+
 module.exports = mongoose.model('user', userSchema)

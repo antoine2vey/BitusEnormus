@@ -17,4 +17,14 @@ const bankSchema = new Schema({
   last_get: Date,
 })
 
+bankSchema.statics = {
+  findByUserId(userId) {
+    return this.findOneAndUpdate(
+      { belongs_to: userId },
+      {},
+      { new: true, setDefaultsOnInsert: true, upsert: true }
+    )
+  }
+}
+
 module.exports = mongoose.model('bank', bankSchema)
