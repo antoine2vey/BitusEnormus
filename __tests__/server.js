@@ -8,7 +8,7 @@ const server = new Server()
 
 describe('Suite for server commands', () => {
   beforeAll(() => {
-    mongoose.connect('mongodb://127.0.0.1:27017/mappabot_test')
+    mongoose.connect('mongodb://mongodb/mappabot_test')
   })
 
   afterEach((done) => {

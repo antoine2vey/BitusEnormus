@@ -16,7 +16,7 @@ const user = new DiscordUser({
 
 describe('Suite for user commands', () => {
   beforeAll((done) => {
-    mongoose.connect('mongodb://127.0.0.1:27017/mappabot_test')
+    mongoose.connect('mongodb://mongodb/mappabot_test')
 
     const guild = new First({ guild_id: 1 })
     guild.save(done)

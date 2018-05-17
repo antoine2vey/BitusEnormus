@@ -17,7 +17,7 @@ const user = new DiscordUser({
 
 describe('Suite for bank commands', () => {
   beforeAll((done) => {
-    mongoose.connect('mongodb://127.0.0.1:27017/mappabot_test')
+    mongoose.connect('mongodb://mongodb/mappabot_test')
 
     const guild = new First({ guild_id: 1 })
     guild.save(done)
@@ -35,9 +35,27 @@ describe('Suite for bank commands', () => {
   it('expect checkBank() to return bank for user that belongs to him', () => {
     return user.get().then((client) => {
       return user.checkBankExists().then((bank) => {
-        expect(client._id.toString()).toBe(bank.belongs_to._id.toString())
-        expect(bank._id.toString()).toBe(client.bank._id.toString())
+        expect(client.id.toString()).toBe(bank.belongs_to.toString())
+        expect(bank.id.toString()).toBe(client.bank.id.toString())
       })
+    })
+  })
+
+  it('expect to throw when cannot withdraw money', () => {
+    return user.get().then((client) => {
+      return user.checkIfCanWithdraw(2000)
+        .then((res) => {
+          expect(res).toBeNull()
+        })
+    })
+  })
+
+  it('expect to not throw when can withdraw money', () => {
+    return user.get().then((client) => {
+      return user.checkIfCanWithdraw(500)
+        .then((bank) => {
+          expect(bank.amount).toBe(500)
+        })
     })
   })
 })

@@ -1,9 +1,9 @@
 // @flow
 import type { Guild, User, Message } from 'discord.js'
-import type { dBank } from '../types/data'
+import type { dBank, UserPayload } from '../types/data'
 
 const UserBank = require('../database/models/bank')
-const user = require('../database/models/user')
+const DiscordUser = require('../database/models/user')
 
 class Bank {
   guild: Guild
@@ -14,7 +14,7 @@ class Bank {
     this.author = message.author
   }
 
-  get payload() {
+  get payload(): UserPayload {
     return {
       guildId: this.guild.id,
       userId: this.author.id
@@ -22,7 +22,7 @@ class Bank {
   }
 
   checkBankExists(): Promise<dBank> {
-    return user.findByDiscordId(this.payload)
+    return DiscordUser.findByDiscordId(this.payload)
       .then(async (user) => {
         const client = user
         if (!user.bank) {
@@ -35,7 +35,18 @@ class Bank {
           return Promise.resolve(newBank)
         }
 
-        return Promise.resolve(user.bank)
+        return Promise.resolve(client.bank)
+      })
+  }
+
+  checkIfCanWithdraw(amount: number): Promise<dBank> {
+    return this.checkBankExists()
+      .then((bank) => {
+        if (bank.amount > amount) {
+          return UserBank.withdrawById(bank.id, amount)
+        }
+
+        return Promise.reject()
       })
   }
 }

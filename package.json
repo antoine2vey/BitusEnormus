@@ -7,7 +7,7 @@
     "build": "babel src/ -d lib/",
     "dev": "concurrently \"npm run build -- --watch\" \"nodemon lib/index.js\"",
     "start": "npm run build && node ./lib/",
-    "test": "jest --watch --env=node"
+    "test": "jest --watchAll --env=node"
   },
   "license": "ISC",
   "devDependencies": {

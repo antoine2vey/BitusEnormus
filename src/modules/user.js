@@ -1,6 +1,6 @@
 // @flow
 import type { Guild, User, Message } from 'discord.js'
-import type { dUser } from '../types/data'
+import type { dUser, UserPayload } from '../types/data'
 
 const user = require('../database/models/user')
 const Bank = require('./bank')
@@ -18,7 +18,7 @@ class DiscordUser extends Bank {
     this.author = this.message.author
   }
 
-  get payload() {
+  get payload(): UserPayload {
     return {
       guildId: this.guild.id,
       userId: this.author.id

@@ -24,6 +24,20 @@ bankSchema.statics = {
       {},
       { new: true, setDefaultsOnInsert: true, upsert: true }
     )
+  },
+  withdrawById(bankId, amount) {
+    return this.findByIdAndUpdate(
+      bankId,
+      { $inc: { amount: -amount } },
+      { setDefaultsOnInsert: true, new: true, upsert: true }
+    )
+  },
+  payById(bankId, amount) {
+    return this.findByIdAndUpdate(
+      bankId,
+      { $inc: { amount } },
+      { setDefaultsOnInsert: true, new: true, upsert: true }
+    )
   }
 }
 

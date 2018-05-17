@@ -1,11 +1,11 @@
 // @flow
-import type { Snowflake, Emoji } from 'discord.js'
+import type { Emoji } from 'discord.js'
 
 const { CronJob } = require('cron')
 const mongoose = require('mongoose')
 
 class Helpers {
-  kebabId: Snowflake
+  kebabId: string
 
   constructor(): void {
     this.kebabId = ''
@@ -23,7 +23,7 @@ class Helpers {
     return mongoose.connect('mongodb://mongodb/mappabot')
   }
 
-  get kebab() {
+  get kebab(): string {
     return `<:kebab:${this.kebabId}>`
   }
 }
