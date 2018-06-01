@@ -2,6 +2,10 @@
 
 class NumberValidation {
   validateStack(str: string): boolean {
+    if (!str || !(typeof str === 'string')) {
+      return false
+    }
+
     const tmp = str.split('-')
     const min = parseInt(tmp[0], 10)
     const max = parseInt(tmp[1], 10)
