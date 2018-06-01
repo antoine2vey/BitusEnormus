@@ -1,4 +1,13 @@
-FROM node:8.11-alpine
+FROM node:alpine
 
 WORKDIR /usr/app
-COPY package.json .
+COPY package*.json ./
+COPY yarn.lock .
+
+RUN \
+  apk update && \
+  apk add --no-cache make gcc g++ python && \
+  yarn && \
+  apk del make gcc g++ python
+
+COPY . .
