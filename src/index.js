@@ -14,13 +14,15 @@ class Bot extends Helpers {
       this.setNewEmote(this.client.emojis.find('name', 'kebab'))
 
       // Everytime at midnight
-      this.makeTask('0 0 * * *', async () => {
-
+      const giveMidnight = this.makeTask('0 0 * * *', async () => {
+        console.log('yo')
       })
+
+      giveMidnight.start()
       // Update bank every 2 hours
-      this.makeTask('0 */2 * * *', async () => {
+      const growBank = this.makeTask('0 */2 * * *', async () => {})
 
-      })
+      growBank.start()
     })
 
     this.client.registry
@@ -31,7 +33,7 @@ class Bot extends Helpers {
         ['games', 'Mini jeux'],
         ['infos', 'Informations'],
         ['bank', 'Informations bancaires'],
-        ['rob', 'Voler un utilisateur'],
+        ['rob', 'Voler un utilisateur']
       ])
       .registerDefaults()
       .registerCommandsIn(path.join(__dirname, 'commands'))
