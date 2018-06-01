@@ -5,14 +5,19 @@ const { CronJob } = require('cron')
 const mongoose = require('mongoose')
 
 class Helpers {
-  kebabId: string
+  kebabId: ?string
 
   constructor(): void {
-    this.kebabId = ''
+    this.kebabId = undefined
   }
 
-  makeTask(pattern: string, fn: Function): void {
-    new CronJob(pattern, fn, null, true, 'Europe/Paris')
+  makeTask(pattern: string, callback: Function): any {
+    return new CronJob({
+      cronTime: pattern,
+      start: false,
+      timeZone: 'Europe/Paris',
+      onTick: callback
+    })
   }
 
   setNewEmote(emote: Emoji): void {
