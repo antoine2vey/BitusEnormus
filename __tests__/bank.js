@@ -6,14 +6,15 @@ const Bank = require('../src/database/models/bank')
 const User = require('../src/database/models/user')
 const DiscordUser = require('../src/modules/user')
 
-const user = new DiscordUser({
+const user = new DiscordUser()
+const message = {
   author: {
     id: 1
   },
   guild: {
     id: 1
   }
-})
+}
 
 describe('Suite for bank commands', () => {
   beforeAll((done) => {
@@ -24,7 +25,7 @@ describe('Suite for bank commands', () => {
   })
 
   afterEach((done) => {
-    return User.remove({ guild_id: 1 }, done)
+    User.remove({ guild_id: 1 }, done)
   })
 
   afterAll((done) => {
@@ -33,8 +34,10 @@ describe('Suite for bank commands', () => {
   })
 
   it('expect checkBank() to return bank for user that belongs to him', () => {
-    return user.get().then((client) => {
-      return user.checkBankExists().then((bank) => {
+    const { author, guild } = message
+
+    return user.get(author, guild).then((client) => {
+      return user.checkBankExists(client.user_id, guild.id).then((bank) => {
         expect(client.id.toString()).toBe(bank.belongs_to.toString())
         expect(bank.id.toString()).toBe(client.bank.id.toString())
       })
@@ -42,20 +45,35 @@ describe('Suite for bank commands', () => {
   })
 
   it('expect to throw when cannot withdraw money', () => {
-    return user.get().then((client) => {
-      return user.checkIfCanWithdraw(2000)
-        .then((res) => {
-          expect(res).toBeNull()
-        })
-    })
+    const { author, guild } = message
+
+    return user.checkIfCanWithdraw(author.id, guild.id, 2000)
+      .then((res) => {
+        expect(res).toBeNull()
+      })
+      .catch((err) => {
+        expect(err).toBeUndefined()
+      })
   })
 
   it('expect to not throw when can withdraw money', () => {
-    return user.get().then((client) => {
-      return user.checkIfCanWithdraw(500)
-        .then((bank) => {
-          expect(bank.amount).toBe(500)
-        })
-    })
+    const { author, guild } = message
+
+    return user.checkIfCanWithdraw(author.id, guild.id, 500)
+      .then((bank) => {
+        expect(bank.amount).toBe(500)
+      })
+  })
+
+  it('expect to throw when not good input', () => {
+    const { author, guild } = message
+
+    return user.checkIfCanWithdraw(author.id, guild.id, 'foo')
+      .then((res) => {
+        expect(res).toBeNull()
+      })
+      .catch((err) => {
+        expect(err).toBeUndefined()
+      })
   })
 })

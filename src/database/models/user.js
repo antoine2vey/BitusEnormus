@@ -27,9 +27,9 @@ const userSchema = new Schema({
 }, { timestamps: true })
 
 userSchema.statics = {
-  findByDiscordId({ userId, guildId }) {
+  findByDiscordId(authorId, guildId) {
     return this.findOneAndUpdate(
-      { guild_id: guildId, user_id: userId },
+      { guild_id: guildId, user_id: authorId },
       {},
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
@@ -37,35 +37,35 @@ userSchema.statics = {
   findByGuild(guildId) {
     return this.find({ guild_id: guildId })
   },
-  updateByDiscordId({ userId, guildId }, query) {
+  updateByDiscordId(authorId, guildId, query) {
     return this.findOneAndUpdate(
-      { guild_id: guildId, user_id: userId },
+      { guild_id: guildId, user_id: authorId },
       query,
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },
-  pay({ userId, guildId }, amount) {
+  pay(authorId, guildId, amount) {
     return this.findOneAndUpdate(
-      { guild_id: guildId, user_id: userId },
+      { guild_id: guildId, user_id: authorId },
       { $inc: {
         kebabs: amount
       } },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },
-  withdraw({ userId, guildId }, amount) {
+  withdraw(authorId, guildId, amount) {
     return this.findOneAndUpdate(
-      { guild_id: guildId, user_id: userId },
+      { guild_id: guildId, user_id: authorId },
       { $inc: {
         kebabs: -amount
       } },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },
-  didFirst({ userId, guildId }) {
+  didFirst(authorId, guildId) {
     return this.findOneAndUpdate(
-      { guild_id: guildId, user_id: userId },
-      { $inc: { first_count: 1 } },
+      { guild_id: guildId, user_id: authorId },
+      { $inc: { first_count: 1, kebabs: 1000 } },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     )
   }

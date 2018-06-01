@@ -1,7 +1,7 @@
 // @flow
 
 class NumberValidation {
-  validateStack(str: string) {
+  validateStack(str: string): boolean {
     const tmp = str.split('-')
     const min = parseInt(tmp[0], 10)
     const max = parseInt(tmp[1], 10)
@@ -17,11 +17,11 @@ class NumberValidation {
     return false
   }
 
-  isValid(val: number) {
+  isValid(val: number): boolean {
     return val >= 0 && Number.isFinite(val) && typeof val === 'number'
   }
 
-  isValidStack(str: string) {
+  isValidStack(str: string): boolean {
     return this.validateStack(str)
   }
 }

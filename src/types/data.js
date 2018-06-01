@@ -1,5 +1,4 @@
 // @flow
-import type { Guild, User } from 'discord-js'
 
 export type dPhoto = {
   id: string,
@@ -31,9 +30,4 @@ export type dUser = {
   created_at: Date,
   updated_at: Date,
   first_count: number
-}
-
-export type UserPayload = {
-  guildId: string,
-  userId: string
 }

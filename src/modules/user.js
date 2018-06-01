@@ -1,67 +1,52 @@
 // @flow
-import type { Guild, User, Message } from 'discord.js'
-import type { dUser, UserPayload } from '../types/data'
+import type { Guild, User } from 'discord.js'
+import type { dUser } from '../types/data'
 
-const user = require('../database/models/user')
-const Bank = require('./bank')
+const DiscordBank = require('./bank')
+const discordUser = require('../database/models/user')
 
-class DiscordUser extends Bank {
-  message: Message
-  guild: Guild
-  author: User
-
-  constructor(message: Message) {
-    super(message)
-
-    this.message = message
-    this.guild = this.message.guild
-    this.author = this.message.author
+class DiscordUser extends DiscordBank {
+  async pay(user: User, guild: Guild, amount: number): Promise<dUser> {
+    await this.get(user, guild)
+    return discordUser.pay(user.id, guild.id, amount)
   }
 
-  get payload(): UserPayload {
-    return {
-      guildId: this.guild.id,
-      userId: this.author.id
-    }
-  }
-
-  async pay(amount: number): Promise<dUser> {
-    await this.get()
-    return user.pay(this.payload, amount)
-  }
-
-  async withdraw(amount: number): Promise<dUser> {
-    const client = await this.get()
+  async withdraw(user: User | { id: string }, guild: Guild, amount: number): Promise<dUser> {
+    const client = await this.get(user, guild)
     if (this.canWithdraw(amount, client.kebabs)) {
-      return user.withdraw(this.payload, amount)
+      return discordUser.withdraw(user.id, guild.id, amount)
     }
 
-    return Promise.reject('Not enough money')
+    return Promise.reject()
   }
 
-  async get(): Promise<dUser> {
-    return this.checkBankExists()
+  async get(user: User | { id: string }, guild: Guild): Promise<dUser> {
+    return this.checkBankExists(user.id, guild.id)
       .then(() => {
-        return user.findByDiscordId(this.payload)
+        return discordUser.findByDiscordId(user.id, guild.id)
       })
   }
 
-  async getInGuild(): Promise<Array<dUser>> {
-    await this.get()
+  async getInGuild(user: User, guild: Guild): Promise<Array<dUser>> {
+    await this.get(user, guild)
 
-    return user.findByGuild(this.guild.id)
+    return discordUser.findByGuild(guild.id)
   }
 
-  async hasDoneFirst(): Promise<dUser> {
-    return user.didFirst(this.payload)
+  async doFirst(user: User, guild: Guild): Promise<dUser> {
+    await this.get(user, guild)
+
+    return discordUser.didFirst(user.id, guild.id)
   }
 
-  send(message: any) {
-    return this.message.channel.send(message)
-  }
+  async exchange(user: User, guild: Guild, targetId: string, amount: number): Promise<dUser> {
+    const target = { id: targetId }
+    await this.get(target, guild)
+    await this.get(user, guild)
 
-  canWithdraw(amount: number, available: number): boolean {
-    return available > amount
+    return this.withdraw(target, guild, amount)
+      .then(() => this.pay(user, guild, amount))
+      .catch(() => Promise.reject())
   }
 }
 

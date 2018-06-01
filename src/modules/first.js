@@ -1,27 +1,38 @@
 // @flow
 import type { Message } from 'discord.js'
-import type { dFirst } from '../types/data'
 
 const DiscordUser = require('./user')
 const Server = require('./server')
 
-const server = new Server()
-
 class ModuleFirst extends DiscordUser {
-  constructor(message: Message) {
-    super(message)
+  message: Message
+  server: Server
 
+  constructor(message: Message) {
+    super()
+
+    this.message = message
+    this.server = new Server()
     this.handle()
   }
 
   handle() {
-    server.getByGuildId(this.message.guild)
-      .then((guild) => {
-        console.log(guild)
+    const { guild, author } = this.message
+
+    this.server
+      .getByGuildId(guild)
+      .then(async (discordGuild) => {
+        if (discordGuild.has_done_first) {
+          return this.message.channel.send('Ton serveur à fait le first déjà pd')
+        }
+
+        await this.doFirst(author, guild)
+        await this.server.doFirst(guild)
+
+        return this.message.channel.send('Bien joué pour le first connard')
       })
-      .catch((err) => {
-        console.log(err)
-        this.send('err')
+      .catch(() => {
+        this.message.channel.send('err')
       })
   }
 }
