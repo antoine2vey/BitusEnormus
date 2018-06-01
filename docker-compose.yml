@@ -12,6 +12,8 @@ services:
       - mongodb
     env_file:
       - development.env
+    ports:
+      - 5858:5858 # node debugger port
 
   mongodb:
     image: mongo

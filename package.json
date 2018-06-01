@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src/ -d lib/",
-    "dev": "concurrently \"npm run build -- --watch\" \"nodemon lib/index.js\"",
+    "dev":
+      "concurrently \"npm run build -- --watch\" \"nodemon --inspect=0.0.0.0:5858 lib/index.js\"",
     "start": "npm run build && node ./lib/",
     "test": "jest --watchAll --env=node"
   },
@@ -40,5 +41,8 @@
     "node-opus": "^0.2.9",
     "opusscript": "0.0.6",
     "request": "^2.85.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

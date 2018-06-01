@@ -8,3 +8,4 @@ mappa.json
 **/.DS_Store
 src/.swp
 lib
+.vscode
