@@ -47,33 +47,24 @@ describe('Suite for bank commands', () => {
   it('expect to throw when cannot withdraw money', () => {
     const { author, guild } = message
 
-    return user.checkIfCanWithdraw(author.id, guild.id, 2000)
-      .then((res) => {
-        expect(res).toBeNull()
-      })
-      .catch((err) => {
-        expect(err).toBeUndefined()
-      })
+    return user.checkIfCanWithdraw(author.id, guild.id, 2000).catch((err) => {
+      expect(err).toBe(null)
+    })
   })
 
   it('expect to not throw when can withdraw money', () => {
     const { author, guild } = message
 
-    return user.checkIfCanWithdraw(author.id, guild.id, 500)
-      .then((bank) => {
-        expect(bank.amount).toBe(500)
-      })
+    return user.checkIfCanWithdraw(author.id, guild.id, 500).then((bank) => {
+      expect(bank.amount).toBe(500)
+    })
   })
 
   it('expect to throw when not good input', () => {
     const { author, guild } = message
 
-    return user.checkIfCanWithdraw(author.id, guild.id, 'foo')
-      .then((res) => {
-        expect(res).toBeNull()
-      })
-      .catch((err) => {
-        expect(err).toBeUndefined()
-      })
+    return user.checkIfCanWithdraw(author.id, guild.id, 'foo').catch((err) => {
+      expect(err).toBe(null)
+    })
   })
 })
