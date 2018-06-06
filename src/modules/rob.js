@@ -1,15 +1,23 @@
 // @flow
+import type { User, Guild } from 'discord.js'
+import type { dUser } from '../types/data'
 
 type WorkerElement = {
   from: string,
   to: string
 }
 
+const DiscordUser = require('../modules/user')
+
+const user = new DiscordUser()
+
 class Rob {
   workers: Map<string, Array<WorkerElement>>
+  DEFAULT_ROB_TIME: number
 
   constructor() {
     this.workers = new Map()
+    this.DEFAULT_ROB_TIME = 5 * 60 * 1000
   }
 
   createWorker(guildId: string, authorId: string, targetId: string): void {
@@ -62,6 +70,24 @@ class Rob {
 
   getWorkers(guildId: string): Array<WorkerElement> {
     return this.workers.get(guildId) || []
+  }
+
+  steal(fromUser: User, guild: Guild, targetId: string, amount: number): Promise<dUser | boolean> {
+    return user.exchange(fromUser, guild, targetId, amount)
+  }
+
+  start(authorId: string, guildId: string, targetId: string) {
+    this.createWorker(guildId, authorId, targetId)
+
+    const handleWorkerEvents = setTimeout(() => {
+      this.deleteWorker(guildId, authorId)
+
+      clearTimeout(handleWorkerEvents)
+    }, this.DEFAULT_ROB_TIME)
+  }
+
+  stop(guildId: string, authorId: string): void {
+    this.deleteWorker(guildId, authorId)
   }
 }
 
