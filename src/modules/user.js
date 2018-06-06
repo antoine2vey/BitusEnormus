@@ -21,10 +21,9 @@ class DiscordUser extends DiscordBank {
   }
 
   async get(user: User | { id: string }, guild: Guild): Promise<dUser> {
-    return this.checkBankExists(user.id, guild.id)
-      .then(() => {
-        return discordUser.findByDiscordId(user.id, guild.id)
-      })
+    return this.checkBankExists(user.id, guild.id).then(() => {
+      return discordUser.findByDiscordId(user.id, guild.id)
+    })
   }
 
   async getInGuild(user: User, guild: Guild): Promise<Array<dUser>> {
@@ -41,8 +40,6 @@ class DiscordUser extends DiscordBank {
 
   async exchange(user: User, guild: Guild, targetId: string, amount: number): Promise<dUser> {
     const target = { id: targetId }
-    await this.get(target, guild)
-    await this.get(user, guild)
 
     return this.withdraw(target, guild, amount)
       .then(() => this.pay(user, guild, amount))
