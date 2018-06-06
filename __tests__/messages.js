@@ -2,6 +2,18 @@
 const Messages = require('../src/modules/messages')
 
 const messages = new Messages()
+const message = {
+  author: {
+    username: 'John',
+    avatarURL: null
+  },
+  client: {
+    user: {
+      username: 'Doe',
+      avatarURL: null
+    }
+  }
+}
 
 describe('Tests for message system', () => {
   afterEach(() => {
@@ -44,7 +56,25 @@ describe('Tests for message system', () => {
   })
 
   it('expect to send messages off queue', () => {
-    expect(messages.send).toBeDefined()
+    expect(messages.get).toBeDefined()
+    const embed = messages.get(message)
+
+    expect(embed.color).toBe(messages.SUCCESS_COLOR)
+    expect(messages.queue).toEqual({
+      valid: [],
+      errors: []
+    })
+  })
+
+  it('expect to send messages for not valid off queue', () => {
+    messages.addError({ name: 'foo', value: 'bar' })
+    const embed = messages.get(message)
+
+    expect(embed.color).toBe(messages.ERROR_COLOR)
+    expect(messages.queue).toEqual({
+      valid: [],
+      errors: []
+    })
   })
 
   it('expect clearing queue', () => {
@@ -56,5 +86,9 @@ describe('Tests for message system', () => {
       valid: [],
       errors: []
     })
+  })
+
+  it('expect to send images', () => {
+    expect(messages.getImage).toBeDefined()
   })
 })

@@ -1,5 +1,5 @@
 // @flow
-import type { Message } from 'discord.js'
+import type { Message, RichEmbed } from 'discord.js'
 
 type QueueMessage = {
   name: string,
@@ -7,6 +7,8 @@ type QueueMessage = {
 }
 
 class Messages {
+  ERROR_COLOR: number
+  SUCCESS_COLOR: number
   queue: {
     errors: Array<QueueMessage>,
     valid: Array<QueueMessage>
@@ -17,6 +19,8 @@ class Messages {
       errors: [],
       valid: []
     }
+    this.ERROR_COLOR = 16711680
+    this.SUCCESS_COLOR = 65280
   }
 
   addError({ name, value }: QueueMessage): void {
@@ -38,49 +42,49 @@ class Messages {
     return this.queue.errors.length > 0
   }
 
-  message(message: Message, fields: Array<any>, isError: boolean): void {
-    message.channel.send({
-      embed: {
-        color: isError ? 16711680 : 65280,
-        author: {
-          name: message.author.username,
-          icon_url: message.author.avatarURL
-        },
-        title: '',
-        fields,
-        footer: {
-          icon_url: message.client.user.avatarURL,
-          text: `- ${message.client.user.username}`
-        }
+  default(
+    message: Message,
+    fields: Array<QueueMessage>,
+    isError: boolean = false
+  ): RichEmbed | any {
+    this.clearQueue()
+
+    return {
+      color: isError ? this.ERROR_COLOR : this.SUCCESS_COLOR,
+      author: {
+        name: message.author.username,
+        icon_url: message.author.avatarURL
+      },
+      title: '',
+      fields,
+      footer: {
+        icon_url: message.client.user.avatarURL,
+        text: `- ${message.client.user.username}`
       }
-    })
+    }
   }
 
-  sendImage(message: Message, link: string): void {
-    message.channel.send({
-      embed: {
-        color: 65280,
-        author: {
-          name: message.client.user.username,
-          icon_url: message.client.user.avatarURL
-        },
-        title: '',
-        fields: [],
-        image: {
-          url: link
-        }
+  getImage(message: Message, link: string): RichEmbed | any {
+    return {
+      color: this.SUCCESS_COLOR,
+      author: {
+        name: message.client.user.username,
+        icon_url: message.client.user.avatarURL
+      },
+      title: '',
+      fields: [],
+      image: {
+        url: link
       }
-    })
+    }
   }
 
-  send(message: Message): void {
+  get(message: Message): RichEmbed | any {
     if (this.shouldThrow()) {
-      this.message(message, this.queue.errors, true)
-    } else {
-      this.message(message, this.queue.valid, false)
+      return this.default(message, this.queue.errors, true)
     }
 
-    this.clearQueue()
+    return this.default(message, this.queue.valid, false)
   }
 }
 
