@@ -1,0 +1,15 @@
+sudo: required
+
+language: node_js
+
+node_js:
+  - "8"
+
+services:
+  - docker
+
+before_install:
+  - docker-compose build -t shaark/mappabot
+  - docker-compose up
+  - docker-compose ps
+  - docker-compose exec bot sh -c 'npm run test'
