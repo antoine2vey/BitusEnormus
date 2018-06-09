@@ -8,7 +8,7 @@
     "dev":
       "concurrently \"npm run build -- --watch\" \"nodemon --inspect=0.0.0.0:5858 lib/index.js\"",
     "start": "npm run build && node ./lib/",
-    "test": "jest --env=node"
+    "test": "jest --env=node --forceExit"
   },
   "license": "ISC",
   "devDependencies": {

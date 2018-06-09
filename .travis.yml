@@ -6,7 +6,7 @@ services:
 - docker
 before_install:
 - docker-compose -f docker-compose.ci.yml build
-- docker-compose -f docker-compose.ci.yml up
+- docker-compose -f docker-compose.ci.yml up -d
 - docker-compose -f docker-compose.ci.yml ps
 - docker-compose -f docker-compose.ci.yml exec bot sh -c 'npm run test'
 env:
