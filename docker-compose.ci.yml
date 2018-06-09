@@ -7,6 +7,7 @@ services:
       - /usr/app/node_modules/
     depends_on:
       - mongodb
+    command: tail -f /usr/app/yarn.lock
     environment:
       - "NODE_ENV=development"
       - "DISCORD_TOKEN=${DISCORD_TOKEN}"
