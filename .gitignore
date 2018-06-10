@@ -9,3 +9,4 @@ mappa.json
 src/.swp
 lib
 .vscode
+coverage/
