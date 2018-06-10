@@ -40,7 +40,6 @@ describe('Suite for bank commands', () => {
       return user.checkBankExists(client.user_id, guild.id).then((bank) => {
         expect(client.id.toString()).toBe(bank.belongs_to.toString())
         expect(bank.id.toString()).toBe(client.bank.id.toString())
-        expect(false).toBe(true)
       })
     })
   })
