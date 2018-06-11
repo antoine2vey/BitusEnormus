@@ -10,7 +10,7 @@
     "start": "npm run build && node ./lib/",
     "test": "jest --env=node --forceExit",
     "coverage":
-      "jest --coverage --forceExit &&& cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+      "jest --coverage --forceExit && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "license": "ISC",
   "devDependencies": {
