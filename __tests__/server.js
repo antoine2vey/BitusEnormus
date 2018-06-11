@@ -21,24 +21,20 @@ describe('Suite for server commands', () => {
   })
 
   it('expect getByGuildId to return a guild if not exists', () => {
-    return server
-      .getByGuildId({ id: 1 })
-      .then((guild) => {
-        expect(guild).toBeTruthy()
-        expect(guild.guild_id).toBe('1')
-      })
+    return server.getByGuildId({ id: 1 }).then((guild) => {
+      expect(guild).toBeTruthy()
+      expect(guild.guild_id).toBe('1')
+    })
   })
 
   it('expect getByGuildId to return a guild if exists', () => {
     const guild = new First({ guild_id: 1 })
 
     return guild.save().then(() => {
-      return server
-        .getByGuildId({ id: 1 })
-        .then((guild) => {
-          expect(guild).toBeTruthy()
-          expect(guild.guild_id).toBe('1')
-        })
+      return server.getByGuildId({ id: 1 }).then((guild) => {
+        expect(guild).toBeTruthy()
+        expect(guild.guild_id).toBe('1')
+      })
     })
   })
 
@@ -49,26 +45,19 @@ describe('Suite for server commands', () => {
     await guild.save()
     await guild2.save()
 
-    return server
-      .resetGuilds()
-      .then((res) => {
-        expect(res).toBe(true)
-      })
-      .catch((err) => {
-        expect(err).toBe(false)
-      })
+    return server.resetGuilds().then((res) => {
+      expect(res).toBe(true)
+    })
   })
 
   it('expect `has_done_first` to be true when we first', () => {
     const guild = new First({ guild_id: 1 })
 
     return guild.save().then(() => {
-      return server
-        .doFirst({ id: 1 })
-        .then((guild) => {
-          expect(guild).toBeTruthy()
-          expect(guild.has_done_first).toBe(true)
-        })
+      return server.doFirst({ id: 1 }).then((guild) => {
+        expect(guild).toBeTruthy()
+        expect(guild.has_done_first).toBe(true)
+      })
     })
   })
 })

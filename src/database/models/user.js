@@ -3,28 +3,31 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const { ObjectId } = Schema.Types
 
-const userSchema = new Schema({
-  user_id: String,
-  guild_id: String,
-  username: String,
-  kebabs: {
-    type: Number,
-    default: 500,
+const userSchema = new Schema(
+  {
+    user_id: String,
+    guild_id: String,
+    username: String,
+    kebabs: {
+      type: Number,
+      default: 500
+    },
+    bank: {
+      type: ObjectId,
+      ref: 'bank'
+    },
+    is_getting_rob: {
+      type: Boolean,
+      default: false
+    },
+    robbed_at: Date,
+    first_count: {
+      type: Number,
+      default: 0
+    }
   },
-  bank: {
-    type: ObjectId,
-    ref: 'bank',
-  },
-  is_getting_rob: {
-    type: Boolean,
-    default: false,
-  },
-  robbed_at: Date,
-  first_count: {
-    type: Number,
-    default: 0,
-  },
-}, { timestamps: true })
+  { timestamps: true }
+)
 
 userSchema.statics = {
   findByDiscordId(authorId, guildId) {
@@ -37,28 +40,25 @@ userSchema.statics = {
   findByGuild(guildId) {
     return this.find({ guild_id: guildId })
   },
-  updateByDiscordId(authorId, guildId, query) {
-    return this.findOneAndUpdate(
-      { guild_id: guildId, user_id: authorId },
-      query,
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    ).populate('bank')
-  },
   pay(authorId, guildId, amount) {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: authorId },
-      { $inc: {
-        kebabs: amount
-      } },
+      {
+        $inc: {
+          kebabs: amount
+        }
+      },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },
   withdraw(authorId, guildId, amount) {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: authorId },
-      { $inc: {
-        kebabs: -amount
-      } },
+      {
+        $inc: {
+          kebabs: -amount
+        }
+      },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },

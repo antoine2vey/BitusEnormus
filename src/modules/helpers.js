@@ -8,7 +8,7 @@ class Helpers {
   kebabId: ?string
 
   constructor(): void {
-    this.kebabId = undefined
+    this.kebabId = ''
   }
 
   makeTask(pattern: string, callback: Function): any {

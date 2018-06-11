@@ -10,9 +10,7 @@ class Server {
   }
 
   resetGuilds(): Promise<boolean> {
-    return First.resetAll()
-      .then(() => true)
-      .catch(() => false)
+    return First.resetAll().then(() => true)
   }
 
   doFirst(guild: Guild): Promise<dFirst> {

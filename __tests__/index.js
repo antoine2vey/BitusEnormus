@@ -22,11 +22,18 @@ describe('Checks for helpers', () => {
 
       expect(task.running).toBe(true)
     })
+
+    it('expect to return a database connector', () => {
+      expect(helpers.bootDatabase).toBeDefined()
+
+      const promise = helpers.bootDatabase()
+      expect(promise.then).toBeDefined()
+    })
   })
 
   describe('Checks for emojis set', () => {
-    it('expect kebab id to not be defined on startup', () => {
-      expect(helpers.kebabId).toBe(undefined)
+    it('expect kebab id to not be empty on startup', () => {
+      expect(helpers.kebabId).toBe('')
     })
 
     it('expect set method to be defined', () => {
@@ -37,6 +44,12 @@ describe('Checks for helpers', () => {
       helpers.setNewEmote({ id: 1 })
 
       expect(helpers.kebabId).toBe(1)
+    })
+
+    it('expect to get kebab without function', () => {
+      const emoji = helpers.kebab
+
+      expect(typeof emoji).toBe('string')
     })
   })
 })

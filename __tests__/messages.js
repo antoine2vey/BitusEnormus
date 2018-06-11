@@ -90,5 +90,17 @@ describe('Tests for message system', () => {
 
   it('expect to send images', () => {
     expect(messages.getImage).toBeDefined()
+
+    const image = messages.getImage(message, 'https://google.com')
+    expect(image).toBeTruthy()
+    expect(image.color).toBe(messages.SUCCESS_COLOR)
+  })
+
+  it('expect to send default message', () => {
+    expect(messages.default).toBeDefined()
+
+    const notValidMessage = messages.default(message, [{ name: 'foo', value: 'bar' }], true)
+    expect(notValidMessage.color).toBe(messages.ERROR_COLOR)
+    expect(notValidMessage.fields[0].value).toBe('bar')
   })
 })

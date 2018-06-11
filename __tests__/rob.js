@@ -67,6 +67,8 @@ describe('Rob module', () => {
       expect(rob.workerExists).toBeDefined()
       const isInWorker = rob.workerExists(guild.id, author.id)
       expect(isInWorker).toBe(false)
+      const workerExists = rob.workerExists(5, author.id)
+      expect(workerExists).toBe(false)
 
       rob.createWorker(guild.id, author.id, 2)
       const shouldBeInWorker = rob.workerExists(guild.id, author.id)
