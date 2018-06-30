@@ -26,7 +26,7 @@ export type dUser = {
   username: string,
   kebabs: number,
   bank: string | dBank,
-  robbet_at: Date,
+  robbed_at: Date,
   created_at: Date,
   updated_at: Date,
   first_count: number
