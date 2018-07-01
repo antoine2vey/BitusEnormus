@@ -6,7 +6,7 @@ class Helpers {
   kebabId?: string
 
   constructor() {
-    this.kebabId = undefined
+    this.kebabId = ''
   }
 
   makeTask(pattern: string, callback: any): CronJob {
