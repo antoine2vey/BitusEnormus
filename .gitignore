@@ -7,6 +7,6 @@ mappa.json
 .DS_Store
 **/.DS_Store
 src/.swp
-lib
+build
 .vscode
 coverage/

@@ -11,9 +11,10 @@ before_install:
   - docker-compose -f docker-compose.ci.yml up -d
 script: 
   - docker-compose -f docker-compose.ci.yml exec bot sh -c 'npm run test'
+after_success:
+  - docker-compose -f docker-compose.ci.yml exec bot sh -c 'npm run coverage'
 after_script:
   - docker-compose -f docker-compose.ci.yml down
-after_success: docker-compose -f docker-compose.ci.yml exec bot sh -c 'npm run coverage'
 env:
   global:
     secure: YxQ7N1QDrU4oAzksynpx9qFgYRVOLDpkYbZQh6vNxh8gAmFfFNBHNFEFWpRHuV4klJy0GtbQVYKh3GkWu4WAMjmWbv8kWYpZNRySBXk2pQYw0bpXc4qtALeq3r89zgra56Fecsm4E+3RkxKoJ19g0phRJJqxQFaR3TmZaoiHU54b/jb/fMuRliylnKx7m+jdYIXrdMdFuxC0FyV4k3/q2s2m/M1hxK8Df2APJNYjyx1ZD2LmtuP88LkoFC11wriyP5sTxvTEtTrckcIcd9morYUB7eTuWM9w4IFsrRLiKarPdURWR9/2S0xhDhPyyOoJwnCrq5iZm+Ol6yo6wcYR+i4E2kd1ZInyQ3rLlm6sciVti9rbV6HBBW5YdA7J7B553Rwd7hpskuwVaF3z1sVJEowzKWsnslC2vOx2HsrHkxEqktWMBQhgvwa0SrhXWx+JEV1Sqb8axK4/NBoG5fSIjgRuDWVddtNLzOi7nUeRssLt32ho6uOHnJ/e66nZG4KNlHAqWX2G+jl1ZVUEu1xEBYtWTAUFj6h6urunUNJV7YjJao5zux+taPkYnwP9o0EEvcUX5tc5v9Qs6XjRPNyp+F/7EiWxIEi06JIXd3vPeF44/wNSyvDKtAC+EPV8NM7buRfQjGwQlUkcpnX1nOArRV+soPcyYC5JfjSUWDYZnf8=

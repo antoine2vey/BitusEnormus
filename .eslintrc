@@ -1,20 +1,16 @@
 {
-    "parser": "babel-eslint",
-    "plugins": [
-        "flowtype"
-    ],
-    "extends": "airbnb-base",
-    "rules": {
-        "no-return-await": "off",
-        "class-methods-use-this": "off",
-        "no-underscore-dangle": "off",
-        "semi": ["error", "never"],
-        "no-undef": "off",
-        "no-new": "off",
-        "flowtype/define-flow-type": 1,
-        "flowtype/use-flow-type": 1,
-        "no-shadow": "off",
-        "comma-dangle": "off",
-        "arrow-body-style": "off"
-    }
+  "parser": "babel-eslint",
+  "plugins": ["flowtype"],
+  "extends": "airbnb-base",
+  "rules": {
+    "no-return-await": "off",
+    "class-methods-use-this": "off",
+    "no-underscore-dangle": "off",
+    "semi": ["error", "never"],
+    "no-undef": "off",
+    "no-new": "off",
+    "no-shadow": "off",
+    "comma-dangle": "off",
+    "arrow-body-style": "off"
+  }
 }
