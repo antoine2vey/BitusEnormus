@@ -49,14 +49,9 @@ describe('Suite for server commands', () => {
     await guild.save()
     await guild2.save()
 
-    return server
-      .resetGuilds()
-      .then((res) => {
-        expect(res).toBe(true)
-      })
-      .catch((err) => {
-        expect(err).toBe(false)
-      })
+    return server.resetGuilds().then((res) => {
+      expect(res).toBe(true)
+    })
   })
 
   it('expect `has_done_first` to be true when we first', () => {
