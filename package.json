@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc && node build/index.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js",
-    "test": "jest",
+    "test": "jest --forceExit",
     "test:watch": "jest --watchAll",
     "coverage":
       "jest --coverage --coverageReporters=text-lcov --forceExit | coveralls"

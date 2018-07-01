@@ -10,9 +10,8 @@ const userSchema = new mongoose.Schema({
   kebabs: {
     type: Number,
     default: 500,
-  },
-  { timestamps: true }
-)
+  }
+}, { timestamps: true })
 
 userSchema.statics = {
   findByDiscordId(authorId, guildId) {
