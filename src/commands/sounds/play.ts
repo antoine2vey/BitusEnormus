@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class PlayCommand extends Commando.Command {
+class PlayCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'sound',
@@ -25,3 +25,5 @@ export default class PlayCommand extends Commando.Command {
   async run() {
   }
 }
+
+module.exports = PlayCommand

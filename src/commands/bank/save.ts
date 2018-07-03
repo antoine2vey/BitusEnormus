@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class BankSaveCommand extends Commando.Command {
+class BankSaveCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'bank save',
@@ -25,3 +25,5 @@ export default class BankSaveCommand extends Commando.Command {
   async run() {
   }
 }
+
+module.exports = BankSaveCommand

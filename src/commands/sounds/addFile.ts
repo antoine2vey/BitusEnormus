@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class AddFileCommand extends Commando.Command {
+class AddFileCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'add',
@@ -17,3 +17,5 @@ export default class AddFileCommand extends Commando.Command {
   async run() {
   }
 }
+
+module.exports = AddFileCommand

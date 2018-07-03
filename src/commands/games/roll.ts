@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class RollCommands extends Commando.Command {
+class RollCommands extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'roll',
@@ -32,3 +32,5 @@ export default class RollCommands extends Commando.Command {
 
   }
 }
+
+module.exports = RollCommands

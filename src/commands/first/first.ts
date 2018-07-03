@@ -4,7 +4,7 @@ import User from '../../modules/user';
 import Server from '../../modules/server';
 import Messages from '../../modules/messages';
 
-export default class FirstCommand extends Commando.Command {
+class FirstCommand extends Commando.Command {
   private server: Server
   private user: User
   private message: Messages
@@ -26,7 +26,7 @@ export default class FirstCommand extends Commando.Command {
     this.message = new Messages()
   }
 
-  async run(message: Message) {
+  async run(message: Message): Promise<Message | Message[]> {
     console.log('works')
     const { guild, author } = message
     const discordGuild = await this.server.getByGuildId(guild)
@@ -46,3 +46,5 @@ export default class FirstCommand extends Commando.Command {
     return message.channel.send('First', embed)
   }
 }
+
+module.exports = FirstCommand

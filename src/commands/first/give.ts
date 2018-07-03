@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class GiveCommand extends Commando.Command {
+class GiveCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'give',
@@ -31,3 +31,5 @@ export default class GiveCommand extends Commando.Command {
   async run() {
   }
 }
+
+module.exports = GiveCommand
