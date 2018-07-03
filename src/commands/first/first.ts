@@ -4,7 +4,7 @@ import User from '../../modules/user';
 import Server from '../../modules/server';
 import Messages from '../../modules/messages';
 
-module.exports = class FirstCommand extends Commando.Command {
+export default class FirstCommand extends Commando.Command {
   private server: Server
   private user: User
   private message: Messages
@@ -27,22 +27,22 @@ module.exports = class FirstCommand extends Commando.Command {
   }
 
   async run(message: Message) {
+    console.log('works')
     const { guild, author } = message
+    const discordGuild = await this.server.getByGuildId(guild)
 
-    this.server
-      .getByGuildId(guild)
-      .then(async (discordGuild) => {
-        if (discordGuild.has_done_first) {
-          return message.channel.send('mdr')
-        }
+    console.log(discordGuild)
 
-        await this.user.doFirst(author, guild)
-        await this.server.doFirst(guild)
+    if (discordGuild.has_done_first) {
+      this.message.addError({ name: 'First', value: 'Le first est déjà fait' })
+    } else {
+      await this.user.doFirst(author, guild)
+      await this.server.doFirst(guild)
 
-        return message.channel.send('Bien joué pour le first connard')
-      })
-      .catch(() => {
-        message.channel.send('err')
-      })
+      this.message.addValid({ name: 'First', value: 'Bien joué pour le first!' })
+    }
+
+    const embed = this.message.get(message)
+    return message.channel.send('First', embed)
   }
 }

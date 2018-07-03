@@ -9,7 +9,7 @@ class Helpers {
     this.kebabId = ''
   }
 
-  makeTask(pattern: string, callback: any): CronJob {
+  makeTask(pattern: string, callback: () => void): CronJob {
     return new CronJob(pattern, callback, undefined, false, 'Europe/Paris')
   }
 

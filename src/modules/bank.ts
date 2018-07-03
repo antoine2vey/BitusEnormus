@@ -3,7 +3,7 @@ import UserBank from '../database/models/bank';
 import DiscordUser from '../database/models/user';
 
 class Bank {
-  checkBankExists(authorId: string, guildId: string): Promise<dBank> {
+  public checkBankExists(authorId: string, guildId: string): Promise<dBank> {
     return DiscordUser.findByDiscordId(authorId, guildId).then(async (user: any) => {
       const client = user
       if (!user.bank) {
@@ -20,7 +20,7 @@ class Bank {
     })
   }
 
-  checkIfCanWithdraw(authorId: string, guildId: string, amount: number): Promise<dBank> {
+  public checkIfCanWithdraw(authorId: string, guildId: string, amount: number): Promise<dBank> {
     return this.checkBankExists(authorId, guildId).then((bank) => {
       if (this.canWithdraw(amount, bank.amount)) {
         return UserBank.withdrawById(bank.id, amount)
@@ -30,7 +30,7 @@ class Bank {
     })
   }
 
-  canWithdraw(amount: number, available: number): boolean {
+  public canWithdraw(amount: number, available: number): boolean {
     return available > amount
   }
 }

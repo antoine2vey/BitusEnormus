@@ -9,6 +9,7 @@ class Bot extends Helpers {
   constructor() {
     super()
 
+    console.log(process.env)
     this.client = new Commando.Client({ owner: process.env.OWNER_ID })
 
     this.client.on('ready', () => {
@@ -19,6 +20,7 @@ class Bot extends Helpers {
 
           // Everytime at midnight
           const giveMidnight = this.makeTask('0 0 * * *', () => {
+            return 2
           })
     
           giveMidnight.start()
