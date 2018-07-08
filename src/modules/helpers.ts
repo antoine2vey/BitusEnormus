@@ -18,7 +18,7 @@ class Helpers {
   }
 
   bootDatabase(): Promise<typeof mongoose> {
-    return mongoose.connect('mongodb://mongodb/mappabot')
+    return mongoose.connect('mongodb://mongodb:27017/mappabot')
   }
 
   get kebab(): string {

@@ -8,6 +8,7 @@ class FirstCommand extends Commando.Command {
   private server: Server
   private user: User
   private message: Messages
+  private readonly embedTitle: string
 
   constructor(client: any) {
     super(client, {
@@ -24,26 +25,24 @@ class FirstCommand extends Commando.Command {
     this.server = new Server()
     this.user = new User()
     this.message = new Messages()
+
+    this.embedTitle = 'First'
   }
 
-  async run(message: Message): Promise<Message | Message[]> {
-    console.log('works')
+  async run(message: Message): Promise<Message> {
     const { guild, author } = message
     const discordGuild = await this.server.getByGuildId(guild)
 
-    console.log(discordGuild)
-
     if (discordGuild.has_done_first) {
-      this.message.addError({ name: 'First', value: 'Le first est déjà fait' })
+      this.message.addError({ name: this.embedTitle, value: 'Le first est déjà fait' })
     } else {
       await this.user.doFirst(author, guild)
       await this.server.doFirst(guild)
 
-      this.message.addValid({ name: 'First', value: 'Bien joué pour le first!' })
+      this.message.addValid({ name: this.embedTitle, value: 'Bien joué pour le first!' })
     }
 
-    const embed = this.message.get(message)
-    return message.channel.send('First', embed)
+    return message.channel.sendEmbed(this.message.get(message))
   }
 }
 

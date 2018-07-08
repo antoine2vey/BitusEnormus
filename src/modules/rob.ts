@@ -1,4 +1,4 @@
-import { User, Guild } from 'discord.js'
+import { User, Guild, GuildMember } from 'discord.js'
 import { dUser } from '../types/data'
 import DiscordUser from '../modules/user'
 
@@ -71,8 +71,8 @@ class Rob {
     return this.workers.get(guildId) || []
   }
 
-  public steal(fromUser: User, guild: Guild, targetId: string, amount: number): Promise<dUser> {
-    return user.exchange(fromUser, guild, targetId, amount)
+  public steal(fromUser: User, guild: Guild, target: GuildMember, amount: number): Promise<dUser> {
+    return user.exchange(fromUser, guild, target, amount)
   }
 
   public start(authorId: string, guildId: string, targetId: string) {

@@ -19,8 +19,14 @@ class NumberValidation {
     return false
   }
 
-  public isValid(val: number): boolean {
-    return val >= 0 && Number.isFinite(val) && typeof val === 'number'
+  public isValid(val: any): boolean {
+    val = parseInt(val, 10)
+    
+    if (typeof val !== 'number' || isNaN(val)) {
+      return false
+    }
+
+    return val >= 0 && Number.isFinite(val)
   }
 
   public isValidStack(str: string): boolean {

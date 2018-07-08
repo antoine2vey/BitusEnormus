@@ -18,6 +18,7 @@ describe('Checks for number validation', () => {
     expect(checker('str')).toBe(false)
     expect(checker(true)).toBe(false)
     expect(checker(false)).toBe(false)
+    expect(checker(NaN)).toBe(false)
   })
 
   it('expect to validate a given stack', () => {

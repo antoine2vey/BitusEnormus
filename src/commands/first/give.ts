@@ -1,6 +1,15 @@
 import Commando from 'discord.js-commando';
+import DiscordUser from '../../modules/user';
+import { Message } from 'discord.js';
+import Messages from '../../modules/messages';
+import NumberValidation from '../../modules/number';
 
 class GiveCommand extends Commando.Command {
+  private readonly user: DiscordUser
+  private readonly messages: Messages
+  private readonly checker: NumberValidation
+  private readonly title: string
+
   constructor(client) {
     super(client, {
       name: 'give',
@@ -26,9 +35,29 @@ class GiveCommand extends Commando.Command {
         },
       ],
     })
+
+    this.user = new DiscordUser()
+    this.messages = new Messages()
+    this.checker = new NumberValidation()
+    this.title = 'Kebabs'
   }
 
-  async run() {
+  async run(message: Message, { kebabs }) {
+    const { author, guild, mentions, channel } = message
+    const target = mentions.members.first()
+    
+    if (!this.checker.isValid(kebabs)) {      
+      this.messages.addError({ name: this.title, value: 'Ton montant n\'est pas valide' })
+    } else {
+      try {
+        await this.user.exchange(author, guild, target, kebabs)
+        this.messages.addValid({ name: this.title, value: `${kebabs} donné à <@${target.id}>` })
+      } catch (e) {
+        this.messages.addError({ name: this.title, value: `Tu n'as pas assez d'argent` })
+      }
+    }
+
+    return channel.sendEmbed(this.messages.get(message))
   }
 }
 

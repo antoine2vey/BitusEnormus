@@ -8,7 +8,7 @@ const server = new Server()
 
 describe('Suite for server commands', () => {
   beforeAll(() => {
-    mongoose.connect('mongodb://mongodb/mappabot_test')
+    mongoose.connect('mongodb://mongodb:27017/mappabot_test')
   })
 
   afterEach((done) => {
@@ -26,6 +26,7 @@ describe('Suite for server commands', () => {
       .then((guild) => {
         expect(guild).toBeTruthy()
         expect(guild.guild_id).toBe('1')
+        expect(guild.has_done_first).toBe(false)
       })
   })
 
