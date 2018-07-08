@@ -5,7 +5,7 @@ const FirstSchema = new mongoose.Schema({
   guild_id: String,
   has_done_first: {
     type: Boolean,
-    default: true,
+    default: false,
   }
 })
 

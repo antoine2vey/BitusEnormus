@@ -4,10 +4,11 @@ import User from '../../modules/user';
 import Server from '../../modules/server';
 import Messages from '../../modules/messages';
 
-module.exports = class FirstCommand extends Commando.Command {
+class FirstCommand extends Commando.Command {
   private server: Server
   private user: User
   private message: Messages
+  private readonly embedTitle: string
 
   constructor(client: any) {
     super(client, {
@@ -24,25 +25,25 @@ module.exports = class FirstCommand extends Commando.Command {
     this.server = new Server()
     this.user = new User()
     this.message = new Messages()
+
+    this.embedTitle = 'First'
   }
 
-  async run(message: Message) {
+  async run(message: Message): Promise<Message> {
     const { guild, author } = message
+    const discordGuild = await this.server.getByGuildId(guild)
 
-    this.server
-      .getByGuildId(guild)
-      .then(async (discordGuild) => {
-        if (discordGuild.has_done_first) {
-          return message.channel.send('mdr')
-        }
+    if (discordGuild.has_done_first) {
+      this.message.addError({ name: this.embedTitle, value: 'Le first est déjà fait' })
+    } else {
+      await this.user.doFirst(author, guild)
+      await this.server.doFirst(guild)
 
-        await this.user.doFirst(author, guild)
-        await this.server.doFirst(guild)
+      this.message.addValid({ name: this.embedTitle, value: 'Bien joué pour le first!' })
+    }
 
-        return message.channel.send('Bien joué pour le first connard')
-      })
-      .catch(() => {
-        message.channel.send('err')
-      })
+    return message.channel.sendEmbed(this.message.get(message))
   }
 }
+
+module.exports = FirstCommand

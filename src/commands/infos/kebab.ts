@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class KebabCommand extends Commando.Command {
+class KebabCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'kebab',
@@ -17,3 +17,5 @@ export default class KebabCommand extends Commando.Command {
   async run() {
   }
 }
+
+module.exports = KebabCommand

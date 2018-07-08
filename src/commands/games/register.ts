@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class RegisterCommand extends Commando.Command {
+class RegisterCommand extends Commando.Command {
   constructor(client: any) {
     super(client, {
       name: 'register',
@@ -18,3 +18,5 @@ export default class RegisterCommand extends Commando.Command {
     console.log(message)
   }
 }
+
+module.exports = RegisterCommand

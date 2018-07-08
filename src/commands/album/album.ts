@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class AlbumCommand extends Commando.Command {
+class AlbumCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'album',
@@ -17,3 +17,5 @@ export default class AlbumCommand extends Commando.Command {
   async run() {
   }
 }
+
+module.exports = AlbumCommand

@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class LadderCommand extends Commando.Command {
+class LadderCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'ladder',
@@ -17,3 +17,5 @@ export default class LadderCommand extends Commando.Command {
   async run() {
   }
 }
+
+module.exports = LadderCommand

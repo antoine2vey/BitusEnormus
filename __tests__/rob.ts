@@ -1,21 +1,32 @@
 /* eslint-env node, jest */
 import Rob from '../src/modules/rob';
 import mongoose from 'mongoose';
-import User from '../src/database/models/user';
+import Member from '../src/database/models/user';
 import DiscordUser from '../src/modules/user';
+import { GuildMember, User, Guild } from 'discord.js';
 
 jest.useFakeTimers()
 
 const rob = new Rob()
 const user = new DiscordUser()
-const message = {
-  author: {
-    id: '1'
-  },
-  guild: {
-    id: '1'
+const author = <User> {
+  id: '1',
+  username: 'John'
+}
+const author2 = <User> {
+  id: '2',
+  username: 'John2'
+}
+const guild = <Guild> {
+  id: '1'
+}
+const target = <GuildMember> {
+  user: {
+    id: '3',
+    username: 'Foo'
   }
 }
+
 
 describe('Rob module', () => {
   describe('workers modules', () => {
@@ -28,8 +39,6 @@ describe('Rob module', () => {
     })
 
     it('expect to find itself in a worker', () => {
-      const { author, guild } = message
-
       expect(rob.getInWorker).toBeDefined()
 
       const worker = rob.getInWorker(guild.id, author.id)
@@ -37,8 +46,6 @@ describe('Rob module', () => {
     })
 
     it('expect to create a worker', () => {
-      const { author, guild } = message
-
       expect(rob.createWorker).toBeDefined()
 
       rob.createWorker(guild.id, author.id, '2')
@@ -51,8 +58,6 @@ describe('Rob module', () => {
     })
 
     it('expect to delete a worker', () => {
-      const { author, guild } = message
-
       expect(rob.deleteWorker).toBeDefined()
 
       rob.deleteWorker(guild.id, author.id)
@@ -62,8 +67,6 @@ describe('Rob module', () => {
     })
 
     it('expect to check if worker exists', () => {
-      const { author, guild } = message
-
       expect(rob.workerExists).toBeDefined()
       const isInWorker = rob.workerExists(guild.id, author.id)
       expect(isInWorker).toBe(false)
@@ -79,8 +82,6 @@ describe('Rob module', () => {
     })
 
     it('expect to get all workers inside a guild', () => {
-      const { author, guild } = message
-
       expect(rob.getWorkers).toBeDefined()
 
       const workers = rob.getWorkers(guild.id)
@@ -90,11 +91,11 @@ describe('Rob module', () => {
 
   describe('robbing modules', () => {
     beforeAll((done) => {
-      mongoose.connect('mongodb://mongodb/mappabot_test', done)
+      mongoose.connect('mongodb://mongodb:27017/mappabot_test', done)
     })
 
     afterEach((done) => {
-      User.remove({ guild_id: 1 }, done)
+      Member.remove({ guild_id: 1 }, done)
     })
 
     afterAll((done) => {
@@ -109,31 +110,25 @@ describe('Rob module', () => {
     it('expect to steal someone from bank', async () => {
       expect(rob.steal).toBeDefined()
 
-      const { author, guild } = message
+      await user.get(author, guild)
+      await user.get(author2, guild)
 
-      await user.get(author, <any>guild)
-      await user.get({ id: '2' }, <any>guild)
-
-      return rob.steal(<any>author, <any>guild, '2', 400).then((client) => {
+      return rob.steal(author, guild, target, 400).then((client) => {
         expect(client.kebabs).toBe(900)
         expect(client.bank.amount).toBe(1000)
       })
     })
 
     it('expect to refuse a steal if not enough money', async () => {
-      const { author, guild } = message
+      await user.get(author, guild)
+      await user.get(author2, guild)
 
-      await user.get(author, <any>guild)
-      await user.get(<any>{ id: 2 }, <any>guild)
-
-      return rob.steal(<any>author, <any>guild, '2', 1000).catch((ex) => {
+      return rob.steal(author, guild, target, 1000).catch((ex) => {
         expect(ex).toBe(null)
       })
     })
 
     it('expect accept concurrent steals', async () => {
-      const { author, guild } = message
-
       expect(rob.start).toBeDefined()
       expect(setTimeout).toHaveBeenCalledTimes(1)
 
@@ -163,8 +158,6 @@ describe('Rob module', () => {
     })
 
     it('expect to end timers', () => {
-      const { author, guild } = message
-
       expect(rob.stop).toBeDefined()
 
       rob.createWorker(guild.id, author.id, '2')

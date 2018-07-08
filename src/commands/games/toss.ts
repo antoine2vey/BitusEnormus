@@ -1,6 +1,6 @@
 import Commando from 'discord.js-commando';
 
-export default class TossCommand extends Commando.Command {
+class TossCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'toss',
@@ -31,3 +31,5 @@ export default class TossCommand extends Commando.Command {
   async run() {
   }
 }
+
+module.exports = TossCommand

@@ -1,4 +1,4 @@
-import { User, Guild } from 'discord.js'
+import { User, Guild, GuildMember } from 'discord.js'
 import { dUser } from '../types/data'
 import DiscordUser from '../modules/user'
 
@@ -19,12 +19,12 @@ class Rob {
     this.DEFAULT_ROB_TIME = 5 * 60 * 1000
   }
 
-  createWorker(guildId: string, authorId: string, targetId: string): void {
+  public createWorker(guildId: string, authorId: string, targetId: string): void {
     const workers = this.getWorkers(guildId)
     this.workers.set(guildId, [...workers, { from: authorId, to: targetId }])
   }
 
-  workerExists(guildId: string, authorId: string): boolean {
+  public workerExists(guildId: string, authorId: string): boolean {
     if (this.workers.has(guildId)) {
       const workers = this.getWorkers(guildId)
       const exists = workers.some((worker: WorkerElement) => {
@@ -41,7 +41,7 @@ class Rob {
     return false
   }
 
-  deleteWorker(guildId: string, authorId: string): void {
+  public deleteWorker(guildId: string, authorId: string): void {
     const workers = this.getWorkers(guildId)
     // delete worker from guild
     const filteredWorkers = workers.filter((worker: WorkerElement) => {
@@ -51,7 +51,7 @@ class Rob {
     this.workers.set(guildId, filteredWorkers)
   }
 
-  getInWorker(guildId: string, authorId: string): WorkerElement | null {
+  public getInWorker(guildId: string, authorId: string): WorkerElement | null {
     const workers = this.getWorkers(guildId)
 
     // no need to process if no workers in this guild
@@ -67,15 +67,15 @@ class Rob {
     return worker
   }
 
-  getWorkers(guildId: string): Array<WorkerElement> {
+  public getWorkers(guildId: string): Array<WorkerElement> {
     return this.workers.get(guildId) || []
   }
 
-  steal(fromUser: User, guild: Guild, targetId: string, amount: number): Promise<dUser> {
-    return user.exchange(fromUser, guild, targetId, amount)
+  public steal(fromUser: User, guild: Guild, target: GuildMember, amount: number): Promise<dUser> {
+    return user.exchange(fromUser, guild, target, amount)
   }
 
-  start(authorId: string, guildId: string, targetId: string) {
+  public start(authorId: string, guildId: string, targetId: string) {
     this.createWorker(guildId, authorId, targetId)
 
     const handleWorkerEvents = setTimeout(() => {
@@ -85,7 +85,7 @@ class Rob {
     }, this.DEFAULT_ROB_TIME)
   }
 
-  stop(guildId: string, authorId: string): void {
+  public stop(guildId: string, authorId: string): void {
     this.deleteWorker(guildId, authorId)
   }
 }
