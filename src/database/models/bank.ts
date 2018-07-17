@@ -1,5 +1,6 @@
 import mongoose, { Model, Document } from 'mongoose';
 import { dBank } from '../../types/data';
+import { ObjectID } from 'bson';
 
 const Schema = mongoose.Schema
 const { ObjectId } = Schema.Types
@@ -46,10 +47,10 @@ export interface IBank extends Document {}
 
 export interface IBankModel extends Model<IBank> {
   // findByUserId(userId: string): Promise<dBank>
-  withdrawById(bankId: string, amount: number): Promise<dBank>
+  withdrawById(bankId: ObjectID, amount: number): Promise<dBank>
   // payById(bankId: string, amount: number): Promise<dBank>
 }
-
+  
 const Bank: IBankModel = mongoose.model<IBank, IBankModel>('bank', bankSchema)
 
 export default Bank
