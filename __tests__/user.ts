@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 import Member from '../src/database/models/user';
 import First from '../src/database/models/first';
 import DiscordUser from '../src/modules/user';
-import { User, Guild, GuildMember } from 'discord.js';
+import { User, Guild, GuildMember, Message } from 'discord.js';
+import { CommandMessage } from 'discord.js-commando';
 
 const user = new DiscordUser()
 const author = <User> {
@@ -57,7 +58,6 @@ describe('Suite for user commands', () => {
     return user
       .getInGuild(author, guild)
       .then((clients) => {
-        console.log(clients)
         expect(clients.length).toBe(2)
         expect(clients[0].guild_id).toBe('1')
         expect(clients[0].bank).toBeTruthy()
@@ -125,5 +125,115 @@ describe('Suite for user commands', () => {
       .catch((err) => {
         expect(err).toBeNull()
       })
+  })
+
+  describe('possible interactions', () => {
+    it('expect all interaction to have a value', () => {
+      expect(user.BASIC_MESSAGE).toEqual(5)
+      expect(user.MESSAGE_WITH_MEDIA).toEqual(8)
+      expect(user.MESSAGE_WITH_PING).toEqual(10)
+      expect(user.AT_HERE).toEqual(15)
+      expect(user.AT_EVERYONE).toEqual(20)
+    })
+
+    it('expect to return message with media', () => {
+      const withEmbed = {
+        attachments: {
+          first() {
+            return true
+          }
+        },
+        content: 'foo',
+        mentions: {
+          users: {
+            first() {
+              return false
+            }
+          },
+          everyone: false
+        }
+      }
+      expect(user.getInteractionValue(<any>withEmbed)).toEqual(user.MESSAGE_WITH_MEDIA)
+    })
+
+    it('expect to return message with message only', () => {
+      const withMessage = {
+        attachments: {
+          first() {
+            return false
+          }
+        },
+        content: 'foo',
+        mentions: {
+          users: {
+            first() {
+              return false
+            }
+          },
+          everyone: false
+        }
+      }
+      expect(user.getInteractionValue(<any>withMessage)).toEqual(user.BASIC_MESSAGE)
+    })
+
+    it('expect to ping @everyone', () => {
+      const withEveryone = {
+        attachments: {
+          first() {
+            return false
+          }
+        },
+        content: 'foobar @everyone',
+        mentions: {
+          users: {
+            first() {
+              return false
+            }
+          },
+          everyone: true
+        }
+      }
+      expect(user.getInteractionValue(<any>withEveryone)).toEqual(user.AT_EVERYONE)
+    })
+
+    it('expect to ping @here', () => {
+      const withHere = {
+        attachments: {
+          first() {
+            return false
+          }
+        },
+        content: 'foobar @here',
+        mentions: {
+          users: {
+            first() {
+              return false
+            }
+          },
+          everyone: true
+        }
+      }
+      expect(user.getInteractionValue(<any>withHere)).toEqual(user.AT_HERE)
+    })
+
+    it('expect to ping someone', () => {
+      const withPing = {
+        attachments: {
+          first() {
+            return false
+          }
+        },
+        content: 'foo @Antoine',
+        mentions: {
+          users: {
+            first() {
+              return true
+            }
+          },
+          everyone: false
+        }
+      }
+      expect(user.getInteractionValue(<any>withPing)).toEqual(user.MESSAGE_WITH_PING)
+    })
   })
 })

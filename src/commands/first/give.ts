@@ -1,4 +1,4 @@
-import Commando from 'discord.js-commando';
+import Commando, { CommandMessage } from 'discord.js-commando';
 import DiscordUser from '../../modules/user';
 import { Message } from 'discord.js';
 import Messages from '../../modules/messages';
@@ -42,7 +42,7 @@ class GiveCommand extends Commando.Command {
     this.title = 'Kebabs'
   }
 
-  async run(message: Message, { kebabs }) {
+  async run(message: CommandMessage, { kebabs }) {
     const { author, guild, mentions, channel } = message
     const target = mentions.members.first()
     

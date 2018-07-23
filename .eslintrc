@@ -1,6 +1,5 @@
 {
   "parser": "babel-eslint",
-  "plugins": ["flowtype"],
   "extends": "airbnb-base",
   "rules": {
     "no-return-await": "off",
@@ -12,5 +11,12 @@
     "no-shadow": "off",
     "comma-dangle": "off",
     "arrow-body-style": "off"
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
   }
 }

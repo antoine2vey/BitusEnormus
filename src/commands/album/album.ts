@@ -1,6 +1,5 @@
-import Commando from 'discord.js-commando';
+import Commando, { CommandMessage } from 'discord.js-commando';
 import Album, { IAlbumModel } from '../../database/models/album';
-import { Message } from 'discord.js';
 
 class AlbumCommand extends Commando.Command {
   private readonly album: IAlbumModel
@@ -20,7 +19,7 @@ class AlbumCommand extends Commando.Command {
     this.album = Album
   }
 
-  async run(message: Message) {
+  async run(message: CommandMessage) {
     const total = await this.album.getTotalPictures()
     const photo = await this.album.getRandomPicture(total)
 

@@ -1,4 +1,5 @@
-import { Message, RichEmbed } from 'discord.js'
+import { RichEmbed } from 'discord.js'
+import { CommandMessage } from 'discord.js-commando';
 
 type QueueMessage = {
   name: string,
@@ -42,7 +43,7 @@ class Messages {
   }
 
   default(
-    message: Message,
+    message: CommandMessage,
     fields: Array<QueueMessage>,
     isError: boolean
   ): RichEmbed | any {
@@ -63,7 +64,7 @@ class Messages {
     }
   }
 
-  getImage(message: Message, link: string): RichEmbed | any {
+  getImage(message: CommandMessage, link: string): RichEmbed | any {
     return {
       color: this.SUCCESS_COLOR,
       author: {
@@ -78,7 +79,7 @@ class Messages {
     }
   }
 
-  get(message: Message): RichEmbed | any {
+  get(message: CommandMessage): RichEmbed | any {
     if (this.shouldThrow()) {
       return this.default(message, this.queue.errors, true)
     }

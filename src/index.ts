@@ -1,16 +1,19 @@
 // https://discordapp.com/api/oauth2/authorize?client_id=336909405981376524&scope=bot&permissions=0
 import path from 'path'
-import Commando from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import Helpers from './modules/helpers'
 import oneLine from 'common-tags'
+import User from './modules/user'
 
 class Bot extends Helpers {
-  client: any
+  client: CommandoClient
+  user: User
 
   constructor() {
     super()
 
-    this.client = new Commando.Client({ owner: process.env.OWNER_ID })
+    this.client = new Commando.CommandoClient({ owner: process.env.OWNER_ID })
+    this.user = new User()
 
     this.client
     .on('error', (err) => {
@@ -73,6 +76,9 @@ class Bot extends Helpers {
     
           growBank.start()
         })
+    })
+    .on('message', (message: CommandMessage) => {
+      console.log(this.user.getInteractionValue(message))
     })
 
     this.client.registry

@@ -8,8 +8,7 @@
     "dev": "./node_modules/nodemon/bin/nodemon.js",
     "test": "jest --forceExit",
     "test:watch": "jest --watchAll",
-    "coverage":
-      "jest --coverage --coverageReporters=text-lcov --forceExit | coveralls"
+    "coverage": "jest --coverage --coverageReporters=text-lcov --forceExit | coveralls"
   },
   "license": "ISC",
   "devDependencies": {
@@ -50,6 +49,11 @@
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
   }
 }

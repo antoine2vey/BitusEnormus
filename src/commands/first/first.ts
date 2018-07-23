@@ -1,5 +1,5 @@
 import { Message } from 'discord.js'
-import Commando from 'discord.js-commando';
+import Commando, { CommandMessage } from 'discord.js-commando';
 import User from '../../modules/user';
 import Server from '../../modules/server';
 import Messages from '../../modules/messages';
@@ -29,7 +29,7 @@ class FirstCommand extends Commando.Command {
     this.embedTitle = 'First'
   }
 
-  async run(message: Message): Promise<Message> {
+  async run(message: CommandMessage): Promise<Message> {
     const { guild, author } = message
     const discordGuild = await this.server.getByGuildId(guild)
 
