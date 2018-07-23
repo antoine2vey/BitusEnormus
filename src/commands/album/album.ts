@@ -1,5 +1,5 @@
-import Commando, { CommandMessage } from 'discord.js-commando';
-import Album, { IAlbumModel } from '../../database/models/album';
+import Commando, { CommandMessage } from 'discord.js-commando'
+import Album, { IAlbumModel } from '../../database/models/album'
 
 class AlbumCommand extends Commando.Command {
   private readonly album: IAlbumModel

@@ -1,6 +1,6 @@
-import mongoose, { Model, Document } from 'mongoose';
-import { dBank } from '../../types/data';
-import { ObjectID } from 'bson';
+import mongoose, { Model, Document } from 'mongoose'
+import { dBank } from '../../types/data'
+import { ObjectID } from 'bson'
 
 const Schema = mongoose.Schema
 const { ObjectId } = Schema.Types
@@ -31,7 +31,7 @@ bankSchema.statics = {
     return this.findByIdAndUpdate(
       bankId,
       { $inc: { amount: -amount } },
-      { setDefaultsOnInsert: true, new: true, upsert: true }
+      { setDefaultsOnInsert: true, new: true, upsert: true },
     )
   },
   // payById(bankId, amount) {
@@ -50,7 +50,7 @@ export interface IBankModel extends Model<IBank> {
   withdrawById(bankId: ObjectID, amount: number): Promise<dBank>
   // payById(bankId: string, amount: number): Promise<dBank>
 }
-  
+
 const Bank: IBankModel = mongoose.model<IBank, IBankModel>('bank', bankSchema)
 
 export default Bank

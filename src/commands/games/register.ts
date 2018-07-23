@@ -1,4 +1,4 @@
-import Commando from 'discord.js-commando';
+import Commando from 'discord.js-commando'
 
 class RegisterCommand extends Commando.Command {
   constructor(client: any) {

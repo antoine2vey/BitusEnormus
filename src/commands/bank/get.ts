@@ -1,4 +1,4 @@
-import Commando from 'discord.js-commando';
+import Commando from 'discord.js-commando'
 
 class BankGetCommand extends Commando.Command {
   constructor(client) {
@@ -22,8 +22,7 @@ class BankGetCommand extends Commando.Command {
     })
   }
 
-  async run(msg) {
-  }
+  async run(msg) {}
 }
 
 module.exports = BankGetCommand

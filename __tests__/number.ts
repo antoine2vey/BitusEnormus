@@ -1,5 +1,5 @@
 /* eslint-env node, jest */
-import NumberValidator from '../src/modules/number';
+import NumberValidator from '../src/modules/number'
 
 const numberValidator = new NumberValidator()
 

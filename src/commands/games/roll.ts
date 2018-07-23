@@ -1,4 +1,4 @@
-import Commando from 'discord.js-commando';
+import Commando from 'discord.js-commando'
 
 class RollCommands extends Commando.Command {
   constructor(client) {
@@ -28,9 +28,7 @@ class RollCommands extends Commando.Command {
     })
   }
 
-  async run() {
-
-  }
+  async run() {}
 }
 
 module.exports = RollCommands

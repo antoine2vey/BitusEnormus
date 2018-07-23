@@ -1,19 +1,19 @@
 /* eslint-env node, jest */
-import Messages from '../src/modules/messages';
-import { Message } from 'discord.js';
+import Messages from '../src/modules/messages'
+import { Message } from 'discord.js'
 
 const messages = new Messages()
 const message = {
   author: {
     username: 'John',
-    avatarURL: null
+    avatarURL: null,
   },
   client: {
     user: {
       username: 'Doe',
-      avatarURL: null
-    }
-  }
+      avatarURL: null,
+    },
+  },
 }
 
 describe('Tests for message system', () => {
@@ -25,7 +25,7 @@ describe('Tests for message system', () => {
     expect(messages.queue).toBeDefined()
     expect(messages.queue).toEqual({
       valid: [],
-      errors: []
+      errors: [],
     })
   })
 
@@ -63,7 +63,7 @@ describe('Tests for message system', () => {
     expect(embed.color).toBe(messages.SUCCESS_COLOR)
     expect(messages.queue).toEqual({
       valid: [],
-      errors: []
+      errors: [],
     })
   })
 
@@ -74,7 +74,7 @@ describe('Tests for message system', () => {
     expect(embed.color).toBe(messages.ERROR_COLOR)
     expect(messages.queue).toEqual({
       valid: [],
-      errors: []
+      errors: [],
     })
   })
 
@@ -85,7 +85,7 @@ describe('Tests for message system', () => {
 
     expect(messages.queue).toEqual({
       valid: [],
-      errors: []
+      errors: [],
     })
   })
 

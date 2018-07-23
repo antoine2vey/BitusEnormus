@@ -1,5 +1,5 @@
-import mongoose, { Model, Document } from 'mongoose';
-import { Photo } from '../../types/data';
+import mongoose, { Model, Document } from 'mongoose'
+import { Photo } from '../../types/data'
 
 const photoSchema = new mongoose.Schema({
   link: String,
@@ -12,7 +12,7 @@ photoSchema.statics = {
   },
   getTotalPictures() {
     return this.countDocuments()
-  }
+  },
 }
 
 export interface IAlbum extends Document {}
@@ -21,6 +21,9 @@ export interface IAlbumModel extends Model<IAlbum> {
   getTotalPictures(): Promise<number>
 }
 
-const Album: IAlbumModel = mongoose.model<IAlbum, IAlbumModel>('photos', photoSchema)
+const Album: IAlbumModel = mongoose.model<IAlbum, IAlbumModel>(
+  'photos',
+  photoSchema,
+)
 
 export default Album

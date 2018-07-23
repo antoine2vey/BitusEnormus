@@ -1,9 +1,9 @@
 import { Guild, User, GuildMember } from 'discord.js'
 import { dUser } from '../types/data'
 
-import DiscordBank from './bank';
-import discordUser from '../database/models/user';
-import { CommandMessage } from 'discord.js-commando';
+import DiscordBank from './bank'
+import discordUser from '../database/models/user'
+import { CommandMessage } from 'discord.js-commando'
 
 class DiscordUser extends DiscordBank {
   public readonly BASIC_MESSAGE: number
@@ -27,7 +27,11 @@ class DiscordUser extends DiscordBank {
     return discordUser.pay(user, guild.id, amount)
   }
 
-  public async withdraw(user: User, guild: Guild, amount: number): Promise<dUser> {
+  public async withdraw(
+    user: User,
+    guild: Guild,
+    amount: number,
+  ): Promise<dUser> {
     const client = await this.get(user, guild)
     if (this.canWithdraw(amount, client.kebabs)) {
       return discordUser.withdraw(user, guild.id, amount)
@@ -54,8 +58,16 @@ class DiscordUser extends DiscordBank {
     return discordUser.didFirst(user, guild.id)
   }
 
-  public exchange(user: User, guild: Guild, target: GuildMember, amount: number): Promise<dUser> {
-    const toTarget = <User>{ id: target.user.id, username: target.user.username }
+  public exchange(
+    user: User,
+    guild: Guild,
+    target: GuildMember,
+    amount: number,
+  ): Promise<dUser> {
+    const toTarget = <User>{
+      id: target.user.id,
+      username: target.user.username,
+    }
 
     return this.withdraw(user, guild, amount)
       .then(() => this.pay(toTarget, guild, amount))

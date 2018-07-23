@@ -16,52 +16,55 @@ class Bot extends Helpers {
     this.user = new User()
 
     this.client
-    .on('error', (err) => {
-      console.log('salut', err)
-    })
-    .on('warn', (err) => {
-      console.log('salutt', err)
-    })
-    .on('debug', console.log)
-    .on('disconnect', () => {
-      console.warn('Disconnected!')
-    })
-    .on('reconnecting', () => {
-      console.warn('Reconnecting...')
-    })
-    .on('commandError', (cmd, err) => {
-      if (err instanceof Commando.FriendlyError) return
-      console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err)
-    })
-    .on('commandBlocked', (msg, reason) => {
-      console.log(oneLine`
-        Command ${msg.command ? `${msg.command.groupID}:${msg.command.memberName}` : ''}
+      .on('error', err => {
+        console.log('salut', err)
+      })
+      .on('warn', err => {
+        console.log('salutt', err)
+      })
+      .on('debug', console.log)
+      .on('disconnect', () => {
+        console.warn('Disconnected!')
+      })
+      .on('reconnecting', () => {
+        console.warn('Reconnecting...')
+      })
+      .on('commandError', (cmd, err) => {
+        if (err instanceof Commando.FriendlyError) return
+        console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err)
+      })
+      .on('commandBlocked', (msg, reason) => {
+        console.log(oneLine`
+        Command ${
+          msg.command ? `${msg.command.groupID}:${msg.command.memberName}` : ''
+        }
         blocked; ${reason}
       `)
-    })
-    .on('commandPrefixChange', (guild, prefix) => {
-      console.log(oneLine`
-        Prefix ${prefix === '' ? 'removed' : `changed to ${prefix || 'the default'}`}
+      })
+      .on('commandPrefixChange', (guild, prefix) => {
+        console.log(oneLine`
+        Prefix ${
+          prefix === '' ? 'removed' : `changed to ${prefix || 'the default'}`
+        }
         ${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
       `)
-    })
-    .on('commandStatusChange', (guild, command, enabled) => {
-      console.log(oneLine`
+      })
+      .on('commandStatusChange', (guild, command, enabled) => {
+        console.log(oneLine`
         Command ${command.groupID}:${command.memberName}
         ${enabled ? 'enabled' : 'disabled'}
         ${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
       `)
-    })
-    .on('groupStatusChange', (guild, group, enabled) => {
-      console.log(oneLine`
+      })
+      .on('groupStatusChange', (guild, group, enabled) => {
+        console.log(oneLine`
         Group ${group.id}
         ${enabled ? 'enabled' : 'disabled'}
         ${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
       `)
-    })
-    .on('ready', () => {
-      this.bootDatabase()
-        .then(() => {
+      })
+      .on('ready', () => {
+        this.bootDatabase().then(() => {
           console.log('Booted!')
           this.setNewEmote(this.client.emojis.find('name', 'kebab'))
 
@@ -69,17 +72,17 @@ class Bot extends Helpers {
           const giveMidnight = this.makeTask('0 0 * * *', () => {
             return 2
           })
-    
+
           giveMidnight.start()
           // Update bank every 2 hours
           const growBank = this.makeTask('0 */2 * * *', () => {})
-    
+
           growBank.start()
         })
-    })
-    .on('message', (message: CommandMessage) => {
-      console.log(this.user.getInteractionValue(message))
-    })
+      })
+      .on('message', (message: CommandMessage) => {
+        console.log(this.user.getInteractionValue(message))
+      })
 
     this.client.registry
       .registerGroups([
@@ -89,7 +92,7 @@ class Bot extends Helpers {
         ['games', 'Mini jeux'],
         ['infos', 'Informations'],
         ['bank', 'Informations bancaires'],
-        ['rob', 'Voler un utilisateur']
+        ['rob', 'Voler un utilisateur'],
       ])
       .registerDefaults()
       .registerCommandsIn(path.join(__dirname, 'commands'))

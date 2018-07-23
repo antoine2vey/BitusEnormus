@@ -1,4 +1,4 @@
-import Commando from 'discord.js-commando';
+import Commando from 'discord.js-commando'
 
 class KebabCommand extends Commando.Command {
   constructor(client) {
@@ -14,8 +14,7 @@ class KebabCommand extends Commando.Command {
     })
   }
 
-  async run() {
-  }
+  async run() {}
 }
 
 module.exports = KebabCommand
