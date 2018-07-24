@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    social_score: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 )
@@ -41,13 +45,13 @@ userSchema.statics = {
   findByGuild(guildId) {
     return this.find({ guild_id: guildId })
   },
-  // updateByDiscordId(authorId, guildId, query) {
-  //   return this.findOneAndUpdate(
-  //     { guild_id: guildId, user_id: authorId },
-  //     query,
-  //     { upsert: true, new: true, setDefaultsOnInsert: true }
-  //   ).populate('bank')
-  // },
+  updateByDiscordId(author: User, guildId: string, query: Object) {
+    return this.findOneAndUpdate(
+      { guild_id: guildId, user_id: author.id, username: author.username },
+      query,
+      { upsert: true, new: true, setDefaultsOnInsert: true },
+    ).populate('bank')
+  },
   pay(author: User, guildId: string, amount: number) {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: author.id, username: author.username },
@@ -84,7 +88,7 @@ export interface IUser extends Document {}
 export interface IUserModel extends Model<IUser> {
   findByDiscordId(author: User, guildId: string): Promise<dUser>
   findByGuild(guildId: string): Promise<dUser[]>
-  // updateByDiscordId(authorId: string, guildId: string, query: Object): Promise<dUser>
+  updateByDiscordId(author: User, guildId: string, query: Object): Promise<dUser>
   pay(author: User, guildId: string, amount: number): Promise<dUser>
   withdraw(author: User, guildId: string, amount: number): Promise<dUser>
   didFirst(author: User, guildId: string): Promise<dUser>

@@ -30,6 +30,7 @@ export type dUser = {
   created_at: Date
   updated_at: Date
   first_count: number
+  social_score: number
 }
 
 export type Photo = {

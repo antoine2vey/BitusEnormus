@@ -5,7 +5,6 @@ import Member from '../src/database/models/user'
 import First from '../src/database/models/first'
 import DiscordUser from '../src/modules/user'
 import { User, Guild, GuildMember, Message } from 'discord.js'
-import { CommandMessage } from 'discord.js-commando'
 
 const user = new DiscordUser()
 const author = <User>{
@@ -143,9 +142,7 @@ describe('Suite for user commands', () => {
           everyone: false,
         },
       }
-      expect(user.getInteractionValue(<any>withEmbed)).toEqual(
-        user.MESSAGE_WITH_MEDIA,
-      )
+      expect(user.getInteractionValue(<any>withEmbed)).toEqual(user.MESSAGE_WITH_MEDIA)
     })
 
     it('expect to return message with message only', () => {
@@ -165,9 +162,7 @@ describe('Suite for user commands', () => {
           everyone: false,
         },
       }
-      expect(user.getInteractionValue(<any>withMessage)).toEqual(
-        user.BASIC_MESSAGE,
-      )
+      expect(user.getInteractionValue(<any>withMessage)).toEqual(user.BASIC_MESSAGE)
     })
 
     it('expect to ping @everyone', () => {
@@ -187,9 +182,7 @@ describe('Suite for user commands', () => {
           everyone: true,
         },
       }
-      expect(user.getInteractionValue(<any>withEveryone)).toEqual(
-        user.AT_EVERYONE,
-      )
+      expect(user.getInteractionValue(<any>withEveryone)).toEqual(user.AT_EVERYONE)
     })
 
     it('expect to ping @here', () => {
@@ -229,9 +222,36 @@ describe('Suite for user commands', () => {
           everyone: false,
         },
       }
-      expect(user.getInteractionValue(<any>withPing)).toEqual(
-        user.MESSAGE_WITH_PING,
-      )
+      expect(user.getInteractionValue(<any>withPing)).toEqual(user.MESSAGE_WITH_PING)
     })
+  })
+
+  it('expect to update user on any message', async () => {
+    const withEmbed = {
+      guild,
+      author,
+      attachments: {
+        first() {
+          return true
+        },
+      },
+      content: 'foo',
+      mentions: {
+        users: {
+          first() {
+            return false
+          },
+        },
+        everyone: false,
+      },
+    }
+    const client = await user.get(author, guild)
+    const updatedClient = await user.handleMessage(<any>withEmbed)
+
+    expect(client.social_score).toEqual(0)
+    expect(updatedClient.social_score).toEqual(user.MESSAGE_WITH_MEDIA)
+
+    const checkAdd = await user.handleMessage(<any>withEmbed)
+    expect(checkAdd.social_score).toEqual(0 + user.MESSAGE_WITH_MEDIA + user.MESSAGE_WITH_MEDIA)
   })
 })

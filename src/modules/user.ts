@@ -74,7 +74,7 @@ class DiscordUser extends DiscordBank {
       .catch(() => Promise.reject(null))
   }
 
-  public getInteractionValue(message: CommandMessage) {
+  public getInteractionValue(message: CommandMessage): number {
     const { mentions, content, attachments } = message
 
     if (mentions.everyone && content.includes('everyone')) {
@@ -94,6 +94,18 @@ class DiscordUser extends DiscordBank {
     }
 
     return this.BASIC_MESSAGE
+  }
+
+  public handleMessage(message: CommandMessage): Promise<dUser> {
+    const { author, guild } = message
+    const score = this.getInteractionValue(message)
+    const query = {
+      $inc: {
+        social_score: score
+      }
+    }
+
+    return discordUser.updateByDiscordId(author, guild.id, query)
   }
 }
 
