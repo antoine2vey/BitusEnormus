@@ -14,7 +14,7 @@ class AddFileCommand extends Commando.Command {
     })
   }
 
-  async run() {}
+  async run(): Promise<any> {}
 }
 
 module.exports = AddFileCommand

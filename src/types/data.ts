@@ -24,7 +24,7 @@ export type dUser = {
   user_id: string
   guild_id: string
   username: string
-  kebabs: number
+  money: number
   bank: dBank
   robbed_at: Date
   created_at: Date

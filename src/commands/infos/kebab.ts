@@ -1,6 +1,11 @@
-import Commando from 'discord.js-commando'
+import Commando, { CommandMessage } from 'discord.js-commando'
+import DiscordUser from '../../modules/user';
+import Messages from '../../modules/messages';
 
 class KebabCommand extends Commando.Command {
+  private user: DiscordUser
+  private messages: Messages
+
   constructor(client) {
     super(client, {
       name: 'kebab',
@@ -12,9 +17,22 @@ class KebabCommand extends Commando.Command {
       examples: ['!kebab'],
       argsCount: 0,
     })
+
+    this.user = new DiscordUser()
+    this.messages = new Messages()
   }
 
-  async run() {}
+  async run(message: CommandMessage) {
+    const { author, guild } = message
+    const user = await this.user.get(author, guild)
+
+    this.messages.addValid({
+      name: 'Infos',
+      value: `Tu as ${user.money}$ ! (et ${user.bank.amount}$ dans ta banque) :money_with_wings:`
+    })
+
+    return message.channel.sendEmbed(this.messages.get(message))
+  }
 }
 
 module.exports = KebabCommand

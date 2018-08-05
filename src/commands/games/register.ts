@@ -14,7 +14,7 @@ class RegisterCommand extends Commando.Command {
     })
   }
 
-  async run(message) {
+  async run(message): Promise<any> {
     console.log(message)
   }
 }

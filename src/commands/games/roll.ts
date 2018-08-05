@@ -28,7 +28,7 @@ class RollCommands extends Commando.Command {
     })
   }
 
-  async run() {}
+  async run(): Promise<any> {}
 }
 
 module.exports = RollCommands

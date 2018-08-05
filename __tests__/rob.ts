@@ -113,7 +113,7 @@ describe('Rob module', () => {
       await user.get(author2, guild)
 
       return rob.steal(author, guild, target, 400).then(client => {
-        expect(client.kebabs).toBe(900)
+        expect(client.money).toBe(900)
         expect(client.bank.amount).toBe(1000)
       })
     })

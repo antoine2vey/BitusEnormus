@@ -6,11 +6,8 @@ import Messages from '../../modules/messages'
 
 class FirstCommand extends Commando.Command {
   private server: Server
-
   private user: User
-
   private message: Messages
-
   private readonly embedTitle: string
 
   constructor(client: any) {

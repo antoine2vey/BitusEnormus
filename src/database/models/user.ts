@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     user_id: String,
     guild_id: String,
     username: String,
-    kebabs: {
+    money: {
       type: Number,
       default: 500,
     },
@@ -42,8 +42,8 @@ userSchema.statics = {
       { upsert: true, new: true, setDefaultsOnInsert: true },
     ).populate('bank')
   },
-  findByGuild(guildId) {
-    return this.find({ guild_id: guildId })
+  findByGuild(guildId: string, query: {}) {
+    return this.find({ guild_id: guildId }).sort(query)
   },
   updateByDiscordId(author: User, guildId: string, query: Object) {
     return this.findOneAndUpdate(
@@ -57,7 +57,7 @@ userSchema.statics = {
       { guild_id: guildId, user_id: author.id, username: author.username },
       {
         $inc: {
-          kebabs: amount,
+          money: amount,
         },
       },
       { upsert: true, new: true, setDefaultsOnInsert: true },
@@ -68,7 +68,7 @@ userSchema.statics = {
       { guild_id: guildId, user_id: author.id, username: author.username },
       {
         $inc: {
-          kebabs: -amount,
+          money: -amount,
         },
       },
       { upsert: true, new: true, setDefaultsOnInsert: true },
@@ -77,7 +77,7 @@ userSchema.statics = {
   didFirst(author: User, guildId: string) {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: author.id, username: author.username },
-      { $inc: { first_count: 1, kebabs: 1000 } },
+      { $inc: { first_count: 1, money: 1000 } },
       { upsert: true, new: true, setDefaultsOnInsert: true },
     )
   },
@@ -87,7 +87,7 @@ export interface IUser extends Document {}
 
 export interface IUserModel extends Model<IUser> {
   findByDiscordId(author: User, guildId: string): Promise<dUser>
-  findByGuild(guildId: string): Promise<dUser[]>
+  findByGuild(guildId: string, query: {}): Promise<dUser[]>
   updateByDiscordId(author: User, guildId: string, query: Object): Promise<dUser>
   pay(author: User, guildId: string, amount: number): Promise<dUser>
   withdraw(author: User, guildId: string, amount: number): Promise<dUser>

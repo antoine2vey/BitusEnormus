@@ -27,13 +27,9 @@ class DiscordUser extends DiscordBank {
     return discordUser.pay(user, guild.id, amount)
   }
 
-  public async withdraw(
-    user: User,
-    guild: Guild,
-    amount: number,
-  ): Promise<dUser> {
+  public async withdraw(user: User, guild: Guild, amount: number): Promise<dUser> {
     const client = await this.get(user, guild)
-    if (this.canWithdraw(amount, client.kebabs)) {
+    if (this.canWithdraw(amount, client.money)) {
       return discordUser.withdraw(user, guild.id, amount)
     }
 
@@ -46,10 +42,10 @@ class DiscordUser extends DiscordBank {
     })
   }
 
-  public async getInGuild(user: User, guild: Guild): Promise<Array<dUser>> {
+  public async getInGuild(user: User, guild: Guild, query: {} = {}): Promise<Array<dUser>> {
     await this.get(user, guild)
 
-    return discordUser.findByGuild(guild.id)
+    return discordUser.findByGuild(guild.id, query)
   }
 
   public async doFirst(user: User, guild: Guild): Promise<dUser> {
@@ -58,12 +54,7 @@ class DiscordUser extends DiscordBank {
     return discordUser.didFirst(user, guild.id)
   }
 
-  public exchange(
-    user: User,
-    guild: Guild,
-    target: GuildMember,
-    amount: number,
-  ): Promise<dUser> {
+  public exchange(user: User, guild: Guild, target: GuildMember, amount: number): Promise<dUser> {
     const toTarget = <User>{
       id: target.user.id,
       username: target.user.username,
@@ -101,8 +92,8 @@ class DiscordUser extends DiscordBank {
     const score = this.getInteractionValue(message)
     const query = {
       $inc: {
-        social_score: score
-      }
+        social_score: score,
+      },
     }
 
     return discordUser.updateByDiscordId(author, guild.id, query)

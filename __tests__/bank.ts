@@ -18,7 +18,10 @@ const guild = <Guild>{
 
 describe('Suite for bank commands', () => {
   beforeAll(done => {
-    mongoose.connect('mongodb://mongodb:27017/mappabot_test')
+    mongoose.connect(
+      'mongodb://mongodb:27017/mappabot_test',
+      { useNewUrlParser: true },
+    )
 
     const guild = new First({ guild_id: 1 })
     guild.save(done)
@@ -42,20 +45,50 @@ describe('Suite for bank commands', () => {
     })
   })
 
-  it('expect to throw when cannot withdraw money', () => {
-    return user.checkIfCanWithdraw(author, guild.id, 2000).catch(err => {
+  it('expect to throw when cannot withdraw money', async () => {
+    return user.checkIfCanWithdraw(author, guild, 2000).catch(err => {
       expect(err).toBe(null)
     })
   })
 
-  it('expect to not throw when can withdraw money', () => {
-    return user.checkIfCanWithdraw(author, guild.id, 500).then(bank => {
+  it('expect to not throw when can withdraw money', async () => {
+    return user.checkIfCanWithdraw(author, guild, 500).then(async bank => {
+      const newUser = await user.get(author, guild)
+
       expect(bank.amount).toBe(500)
+      expect(newUser.money).toBe(1000)
     })
   })
 
-  it('expect to throw when not good input', () => {
-    return user.checkIfCanWithdraw(author, guild.id, <any>'foo').catch(err => {
+  it('expect to throw when not good input', async () => {
+    return user.checkIfCanWithdraw(author, guild, <any>'foo').catch(err => {
+      expect(err).toBe(null)
+    })
+  })
+
+  it('expect to throw when cannot transfer money', async () => {
+    const client = await user.get(author, guild)
+
+    return user.increaseBank(client, author, guild, 1000).catch(err => {
+      expect(err).toBe(null)
+    })
+  })
+
+  it('expect to not throw when can transfer money', async () => {
+    const client = await user.get(author, guild)
+
+    return user.increaseBank(client, author, guild, 400).then(async bank => {
+      const newUser = await user.get(author, guild)
+
+      expect(bank.amount).toBe(1400)
+      expect(newUser.money).toBe(100)
+    })
+  })
+
+  it('expect to throw when not good input', async () => {
+    const client = await user.get(author, guild)
+
+    return user.increaseBank(client, author, guild, <any>'foo').catch(err => {
       expect(err).toBe(null)
     })
   })

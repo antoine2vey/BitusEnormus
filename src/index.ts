@@ -36,8 +36,11 @@ class Bot extends Helpers {
           growBank.start()
         })
       })
-      .on('message', (message: CommandMessage) => {
-        this.user.handleMessage(message)
+      .on('message', async (message: CommandMessage) => {
+        // If our user is not a bot, process message
+        if (!message.author.bot) {
+          await this.user.handleMessage(message)
+        }
       })
 
     this.client.registry
