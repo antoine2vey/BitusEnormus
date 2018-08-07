@@ -84,14 +84,10 @@ describe('Suite for user commands', () => {
   })
 
   it('expect user to not get withdrawn', () => {
-    return user
-      .withdraw(author, guild, 700)
-      .then(client => {
-        expect(client).toNotHaveBeenCalled()
-      })
-      .catch(err => {
-        expect(err).toBeNull()
-      })
+    return user.withdraw(author, guild, 700).catch(client => {
+      expect(client).toBeTruthy()
+      expect(client.money).toBe(500)
+    })
   })
 
   it('expect user `first_count` to be 1', () => {

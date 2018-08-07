@@ -33,7 +33,7 @@ class DiscordUser extends DiscordBank {
       return discordUser.withdraw(user, guild.id, amount)
     }
 
-    return Promise.reject(null)
+    return Promise.reject(client)
   }
 
   public get(user: User, guild: Guild): Promise<dUser> {
