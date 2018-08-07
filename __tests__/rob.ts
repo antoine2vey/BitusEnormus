@@ -90,7 +90,11 @@ describe('Rob module', () => {
 
   describe('robbing modules', () => {
     beforeAll(done => {
-      mongoose.connect('mongodb://mongodb:27017/mappabot_test', done)
+      mongoose.connect(
+        'mongodb://mongodb:27017/mappabot_test',
+        { useNewUrlParser: true },
+        done,
+      )
     })
 
     afterEach(done => {
