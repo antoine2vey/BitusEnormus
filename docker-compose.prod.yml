@@ -19,3 +19,15 @@ services:
     image: mongo
     ports:
       - 27018:27017
+  
+  mongo-backup:
+    image: "istepanov/mongodump:3.4"
+    volumes:
+      - mongo-backup:/backup
+    environment:
+      CRON_SCHEDULE: '0 1 * * *'
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo-backup:
