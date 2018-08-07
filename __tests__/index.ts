@@ -29,6 +29,15 @@ describe('Checks for helpers', () => {
       const promise = helpers.bootDatabase()
       expect(promise.then).toBeDefined()
     })
+
+    it('expect to get the right medal for given position', () => {
+      expect(helpers.getMedal(1)).toEqual(':first_place:')
+      expect(helpers.getMedal(2)).toEqual(':second_place:')
+      expect(helpers.getMedal(3)).toEqual(':third_place:')
+      expect(helpers.getMedal(4)).toEqual(':medal:')
+      expect(helpers.getMedal(10)).toEqual(':medal:')
+      expect(helpers.getMedal(13982)).toEqual(':medal:')
+    })
   })
 
   describe('Checks for emojis set', () => {

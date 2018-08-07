@@ -1,5 +1,6 @@
-import mongoose, { Model, Document } from 'mongoose';
-import { dBank } from '../../types/data';
+import mongoose, { Model, Document } from 'mongoose'
+import { dBank } from '../../types/data'
+import { ObjectID } from 'bson'
 
 const Schema = mongoose.Schema
 const { ObjectId } = Schema.Types
@@ -19,35 +20,27 @@ const bankSchema = new Schema({
 })
 
 bankSchema.statics = {
-  // findByUserId(userId) {
-  //   return this.findOneAndUpdate(
-  //     { belongs_to: userId },
-  //     {},
-  //     { new: true, setDefaultsOnInsert: true, upsert: true }
-  //   )
-  // },
-  withdrawById(bankId, amount) {
+  withdrawById(bankId: ObjectID, amount: number): Promise<dBank> {
     return this.findByIdAndUpdate(
       bankId,
       { $inc: { amount: -amount } },
-      { setDefaultsOnInsert: true, new: true, upsert: true }
+      { setDefaultsOnInsert: true, new: true, upsert: true },
     )
   },
-  // payById(bankId, amount) {
-  //   return this.findByIdAndUpdate(
-  //     bankId,
-  //     { $inc: { amount } },
-  //     { setDefaultsOnInsert: true, new: true, upsert: true }
-  //   )
-  // }
+  increaseById(bankId: ObjectID, amount: number): Promise<dBank> {
+    return this.findByIdAndUpdate(
+      bankId,
+      { $inc: { amount } },
+      { setDefaultsOnInsert: true, new: true, upsert: true }
+    )
+  }
 }
 
 export interface IBank extends Document {}
 
 export interface IBankModel extends Model<IBank> {
-  // findByUserId(userId: string): Promise<dBank>
-  withdrawById(bankId: string, amount: number): Promise<dBank>
-  // payById(bankId: string, amount: number): Promise<dBank>
+  withdrawById(bankId: ObjectID, amount: number): Promise<dBank>
+  increaseById(bankId: ObjectID, amount: number): Promise<dBank>
 }
 
 const Bank: IBankModel = mongoose.model<IBank, IBankModel>('bank', bankSchema)

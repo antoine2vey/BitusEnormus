@@ -21,8 +21,8 @@ class NumberValidation {
 
   public isValid(val: any): boolean {
     val = parseInt(val, 10)
-    
-    if (typeof val !== 'number' || isNaN(val)) {
+
+    if (typeof val !== 'number' || isNaN(val)) {
       return false
     }
 

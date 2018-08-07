@@ -1,32 +1,31 @@
 /* eslint-env node, jest */
-import Rob from '../src/modules/rob';
-import mongoose from 'mongoose';
-import Member from '../src/database/models/user';
-import DiscordUser from '../src/modules/user';
-import { GuildMember, User, Guild } from 'discord.js';
+import Rob from '../src/modules/rob'
+import mongoose from 'mongoose'
+import Member from '../src/database/models/user'
+import DiscordUser from '../src/modules/user'
+import { GuildMember, User, Guild } from 'discord.js'
 
 jest.useFakeTimers()
 
 const rob = new Rob()
 const user = new DiscordUser()
-const author = <User> {
+const author = <User>{
   id: '1',
-  username: 'John'
+  username: 'John',
 }
-const author2 = <User> {
+const author2 = <User>{
   id: '2',
-  username: 'John2'
+  username: 'John2',
 }
-const guild = <Guild> {
-  id: '1'
+const guild = <Guild>{
+  id: '1',
 }
-const target = <GuildMember> {
+const target = <GuildMember>{
   user: {
     id: '3',
-    username: 'Foo'
-  }
+    username: 'Foo',
+  },
 }
-
 
 describe('Rob module', () => {
   describe('workers modules', () => {
@@ -53,7 +52,7 @@ describe('Rob module', () => {
 
       expect(worker).toEqual({
         from: author.id,
-        to: '2'
+        to: '2',
       })
     })
 
@@ -90,15 +89,19 @@ describe('Rob module', () => {
   })
 
   describe('robbing modules', () => {
-    beforeAll((done) => {
-      mongoose.connect('mongodb://mongodb:27017/mappabot_test', done)
+    beforeAll(done => {
+      mongoose.connect(
+        'mongodb://mongodb:27017/mappabot_test',
+        { useNewUrlParser: true },
+        done,
+      )
     })
 
-    afterEach((done) => {
+    afterEach(done => {
       Member.remove({ guild_id: 1 }, done)
     })
 
-    afterAll((done) => {
+    afterAll(done => {
       mongoose.disconnect(done)
     })
 
@@ -113,8 +116,8 @@ describe('Rob module', () => {
       await user.get(author, guild)
       await user.get(author2, guild)
 
-      return rob.steal(author, guild, target, 400).then((client) => {
-        expect(client.kebabs).toBe(900)
+      return rob.steal(author, guild, target, 400).then(client => {
+        expect(client.money).toBe(900)
         expect(client.bank.amount).toBe(1000)
       })
     })
@@ -123,7 +126,7 @@ describe('Rob module', () => {
       await user.get(author, guild)
       await user.get(author2, guild)
 
-      return rob.steal(author, guild, target, 1000).catch((ex) => {
+      return rob.steal(author, guild, target, 1000).catch(ex => {
         expect(ex).toBe(null)
       })
     })
@@ -140,11 +143,11 @@ describe('Rob module', () => {
 
       expect(worker).toEqual({
         from: author.id,
-        to: '2'
+        to: '2',
       })
       expect(worker2).toEqual({
         from: '3',
-        to: '4'
+        to: '4',
       })
       expect(rob.getWorkers(guild.id).length).toBe(2)
 

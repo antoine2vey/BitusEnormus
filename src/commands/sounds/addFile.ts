@@ -1,4 +1,4 @@
-import Commando from 'discord.js-commando';
+import Commando from 'discord.js-commando'
 
 class AddFileCommand extends Commando.Command {
   constructor(client) {
@@ -14,8 +14,7 @@ class AddFileCommand extends Commando.Command {
     })
   }
 
-  async run() {
-  }
+  async run(): Promise<any> {}
 }
 
 module.exports = AddFileCommand

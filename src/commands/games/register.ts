@@ -1,4 +1,4 @@
-import Commando from 'discord.js-commando';
+import Commando from 'discord.js-commando'
 
 class RegisterCommand extends Commando.Command {
   constructor(client: any) {
@@ -14,7 +14,7 @@ class RegisterCommand extends Commando.Command {
     })
   }
 
-  async run(message) {
+  async run(message): Promise<any> {
     console.log(message)
   }
 }

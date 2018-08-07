@@ -1,6 +1,13 @@
-import Commando from 'discord.js-commando';
+import Commando, { CommandMessage } from 'discord.js-commando'
+import DiscordUser from '../../modules/user'
+import Messages from '../../modules/messages';
+import Helpers from '../../modules/helpers';
 
 class LadderCommand extends Commando.Command {
+  private user: DiscordUser
+  private messages: Messages
+  private helpers: Helpers
+
   constructor(client) {
     super(client, {
       name: 'ladder',
@@ -12,9 +19,25 @@ class LadderCommand extends Commando.Command {
       examples: ['!ladder', '!ladderboard'],
       argsCount: 0,
     })
+
+    this.user = new DiscordUser()
+    this.messages = new Messages()
+    this.helpers = new Helpers()
   }
 
-  async run() {
+  async run(message: CommandMessage): Promise<any> {
+    const { guild, author } = message
+    const query = { money: -1 }
+    const users = await this.user.getInGuild(author, guild, query)
+
+    this.messages.addValid({
+      name: 'Ladderboard',
+      value: users.map((user, i) => {
+        return `${this.helpers.getMedal(i + 1)} - ${user.username} : ${user.money}$`
+      }).join('\n')
+    })
+
+    return message.channel.sendEmbed(this.messages.get(message))
   }
 }
 

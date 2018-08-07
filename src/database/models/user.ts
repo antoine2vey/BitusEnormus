@@ -1,60 +1,66 @@
-import mongoose, { Document, Model } from 'mongoose';
-import { dUser } from '../../types/data';
-import { User } from 'discord.js';
+import mongoose, { Document, Model } from 'mongoose'
+import { dUser } from '../../types/data'
+import { User } from 'discord.js'
 
 const { ObjectId } = mongoose.Schema.Types
 
-const userSchema = new mongoose.Schema({
-  user_id: String,
-  guild_id: String,
-  username: String,
-  kebabs: {
-    type: Number,
-    default: 500
+const userSchema = new mongoose.Schema(
+  {
+    user_id: String,
+    guild_id: String,
+    username: String,
+    money: {
+      type: Number,
+      default: 500,
+    },
+    bank: {
+      type: ObjectId,
+      ref: 'bank',
+    },
+    is_getting_rob: {
+      type: Boolean,
+      default: false,
+    },
+    robbed_at: Date,
+    first_count: {
+      type: Number,
+      default: 0,
+    },
+    social_score: {
+      type: Number,
+      default: 0,
+    },
   },
-  bank: {
-    type: ObjectId,
-    ref: 'bank'
-  },
-  is_getting_rob: {
-    type: Boolean,
-    default: false
-  },
-  robbed_at: Date,
-  first_count: {
-    type: Number,
-    default: 0
-  }
-}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
-})
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+)
 
 userSchema.statics = {
   findByDiscordId(author: User, guildId: string) {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: author.id, username: author.username },
       {},
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true },
     ).populate('bank')
   },
-  findByGuild(guildId) {
-    return this.find({ guild_id: guildId })
+  findByGuild(guildId: string, query: {}) {
+    return this.find({ guild_id: guildId }).sort(query)
   },
-  // updateByDiscordId(authorId, guildId, query) {
-  //   return this.findOneAndUpdate(
-  //     { guild_id: guildId, user_id: authorId },
-  //     query,
-  //     { upsert: true, new: true, setDefaultsOnInsert: true }
-  //   ).populate('bank')
-  // },
+  updateByDiscordId(author: User, guildId: string, query: Object) {
+    return this.findOneAndUpdate(
+      { guild_id: guildId, user_id: author.id, username: author.username },
+      query,
+      { upsert: true, new: true, setDefaultsOnInsert: true },
+    ).populate('bank')
+  },
   pay(author: User, guildId: string, amount: number) {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: author.id, username: author.username },
       {
         $inc: {
-          kebabs: amount
-        }
+          money: amount,
+        },
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true },
     ).populate('bank')
   },
   withdraw(author: User, guildId: string, amount: number) {
@@ -62,27 +68,27 @@ userSchema.statics = {
       { guild_id: guildId, user_id: author.id, username: author.username },
       {
         $inc: {
-          kebabs: -amount
-        }
+          money: -amount,
+        },
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true },
     ).populate('bank')
   },
   didFirst(author: User, guildId: string) {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: author.id, username: author.username },
-      { $inc: { first_count: 1, kebabs: 1000 } },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { $inc: { first_count: 1, money: 1000 } },
+      { upsert: true, new: true, setDefaultsOnInsert: true },
     )
-  }
+  },
 }
 
 export interface IUser extends Document {}
 
 export interface IUserModel extends Model<IUser> {
   findByDiscordId(author: User, guildId: string): Promise<dUser>
-  findByGuild(guildId: string): Promise<dUser[]>
-  // updateByDiscordId(authorId: string, guildId: string, query: Object): Promise<dUser>
+  findByGuild(guildId: string, query: {}): Promise<dUser[]>
+  updateByDiscordId(author: User, guildId: string, query: Object): Promise<dUser>
   pay(author: User, guildId: string, amount: number): Promise<dUser>
   withdraw(author: User, guildId: string, amount: number): Promise<dUser>
   didFirst(author: User, guildId: string): Promise<dUser>

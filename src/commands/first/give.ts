@@ -1,8 +1,7 @@
-import Commando from 'discord.js-commando';
-import DiscordUser from '../../modules/user';
-import { Message } from 'discord.js';
-import Messages from '../../modules/messages';
-import NumberValidation from '../../modules/number';
+import Commando, { CommandMessage } from 'discord.js-commando'
+import DiscordUser from '../../modules/user'
+import Messages from '../../modules/messages'
+import NumberValidation from '../../modules/number'
 
 class GiveCommand extends Commando.Command {
   private readonly user: DiscordUser
@@ -42,18 +41,27 @@ class GiveCommand extends Commando.Command {
     this.title = 'Kebabs'
   }
 
-  async run(message: Message, { kebabs }) {
+  async run(message: CommandMessage, { kebabs }) {
     const { author, guild, mentions, channel } = message
     const target = mentions.members.first()
-    
-    if (!this.checker.isValid(kebabs)) {      
-      this.messages.addError({ name: this.title, value: 'Ton montant n\'est pas valide' })
+
+    if (!this.checker.isValid(kebabs)) {
+      this.messages.addError({
+        name: this.title,
+        value: "Ton montant n'est pas valide",
+      })
     } else {
       try {
         await this.user.exchange(author, guild, target, kebabs)
-        this.messages.addValid({ name: this.title, value: `${kebabs} donné à <@${target.id}>` })
+        this.messages.addValid({
+          name: this.title,
+          value: `${kebabs} donné à <@${target.id}>`,
+        })
       } catch (e) {
-        this.messages.addError({ name: this.title, value: `Tu n'as pas assez d'argent` })
+        this.messages.addError({
+          name: this.title,
+          value: `Tu n'as pas assez d'argent`,
+        })
       }
     }
 

@@ -1,8 +1,8 @@
 import { Message } from 'discord.js'
-import Commando from 'discord.js-commando';
-import User from '../../modules/user';
-import Server from '../../modules/server';
-import Messages from '../../modules/messages';
+import Commando, { CommandMessage } from 'discord.js-commando'
+import User from '../../modules/user'
+import Server from '../../modules/server'
+import Messages from '../../modules/messages'
 
 class FirstCommand extends Commando.Command {
   private server: Server
@@ -19,7 +19,7 @@ class FirstCommand extends Commando.Command {
       description: 'MAIS FIRST PUTAIN',
       details: 'FIRST BORDEL LA',
       examples: ['!first'],
-      argsCount: 0
+      argsCount: 0,
     })
 
     this.server = new Server()
@@ -29,17 +29,23 @@ class FirstCommand extends Commando.Command {
     this.embedTitle = 'First'
   }
 
-  async run(message: Message): Promise<Message> {
+  async run(message: CommandMessage): Promise<Message> {
     const { guild, author } = message
     const discordGuild = await this.server.getByGuildId(guild)
 
     if (discordGuild.has_done_first) {
-      this.message.addError({ name: this.embedTitle, value: 'Le first est déjà fait' })
+      this.message.addError({
+        name: this.embedTitle,
+        value: 'Le first est déjà fait',
+      })
     } else {
       await this.user.doFirst(author, guild)
       await this.server.doFirst(guild)
 
-      this.message.addValid({ name: this.embedTitle, value: 'Bien joué pour le first!' })
+      this.message.addValid({
+        name: this.embedTitle,
+        value: 'Bien joué pour le first!',
+      })
     }
 
     return message.channel.sendEmbed(this.message.get(message))

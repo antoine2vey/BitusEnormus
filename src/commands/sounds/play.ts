@@ -1,4 +1,4 @@
-import Commando from 'discord.js-commando';
+import Commando from 'discord.js-commando'
 
 class PlayCommand extends Commando.Command {
   constructor(client) {
@@ -22,8 +22,7 @@ class PlayCommand extends Commando.Command {
     })
   }
 
-  async run() {
-  }
+  async run(): Promise<any> {}
 }
 
 module.exports = PlayCommand

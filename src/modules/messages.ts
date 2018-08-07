@@ -1,22 +1,25 @@
-import { Message, RichEmbed } from 'discord.js'
+import { RichEmbed } from 'discord.js'
+import { CommandMessage } from 'discord.js-commando'
 
 type QueueMessage = {
-  name: string,
+  name: string
   value: string
 }
 
 class Messages {
   ERROR_COLOR: number
+
   SUCCESS_COLOR: number
+
   queue: {
-    errors: Array<QueueMessage>,
+    errors: Array<QueueMessage>
     valid: Array<QueueMessage>
   }
 
   constructor() {
     this.queue = {
       errors: [],
-      valid: []
+      valid: [],
     }
     this.ERROR_COLOR = 16711680
     this.SUCCESS_COLOR = 65280
@@ -33,7 +36,7 @@ class Messages {
   clearQueue(): void {
     this.queue = {
       errors: [],
-      valid: []
+      valid: [],
     }
   }
 
@@ -42,9 +45,9 @@ class Messages {
   }
 
   default(
-    message: Message,
+    message: CommandMessage,
     fields: Array<QueueMessage>,
-    isError: boolean
+    isError: boolean,
   ): RichEmbed | any {
     this.clearQueue()
 
@@ -52,33 +55,33 @@ class Messages {
       color: isError ? this.ERROR_COLOR : this.SUCCESS_COLOR,
       author: {
         name: message.author.username,
-        icon_url: message.author.avatarURL
+        icon_url: message.author.avatarURL,
       },
       title: '',
       fields,
       footer: {
         icon_url: message.client.user.avatarURL,
-        text: `- ${message.client.user.username}`
-      }
+        text: `- ${message.client.user.username}`,
+      },
     }
   }
 
-  getImage(message: Message, link: string): RichEmbed | any {
+  getImage(message: CommandMessage, link: string): RichEmbed | any {
     return {
       color: this.SUCCESS_COLOR,
       author: {
         name: message.client.user.username,
-        icon_url: message.client.user.avatarURL
+        icon_url: message.client.user.avatarURL,
       },
       title: '',
       fields: [],
       image: {
-        url: link
-      }
+        url: link,
+      },
     }
   }
 
-  get(message: Message): RichEmbed | any {
+  get(message: CommandMessage): RichEmbed | any {
     if (this.shouldThrow()) {
       return this.default(message, this.queue.errors, true)
     }

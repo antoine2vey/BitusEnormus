@@ -1,16 +1,6 @@
 {
-  "parser": "babel-eslint",
-  "plugins": ["flowtype"],
-  "extends": "airbnb-base",
+  "extends": "airbnb",
   "rules": {
-    "no-return-await": "off",
-    "class-methods-use-this": "off",
-    "no-underscore-dangle": "off",
-    "semi": ["error", "never"],
-    "no-undef": "off",
-    "no-new": "off",
-    "no-shadow": "off",
-    "comma-dangle": "off",
-    "arrow-body-style": "off"
+    "semi": "off"
   }
 }

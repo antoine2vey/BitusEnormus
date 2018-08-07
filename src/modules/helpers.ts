@@ -18,11 +18,27 @@ class Helpers {
   }
 
   bootDatabase(): Promise<typeof mongoose> {
-    return mongoose.connect('mongodb://mongodb:27017/mappabot')
+    return mongoose.connect(
+      'mongodb://mongodb:27017/mappabot',
+      { useNewUrlParser: true },
+    )
   }
 
   get kebab(): string {
     return `<:kebab:${this.kebabId}>`
+  }
+
+  getMedal(position: number): string {
+    switch (position) {
+      case 1:
+        return ':first_place:'
+      case 2:
+        return ':second_place:'
+      case 3:
+        return ':third_place:'
+      default:
+        return ':medal:'
+    }
   }
 }
 

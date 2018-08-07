@@ -1,7 +1,7 @@
 import { Guild } from 'discord.js'
 import { dFirst } from '../types/data'
 
-import First from '../database/models/first';
+import First from '../database/models/first'
 
 class Server {
   public getByGuildId(guild: Guild): Promise<dFirst> {
