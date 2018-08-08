@@ -1,31 +1,34 @@
 import { Emoji } from 'discord.js'
 import { CronJob } from 'cron'
 import mongoose from 'mongoose'
+import { CommandoClient } from 'discord.js-commando'
 
 class Helpers {
   kebabId?: string
-
-  constructor() {
-    this.kebabId = ''
-  }
 
   makeTask(pattern: string, callback: () => void): CronJob {
     return new CronJob(pattern, callback, undefined, false, 'Europe/Paris')
   }
 
-  setNewEmote(emote: Emoji): void {
-    this.kebabId = emote.id
-  }
-
   bootDatabase(): Promise<typeof mongoose> {
     return mongoose.connect(
       'mongodb://mongodb:27017/mappabot',
-      { useNewUrlParser: true },
+      { useNewUrlParser: true }
     )
   }
 
-  get kebab(): string {
-    return `<:kebab:${this.kebabId}>`
+  getMoneyEmoji(client: CommandoClient): string {
+    const emoji = client.emojis.find('name', 'kebab').id
+
+    if (emoji) {
+      return `<:kebab:${emoji}>`
+    } else {
+      return `:moneybag:`
+    }
+  }
+
+  getRoundedValue(value: string): number {
+    return Math.round(parseFloat(value))
   }
 
   getMedal(position: number): string {
