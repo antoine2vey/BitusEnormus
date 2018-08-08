@@ -1,12 +1,14 @@
 import Commando, { CommandMessage } from 'discord.js-commando'
-import DiscordUser from '../../modules/user';
-import Messages from '../../modules/messages';
-import NumberValidation from '../../modules/number';
+import DiscordUser from '../../modules/user'
+import Messages from '../../modules/messages'
+import NumberValidation from '../../modules/number'
+import Helpers from '../../modules/helpers'
 
 class BankSaveCommand extends Commando.Command {
   private user: DiscordUser
   private messages: Messages
   private numberValidation: NumberValidation
+  private helpers: Helpers
 
   constructor(client) {
     super(client, {
@@ -23,42 +25,47 @@ class BankSaveCommand extends Commando.Command {
           key: 'value',
           label: 'Kebabs',
           prompt: 'Nombre de kebabs',
-          type: 'string',
-        },
-      ],
+          type: 'string'
+        }
+      ]
     })
 
     this.user = new DiscordUser()
     this.messages = new Messages()
+    this.helpers = new Helpers()
     this.numberValidation = new NumberValidation()
   }
 
   async run(message: CommandMessage, { value }): Promise<any> {
-    const { author, guild } = message
+    const { author, guild, client } = message
+    const emoji = this.helpers.getMoneyEmoji(client)
+    const kebabs = this.helpers.getRoundedValue(value)
 
-    if (this.numberValidation.isValid(value)) {
+    if (this.numberValidation.isValid(kebabs)) {
       const user = await this.user.get(author, guild)
 
       try {
-        const bank = await this.user.increaseBank(user, author, guild, value)
+        const bank = await this.user.increaseBank(user, author, guild, kebabs)
 
         this.messages.addValid({
           name: 'Banque',
-          value: `Argent bien envoyé ! (actuellement ${bank.amount}$ dans ta banque)`
+          value: `Argent bien envoyé ! (actuellement ${
+            bank.amount
+          }${emoji} dans ta banque)`
         })
       } catch (e) {
         this.messages.addError({
           name: 'Banque',
-          value: `Il te manque ${value - user.money}$ :cry:`
+          value: `Il te manque ${kebabs - user.money}${emoji} :cry:`
         })
       }
     } else {
       this.messages.addError({
         name: 'Banque',
-        value: 'Le chiffre entré n\'est pas valide !'
+        value: "Le chiffre entré n'est pas valide !"
       })
     }
-    
+
     return message.channel.sendEmbed(this.messages.get(message))
   }
 }

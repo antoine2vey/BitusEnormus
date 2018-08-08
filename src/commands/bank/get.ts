@@ -1,9 +1,16 @@
 import Commando, { CommandMessage } from 'discord.js-commando'
 import DiscordUser from '../../modules/user'
-import Messages from '../../modules/messages';
-import NumberValidation from '../../modules/number';
+import Messages from '../../modules/messages'
+import NumberValidation from '../../modules/number'
+import Helpers from '../../modules/helpers'
+import Bank from '../../database/models/bank'
 
 class BankGetCommand extends Commando.Command {
+  private user: DiscordUser
+  private messages: Messages
+  private numberValidation: NumberValidation
+  private helpers: Helpers
+
   constructor(client) {
     super(client, {
       name: 'bank take',
@@ -19,13 +26,48 @@ class BankGetCommand extends Commando.Command {
           key: 'value',
           label: 'Kebabs',
           prompt: 'Nombre de kebabs',
-          type: 'string',
-        },
-      ],
+          type: 'string'
+        }
+      ]
     })
+
+    this.user = new DiscordUser()
+    this.messages = new Messages()
+    this.helpers = new Helpers()
+    this.numberValidation = new NumberValidation()
   }
 
   async run(message: CommandMessage, { value }): Promise<any> {
+    const { author, guild, client } = message
+    const kebabs = this.helpers.getRoundedValue(value)
+    const emoji = this.helpers.getMoneyEmoji(client)
+
+    if (this.numberValidation.isValid(kebabs)) {
+      const user = await this.user.get(author, guild)
+
+      try {
+        const bank = await this.user.checkIfCanWithdraw(author, guild, kebabs)
+
+        this.messages.addValid({
+          name: 'Banque',
+          value: `Argent bien recu ! (actuellement ${
+            bank.amount
+          }${emoji} dans ta banque et ${kebabs + user.money} sur toi)`
+        })
+      } catch (e) {
+        this.messages.addError({
+          name: 'Banque',
+          value: `Pas assez dans ta banque :cry:`
+        })
+      }
+    } else {
+      this.messages.addError({
+        name: 'Banque',
+        value: "Le chiffre entré n'est pas valide !"
+      })
+    }
+
+    return message.channel.sendEmbed(this.messages.get(message))
   }
 }
 

@@ -38,12 +38,12 @@
     "discord.js-commando": "^0.10.0",
     "expect": "^22.4.3",
     "ffmpeg": "0.0.4",
-    "ffmpeg-binaries": "^3.2.2",
+    "ffmpeg-binaries": "^4.0.0",
     "moment": "^2.22.2",
     "mongoose": "^5.2.5",
     "node-opus": "^0.2.9",
     "opusscript": "0.0.6",
-    "request": "^2.85.0"
+    "request": "^2.87.0"
   },
   "jest": {
     "testEnvironment": "node",
