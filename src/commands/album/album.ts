@@ -13,7 +13,7 @@ class AlbumCommand extends Commando.Command {
       description: "Affiche une image au hasard de l'album",
       details: "Affiche une image au hasard de l'album",
       examples: ['!mappa'],
-      argsCount: 0,
+      argsCount: 0
     })
 
     this.album = Album

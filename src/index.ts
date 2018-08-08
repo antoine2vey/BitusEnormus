@@ -4,7 +4,7 @@ import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import Helpers from './modules/helpers'
 import oneLine from 'common-tags'
 import User from './modules/user'
-import Server from './modules/server';
+import Server from './modules/server'
 
 class Bot extends Helpers {
   client: CommandoClient
@@ -22,7 +22,6 @@ class Bot extends Helpers {
       .on('ready', () => {
         this.bootDatabase().then(() => {
           console.log('Booted!')
-          this.setNewEmote(this.client.emojis.find('name', 'kebab'))
 
           // Everytime at midnight
           const giveMidnight = this.makeTask('0 0 * * *', () => {
@@ -38,6 +37,7 @@ class Bot extends Helpers {
       })
       .on('message', async (message: CommandMessage) => {
         // If our user is not a bot, process message
+
         if (!message.author.bot) {
           await this.user.handleMessage(message)
         }
@@ -51,7 +51,7 @@ class Bot extends Helpers {
         ['games', 'Mini jeux'],
         ['infos', 'Informations'],
         ['bank', 'Informations bancaires'],
-        ['rob', 'Voler un utilisateur'],
+        ['rob', 'Voler un utilisateur']
       ])
       .registerDefaults()
       .registerCommandsIn(path.join(__dirname, 'commands'))

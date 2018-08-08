@@ -41,24 +41,44 @@ describe('Checks for helpers', () => {
   })
 
   describe('Checks for emojis set', () => {
-    it('expect kebab id to not be empty on startup', () => {
-      expect(helpers.kebabId).toBe('')
+    it('expect to get kebab emoji when server has one', () => {
+      const client = {
+        emojis: {
+          find() {
+            return {
+              id: 1
+            }
+          }
+        }
+      }
+
+      expect(helpers.getMoneyEmoji(<any>client)).toBe(`<:kebab:1>`)
     })
 
-    it('expect set method to be defined', () => {
-      expect(helpers.setNewEmote).toBeDefined()
+    it("expect to not get kebab emoji when server donesn't have one", () => {
+      const client = {
+        emojis: {
+          find() {
+            return {
+              id: undefined
+            }
+          }
+        }
+      }
+
+      expect(helpers.getMoneyEmoji(<any>client)).toBe(':moneybag:')
     })
+  })
 
-    it('expect kebab to be set after set called', () => {
-      helpers.setNewEmote(<any>{ id: 1 })
-
-      expect(helpers.kebabId).toBe(1)
-    })
-
-    it('expect get kebab static to return emoji as string', () => {
-      const kebab = helpers.kebab
-      expect(typeof kebab).toBe('string')
-      expect(kebab).toBeTruthy()
+  describe('normalizing rounded values', () => {
+    it('expect to normalize floats', () => {
+      expect(helpers.getRoundedValue('1.56')).toBe(2)
+      expect(helpers.getRoundedValue('1.5')).toBe(2)
+      expect(helpers.getRoundedValue('1.4')).toBe(1)
+      expect(helpers.getRoundedValue('10.4')).toBe(10)
+      expect(helpers.getRoundedValue('-10.412897427819')).toBe(-10)
+      expect(helpers.getRoundedValue('foo')).toBe(NaN)
+      expect(helpers.getRoundedValue('NaN')).toBe(NaN)
     })
   })
 

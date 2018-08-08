@@ -2,15 +2,14 @@ import Commando, { CommandMessage } from 'discord.js-commando'
 import DiscordUser from '../../modules/user'
 import Messages from '../../modules/messages'
 import NumberValidation from '../../modules/number'
+import Helpers from '../../modules/helpers'
 
 class TossCommand extends Commando.Command {
-  user: DiscordUser
-
-  messages: Messages
-
-  validation: NumberValidation
-
-  key: string
+  private user: DiscordUser
+  private messages: Messages
+  private validation: NumberValidation
+  private helpers: Helpers
+  private key: string
 
   constructor(client) {
     super(client, {
@@ -27,25 +26,30 @@ class TossCommand extends Commando.Command {
           key: 'value',
           label: 'Pile ou Face',
           prompt: 'Choisi pile ou face',
-          type: 'string',
+          type: 'string'
         },
         {
           key: 'amount',
           label: 'Kebabs',
           prompt: 'Nombre de kebabs',
-          type: 'string',
-        },
-      ],
+          type: 'string'
+        }
+      ]
     })
 
     this.user = new DiscordUser()
     this.messages = new Messages()
     this.validation = new NumberValidation()
+    this.helpers = new Helpers()
+
     this.key = 'Toss'
   }
 
-  private isInputValid(value: string): boolean {
-    return value.toLowerCase().trim() === 'pile' || value.toLowerCase().trim() === 'face'
+  private isInputValid(value: any): boolean {
+    return (
+      value.toLowerCase().trim() === 'pile' ||
+      value.toLowerCase().trim() === 'face'
+    )
   }
 
   private hasWon(val: number, choice: string): boolean {
@@ -57,26 +61,27 @@ class TossCommand extends Commando.Command {
 
   async run(
     message: CommandMessage,
-    { value, amount }: { value: string; amount: string },
+    { value, amount }: { value: string; amount: string }
   ): Promise<any> {
-    const { author, guild } = message
-    const kebabs = parseInt(amount, 10)
+    const { author, guild, client } = message
+    const emoji = this.helpers.getMoneyEmoji(client)
     const random = Math.random()
 
-    const isValueValid = this.isInputValid(value)
+    const kebabs = this.helpers.getRoundedValue(value)
+    const isValueValid = this.isInputValid(kebabs)
     const isAmountValid = this.validation.isValid(amount)
 
     if (!isValueValid) {
       this.messages.addError({
         name: this.key,
-        value: 'Choisi pile ou face!',
+        value: 'Choisi pile ou face!'
       })
     }
 
     if (!isAmountValid) {
       this.messages.addError({
         name: this.key,
-        value: "Le nombre entre n'est pas valide",
+        value: "Le nombre entre n'est pas valide"
       })
     }
 
@@ -89,7 +94,7 @@ class TossCommand extends Commando.Command {
 
       this.messages.addValid({
         name: this.key,
-        value: `Tu as gagné ${kebabs}$ !`,
+        value: `Tu as gagné ${kebabs}${emoji} !`
       })
     } else {
       try {
@@ -97,12 +102,13 @@ class TossCommand extends Commando.Command {
 
         this.messages.addError({
           name: this.key,
-          value: `Tu as perdu ${kebabs}$ :sob:`,
+          value: `Tu as perdu ${kebabs}${emoji} :sob:`
         })
       } catch (client) {
         this.messages.addError({
           name: this.key,
-          value: `Tu n'as pas assez d'argent, il te manque ${kebabs - client.money}$ !`,
+          value: `Tu n'as pas assez d'argent, il te manque ${kebabs -
+            client.money}${emoji} !`
         })
       }
     }
