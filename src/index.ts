@@ -51,7 +51,8 @@ class Bot extends Helpers {
         ['games', 'Mini jeux'],
         ['infos', 'Informations'],
         ['bank', 'Informations bancaires'],
-        ['rob', 'Voler un utilisateur']
+        ['rob', 'Voler un utilisateur'],
+        ['music', 'Musique']
       ])
       .registerDefaults()
       .registerCommandsIn(path.join(__dirname, 'commands'))
