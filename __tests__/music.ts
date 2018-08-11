@@ -3,13 +3,19 @@ import MusicModule from '../src/modules/music'
 const music = MusicModule
 const guildId = '1'
 const ytPayload = {
-  link: 'http://foo.bar',
+  link: 'https://www.youtube.com/watch?v=1',
   title: 'foobar',
+  resourceId: {
+    videoId: 1
+  }
 }
 
 const secondYtPayload = {
-  link: 'http://quz.qux',
+  link: 'https://www.youtube.com/watch?v=2',
   title: 'quzqux',
+  resourceId: {
+    videoId: 2
+  }
 }
 
 describe('Music module', () => {
