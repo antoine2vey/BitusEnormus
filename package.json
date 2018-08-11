@@ -37,13 +37,16 @@
     "discord.js": "^11.3.2",
     "discord.js-commando": "^0.10.0",
     "expect": "^22.4.3",
-    "ffmpeg": "0.0.4",
     "ffmpeg-binaries": "^4.0.0",
     "moment": "^2.22.2",
     "mongoose": "^5.2.5",
-    "node-opus": "^0.2.9",
+    "node-opus": "^0.3.0",
     "opusscript": "0.0.6",
-    "request": "^2.87.0"
+    "prism-media": "0.0.3",
+    "request": "^2.87.0",
+    "youtube-playlist-info": "^1.1.2",
+    "youtube-search": "^1.1.1",
+    "ytdl-core": "^0.24.0"
   },
   "jest": {
     "testEnvironment": "node",

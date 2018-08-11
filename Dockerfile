@@ -6,8 +6,8 @@ COPY yarn.lock .
 
 RUN \
   apk update && \
-  apk add --no-cache make gcc g++ python && \
-  yarn && \
-  apk del make gcc g++ python
+  apk add --no-cache make gcc g++ python ffmpeg && \
+  npm install -g node-gyp && \
+  npm install
 
 COPY . .
