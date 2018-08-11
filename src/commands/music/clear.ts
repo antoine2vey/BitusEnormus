@@ -1,6 +1,9 @@
 import Commando, { CommandMessage } from 'discord.js-commando'
+import Music from '../../modules/music'
 
-class RegisterCommand extends Commando.Command {
+class ClearCommand extends Commando.Command {
+  music
+
   constructor(client: any) {
     super(client, {
       name: 'clear',
@@ -10,15 +13,20 @@ class RegisterCommand extends Commando.Command {
       description: 'Clear musics',
       details: 'Clear bot musics',
       examples: ['!clear'],
-      argsCount: 0
+      argsCount: 0,
     })
+
+    this.music = Music
   }
 
   async run(message: CommandMessage): Promise<any> {
-    const channel = message.member.voiceChannel
+    const { member, guild } = message
+    const channel = member.voiceChannel
+    const { id } = guild
 
+    this.music.clearQueue(id)
     channel.leave()
   }
 }
 
-module.exports = RegisterCommand
+module.exports = ClearCommand

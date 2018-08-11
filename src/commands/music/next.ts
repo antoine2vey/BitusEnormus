@@ -1,6 +1,7 @@
 import Commando, { CommandMessage } from 'discord.js-commando'
+import music from '../../modules/music'
 
-class RegisterCommand extends Commando.Command {
+class NextCommand extends Commando.Command {
   constructor(client: any) {
     super(client, {
       name: 'next',
@@ -10,11 +11,30 @@ class RegisterCommand extends Commando.Command {
       description: 'Next music in queue',
       details: 'Next bot music',
       examples: ['!next', '!skip'],
-      argsCount: 0
+      argsCount: 0,
     })
   }
 
-  async run(message: CommandMessage): Promise<any> {}
+  async run(message: CommandMessage): Promise<any> {
+    const { member, guild } = message
+
+    if (member.voiceChannel) {
+      // Send event to dispatcher in play.ts
+      if (member.voiceChannel.connection.dispatcher) {
+        const song = music.getNextMusic(guild.id)
+
+        if (song) {
+          message.channel.send(`Prochaine musique : ${song.title} - ${song.channelTitle}`)
+        } else {
+          message.reply('Arrêt de la musique ... (plus de musique dans la playlist)')
+        }
+
+        member.voiceChannel.connection.dispatcher.end()
+      } else {
+        message.reply('Plus de musique dans la playlist')
+      }
+    }
+  }
 }
 
-module.exports = RegisterCommand
+module.exports = NextCommand
