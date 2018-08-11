@@ -92,7 +92,7 @@ describe('Tests for message system', () => {
   it('expect to send images', () => {
     expect(messages.getImage).toBeDefined()
 
-    const image = messages.getImage(<Message>message, 'google.com')
+    const image = messages.getImage(<any>message, 'google.com')
 
     expect(image.author.name).toBe(message.client.user.username)
   })
