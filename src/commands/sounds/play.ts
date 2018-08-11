@@ -4,21 +4,21 @@ class PlayCommand extends Commando.Command {
   constructor(client) {
     super(client, {
       name: 'sound',
-      aliases: ['play', 'sound'],
+      aliases: ['sound'],
       group: 'sounds',
       memberName: 'add',
       description: 'Joue un son',
       details: 'Joue un son',
-      examples: ['!play hugo', '!play deukatorz'],
+      examples: ['!sound hugo', '!sound deukatorz'],
       argsCount: 1,
       args: [
         {
           key: 'soundKey',
           label: 'Son',
-          prompt: 'Joue un son en tapant !play [son]',
-          type: 'string',
-        },
-      ],
+          prompt: 'Joue un son en tapant !sound [son]',
+          type: 'string'
+        }
+      ]
     })
   }
 
