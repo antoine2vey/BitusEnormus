@@ -57,7 +57,11 @@ class TossCommand extends Commando.Command {
     const faceWon = val < 0.5 && choice === 'face'
     const pileWon = val >= 0.5 && choice === 'pile'
 
-    return faceWon || pileWon
+    if (faceWon || pileWon) {
+      return true
+    }
+
+    return false
   }
 
   async run(
