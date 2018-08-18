@@ -26,6 +26,8 @@ services:
       - mongo-backup:/backup
     environment:
       CRON_SCHEDULE: '0 1 * * *'
+      MONGO_HOST: 'mongodb'
+      MONGO_PORT: '27018'
     depends_on:
       - mongodb
 
