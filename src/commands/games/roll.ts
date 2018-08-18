@@ -75,7 +75,7 @@ class RollCommands extends Commando.Command {
   }
 
   private get isSpaceValid(): boolean {
-    return this.max - this.min <= 90;
+    return this.max - this.min <= 65;
   }
 
   async run(message: CommandMessage, { value, stack }: { value: number, stack: string }): Promise<any> {
@@ -92,7 +92,7 @@ class RollCommands extends Commando.Command {
     if (!this.isSpaceValid) {
       this.messages.addError({
         name: 'Kebabs',
-        value: 'Il te faut un écart de plus de 20% (0-80 minimum)',
+        value: 'Il te faut un écart de plus de 35% (0-65 minimum)',
       })
     }
 
