@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 import Member from '../src/database/models/user'
 import First from '../src/database/models/first'
 import DiscordUser from '../src/modules/user'
+import Bank from '../src/database/models/bank'
 import { User, Guild, GuildMember, Message } from 'discord.js'
 
 const user = new DiscordUser()
@@ -264,5 +265,13 @@ describe('Suite for user commands', () => {
       }
       expect(user.getInteractionValue(<any>withPing)).toEqual(user.MESSAGE_WITH_PING)
     })
+  })
+
+  it('expect to return all users from any guilds', async () => {
+    await user.get(author, guild)
+    await user.get(author2, guild)
+    
+    const users = await user.getAll()
+    expect(users.length).toBe(2)
   })
 })
