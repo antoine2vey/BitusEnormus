@@ -2,9 +2,10 @@
 import path from 'path'
 import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import Helpers from './modules/helpers'
-import oneLine from 'common-tags'
 import User from './modules/user'
 import Server from './modules/server'
+import Bank from './database/models/bank'
+import { dBank } from './types/data';
 
 class Bot extends Helpers {
   client: CommandoClient
@@ -20,7 +21,7 @@ class Bot extends Helpers {
 
     this.client
       .on('ready', () => {
-        this.bootDatabase().then(() => {
+        this.bootDatabase().then(async () => {
           console.log('Booted!')
 
           // Everytime at midnight
@@ -30,7 +31,14 @@ class Bot extends Helpers {
 
           giveMidnight.start()
           // Update bank every 2 hours
-          const growBank = this.makeTask('0 */2 * * *', () => {})
+          const growBank = this.makeTask('0 */2 * * *', async () => {
+            for (let user of await this.user.getAll()) {
+              if (user.bank) {
+                // Win 0.25 of his bank per day, divided by 12 for 1 tick per 2 hours
+                await Bank.increaseById(user.bank.id, Math.floor(user.bank.amount * (0.25 / 12)) || 10)
+              }
+            }
+          })
 
           growBank.start()
         })

@@ -81,6 +81,9 @@ userSchema.statics = {
       { upsert: true, new: true, setDefaultsOnInsert: true },
     )
   },
+  findAll() {
+    return this.find({}).populate('bank')
+  }
 }
 
 export interface IUser extends Document {}
@@ -92,6 +95,7 @@ export interface IUserModel extends Model<IUser> {
   pay(author: User, guildId: string, amount: number): Promise<dUser>
   withdraw(author: User, guildId: string, amount: number): Promise<dUser>
   didFirst(author: User, guildId: string): Promise<dUser>
+  findAll(): Promise<dUser[]>
 }
 
 const user: IUserModel = mongoose.model<IUser, IUserModel>('user', userSchema)

@@ -42,6 +42,10 @@ class DiscordUser extends DiscordBank {
     })
   }
 
+  public getAll(): Promise<Array<dUser>> {
+    return discordUser.findAll()
+  } 
+
   public async getInGuild(user: User, guild: Guild, query: {} = {}): Promise<Array<dUser>> {
     await this.get(user, guild)
 
