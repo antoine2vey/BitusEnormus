@@ -6,7 +6,7 @@ import Messages from '../../modules/messages'
 
 class AddFileCommand extends Commando.Command {
   private messages: Messages
-  
+
   constructor(client) {
     super(client, {
       name: 'add',
@@ -23,37 +23,37 @@ class AddFileCommand extends Commando.Command {
           label: 'Nom du son',
           prompt: 'Quel nom pour le son ?',
           type: 'string',
-          default: ''
+          default: '',
         },
       ],
     })
-    
+
     this.messages = new Messages()
   }
 
   private hasMP3Extension(file): boolean {
-    const array = file.split('.');
-    return array[array.length - 1] === 'mp3';
+    const array = file.split('.')
+    return array[array.length - 1] === 'mp3'
   }
 
   async run(message: CommandMessage, { soundName }): Promise<any> {
     if (!message.attachments.first()) {
       this.messages.addError({
         name: 'MP3',
-        value: `:rotating_light: Tu n'as pas envoyé de fichier :rotating_light:`
+        value: ":rotating_light: Tu n'as pas envoyé de fichier :rotating_light:",
       })
-      
+
       return message.channel.sendEmbed(this.messages.get(message))
     }
 
-    const { filename, url } = message.attachments.first();
+    const { filename, url } = message.attachments.first()
 
     if (!this.hasMP3Extension(filename)) {
       this.messages.addError({
         name: 'MP3',
-        value: ':rotating_light: Envoie un MP3 :rotating_light:'
+        value: ':rotating_light: Envoie un MP3 :rotating_light:',
       })
-      
+
       return message.channel.sendEmbed(this.messages.get(message))
     }
 
@@ -64,23 +64,25 @@ class AddFileCommand extends Commando.Command {
       .on('error', () => {
         this.messages.addError({
           name: 'MP3',
-          value: ':rotating_light: Erreur dans le téléchargement :rotating_light:'
+          value: ':rotating_light: Erreur dans le téléchargement :rotating_light:',
         })
-      
+
         return message.channel.sendEmbed(this.messages.get(message))
       })
-      .pipe(
-        fs.createWriteStream(
-          path.join(__dirname, 'sounds', filename)
-        )
-      )
-      
+      .pipe(fs.createWriteStream(path.join(__dirname, 'sounds', filename)))
+
     // If provided soundname rename synchronously file
     if (soundName) {
       const getFile = name => path.join(__dirname, 'sounds', name)
-      
       fs.renameSync(getFile(filename), getFile(`${soundName}.mp3`))
     }
+
+    this.messages.addValid({
+      name: 'MP3',
+      value: `:white_check_mark: Son ajouté! (!sound ${soundName || filename.split('.')[0]})`,
+    })
+
+    message.channel.sendEmbed(this.messages.get(message))
   }
 }
 

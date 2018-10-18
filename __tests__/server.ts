@@ -9,7 +9,7 @@ const server = new Server()
 describe('Suite for server commands', () => {
   beforeAll(() => {
     mongoose.connect(
-      'mongodb://mongodb:27017/mappabot_test',
+      'mongodb://mongo:27017/mappabot_test',
       { useNewUrlParser: true },
     )
   })

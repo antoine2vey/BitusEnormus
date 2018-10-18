@@ -29,7 +29,7 @@ const target = <GuildMember>{
 describe('Suite for user commands', () => {
   beforeAll(done => {
     mongoose.connect(
-      'mongodb://mongodb:27017/mappabot_test',
+      'mongodb://mongo:27017/mappabot_test',
       { useNewUrlParser: true },
     )
 

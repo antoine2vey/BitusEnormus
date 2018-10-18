@@ -1,21 +1,21 @@
-version: "3"
+version: '3'
 services:
   bot:
-    build: .
+    build: ..
     volumes:
-      - .:/usr/app
+      - ..:/usr/app
       - /usr/app/node_modules/
     command: npm run dev
     depends_on:
-      - mongodb
+      - mongo
     links:
-      - mongodb
-    env_file:
-      - development.env
+      - mongo
     ports:
       - 5858:5858
+    env_file:
+      - .development.env
 
-  mongodb:
+  mongo:
     image: mongo
     ports:
       - 27017:27017

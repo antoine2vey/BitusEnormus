@@ -44,11 +44,7 @@ class Messages {
     return this.queue.errors.length > 0
   }
 
-  default(
-    message: CommandMessage,
-    fields: Array<QueueMessage>,
-    isError: boolean,
-  ): RichEmbed | any {
+  default(message: CommandMessage, fields: Array<QueueMessage>, isError: boolean): RichEmbed | any {
     this.clearQueue()
 
     return {

@@ -19,7 +19,7 @@ const guild = <Guild>{
 describe('Suite for bank commands', () => {
   beforeAll(done => {
     mongoose.connect(
-      'mongodb://mongodb:27017/mappabot_test',
+      'mongodb://mongo:27017/mappabot_test',
       { useNewUrlParser: true },
     )
 
