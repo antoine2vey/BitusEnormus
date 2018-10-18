@@ -5,15 +5,12 @@ services:
     volumes:
       - ..:/usr/app
       - /usr/app/node_modules/
-    command: npm run dev
     depends_on:
       - mongo
     links:
       - mongo
     ports:
       - 5858:5858
-    env_file:
-      - .development.env
 
   mongo:
     image: mongo

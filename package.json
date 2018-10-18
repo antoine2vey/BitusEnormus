@@ -8,7 +8,11 @@
     "dev": "./node_modules/nodemon/bin/nodemon.js",
     "test": "jest --forceExit",
     "test:watch": "jest --watchAll",
-    "coverage": "jest --coverage --coverageReporters=text-lcov --forceExit | coveralls"
+    "coverage": "jest --coverage --coverageReporters=text-lcov --forceExit | coveralls",
+
+    "docker-dev": "docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.dev.yml up --build",
+    "docker-prod": "docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.prod.yml up --build",
+    "docker-ci": "docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.dev.yml build && docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.ci.yml exec bot sh -c 'npm run test'"
   },
   "license": "ISC",
   "devDependencies": {
