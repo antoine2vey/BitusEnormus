@@ -6,11 +6,11 @@ node_js:
 services:
   - docker
 before_install:
-  - docker-compose -f docker-compose.yml -f docker-compose.ci.yml build
-  - docker-compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+  - docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.ci.yml build
+  - docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.ci.yml up -d
 script: 
-  - docker-compose -f docker-compose.yml -f docker-compose.ci.yml exec bot sh -c 'npm run test'
+  - docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.ci.yml exec bot sh -c 'npm run test'
 after_success:
-  - docker-compose -f docker-compose.yml -f docker-compose.ci.yml exec bot sh -c 'npm run coverage'
+  - docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.ci.yml exec bot sh -c 'npm run coverage'
 after_script:
-  - docker-compose -f docker-compose.yml -f docker-compose.ci.yml down
+  - docker-compose -f ./scripts/docker-compose.yml -f ./scripts/docker-compose.ci.yml down
