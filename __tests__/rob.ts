@@ -30,17 +30,17 @@ const target = <GuildMember>{
 describe('Rob module', () => {
   describe('workers modules', () => {
     afterAll(() => {
-      rob.deleteWorker('1', '1')
+      jest.runOnlyPendingTimers()
     })
 
     it('expect workers to be a map', () => {
-      expect(rob.workers.entries).toBeDefined()
+      expect(rob.guilds.entries).toBeDefined()
     })
 
     it('expect to find itself in a worker', () => {
-      expect(rob.getInWorker).toBeDefined()
+      expect(rob.getWorker).toBeDefined()
 
-      const worker = rob.getInWorker(guild.id, author.id)
+      const worker = rob.getWorker(guild.id, author.id)
       expect(worker).toBe(null)
     })
 
@@ -48,19 +48,18 @@ describe('Rob module', () => {
       expect(rob.createWorker).toBeDefined()
 
       rob.createWorker(guild.id, author.id, '2')
-      const worker = rob.getInWorker(guild.id, author.id)
+      const worker = rob.getWorker(guild.id, author.id)
 
-      expect(worker).toEqual({
-        from: author.id,
-        to: '2',
-      })
+      expect(worker.from).toEqual(author.id)
+      expect(worker.to).toEqual('2')
+      expect(worker.timer).toBeDefined()
     })
 
     it('expect to delete a worker', () => {
       expect(rob.deleteWorker).toBeDefined()
 
       rob.deleteWorker(guild.id, author.id)
-      const worker = rob.getInWorker(guild.id, author.id)
+      const worker = rob.getWorker(guild.id, author.id)
 
       expect(worker).toBe(null)
     })
@@ -81,17 +80,21 @@ describe('Rob module', () => {
     })
 
     it('expect to get all workers inside a guild', () => {
-      expect(rob.getWorkers).toBeDefined()
+      expect(rob.getGuild).toBeDefined()
 
-      const workers = rob.getWorkers(guild.id)
-      expect(workers).toEqual([{ from: author.id, to: '2' }])
+      const workerMap = rob.getGuild(guild.id)
+      const worker = workerMap.get(author.id)
+
+      expect(worker.from).toEqual(author.id)
+      expect(worker.to).toEqual('2')
+      expect(worker.timer).toBeDefined()
     })
   })
 
   describe('robbing modules', () => {
     beforeAll(done => {
       mongoose.connect(
-        'mongodb://mongodb:27017/mappabot_test',
+        'mongodb://mongo:27017/mappabot_test',
         { useNewUrlParser: true },
         done,
       )
@@ -131,45 +134,35 @@ describe('Rob module', () => {
       })
     })
 
-    it('expect accept concurrent steals', async () => {
+    it('expect to accept concurrent steals', async () => {
       expect(rob.start).toBeDefined()
-      expect(setTimeout).toHaveBeenCalledTimes(1)
 
-      rob.start(author.id, guild.id, '2')
-      rob.start('3', guild.id, '4')
+      rob.start(guild.id, author.id, '2')
+      rob.start(guild.id, '3', '4')
 
-      const worker = rob.getInWorker(guild.id, author.id)
-      const worker2 = rob.getInWorker(guild.id, '3')
-
-      expect(worker).toEqual({
-        from: author.id,
-        to: '2',
-      })
-      expect(worker2).toEqual({
-        from: '3',
-        to: '4',
-      })
-      expect(rob.getWorkers(guild.id).length).toBe(2)
+      const workers = rob.getGuild(guild.id)
+      expect(workers.size).toBe(2)
 
       jest.runOnlyPendingTimers()
 
-      const workerNull = rob.getInWorker(guild.id, author.id)
-      const workerNull2 = rob.getInWorker(guild.id, '3')
+      const workerNull = rob.getWorker(guild.id, author.id)
+      const workerNull2 = rob.getWorker(guild.id, '3')
 
       expect(workerNull).toBe(null)
       expect(workerNull2).toBe(null)
-    })
+    })  
 
     it('expect to end timers', () => {
       expect(rob.stop).toBeDefined()
 
       rob.createWorker(guild.id, author.id, '2')
-      const worker = rob.getInWorker(guild.id, author.id)
+      const worker = rob.getWorker(guild.id, author.id)
+
       expect(worker).toBeTruthy()
 
       rob.stop(guild.id, author.id)
 
-      const endedWorker = rob.getInWorker(guild.id, author.id)
+      const endedWorker = rob.getWorker(guild.id, author.id)
       expect(endedWorker).toEqual(null)
     })
   })

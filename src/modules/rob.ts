@@ -1,78 +1,62 @@
 import { User, Guild, GuildMember } from 'discord.js'
+import { EventEmitter } from 'events'
 import { dUser } from '../types/data'
 import DiscordUser from '../modules/user'
 
 type WorkerElement = {
   from: string
   to: string
+  timer: NodeJS.Timer
+}
+
+type WorkerSocket = {
+  authorId: string,
+  guildId: string
 }
 
 const user = new DiscordUser()
 
 class Rob {
-  workers: Map<string, Array<WorkerElement>>
-
+  guilds: Map<string, Map<string, WorkerElement>>
+  event: EventEmitter
   DEFAULT_ROB_TIME: number
 
   constructor() {
-    this.workers = new Map()
+    this.guilds = new Map()
     this.DEFAULT_ROB_TIME = 5 * 60 * 1000
+    this.event = new EventEmitter()
+
+    this.event.on('clear_timer', ({ authorId, guildId }: WorkerSocket) => {
+      const worker = this.getGuild(guildId).get(authorId)
+
+      this.deleteWorker(guildId, authorId)
+      clearTimeout(worker.timer)
+    })
   }
 
-  public createWorker(
-    guildId: string,
-    authorId: string,
-    targetId: string,
-  ): void {
-    const workers = this.getWorkers(guildId)
-    this.workers.set(guildId, [...workers, { from: authorId, to: targetId }])
+  public createWorker(guildId: string, authorId: string, targetId: string): void {
+    let guild = this.getGuild(guildId)
+
+    guild.set(authorId, {
+      from: authorId,
+      to: targetId,
+      timer: setTimeout(() => {
+        // clear timer itself
+        this.event.emit('clear_timer', { authorId, guildId })
+      }, this.DEFAULT_ROB_TIME)
+    })
   }
 
-  public workerExists(guildId: string, authorId: string): boolean {
-    if (this.workers.has(guildId)) {
-      const workers = this.getWorkers(guildId)
-      const exists = workers.some(
-        (worker: WorkerElement) => worker.from === authorId,
-      )
-
-      if (exists) {
-        return true
-      }
-
-      return false
-    }
-
-    return false
+  public getWorker(guildId: string, authorId: string): WorkerElement | null {
+    return this.getGuild(guildId).get(authorId) || null
   }
 
   public deleteWorker(guildId: string, authorId: string): void {
-    const workers = this.getWorkers(guildId)
-    // delete worker from guild
-    const filteredWorkers = workers.filter(
-      (worker: WorkerElement) => worker.from !== authorId,
-    )
-
-    this.workers.set(guildId, filteredWorkers)
+    this.getGuild(guildId).delete(authorId)
   }
 
-  public getInWorker(guildId: string, authorId: string): WorkerElement | null {
-    const workers = this.getWorkers(guildId)
-
-    // no need to process if no workers in this guild
-    if (!workers.length) {
-      return null
-    }
-
-    // check if worker exists
-    const worker = workers.find(
-      (worker: WorkerElement) => worker.from === authorId,
-    )
-
-    return worker
-  }
-
-  public getWorkers(guildId: string): Array<WorkerElement> {
-    return this.workers.get(guildId) || []
+  public workerExists(guildId: string, authorId: string): boolean {
+    return this.getGuild(guildId).has(authorId)
   }
 
   public steal(
@@ -84,18 +68,21 @@ class Rob {
     return user.exchange(fromUser, guild, target, amount)
   }
 
-  public start(authorId: string, guildId: string, targetId: string) {
+  public start(guildId: string, authorId: string, targetId: string): void {
     this.createWorker(guildId, authorId, targetId)
-
-    const handleWorkerEvents = setTimeout(() => {
-      this.deleteWorker(guildId, authorId)
-
-      clearTimeout(handleWorkerEvents)
-    }, this.DEFAULT_ROB_TIME)
   }
 
-  public stop(guildId: string, authorId: string): void {
-    this.deleteWorker(guildId, authorId)
+  public stop(guildId: string, targetId: string): void {
+    this.deleteWorker(guildId, targetId)
+  }
+
+  public getGuild(guildId: string): Map<string, WorkerElement> {
+    // Create if not exists
+    if (!this.guilds.has(guildId)) {
+      this.guilds.set(guildId, new Map())
+    }
+
+    return this.guilds.get(guildId)
   }
 }
 

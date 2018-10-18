@@ -12,7 +12,7 @@ class Helpers {
 
   bootDatabase(): Promise<typeof mongoose> {
     return mongoose.connect(
-      'mongodb://mongodb:27017/mappabot',
+      'mongodb://mongo:27017/mappabot',
       { useNewUrlParser: true }
     )
   }

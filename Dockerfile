@@ -1,8 +1,9 @@
 FROM node:9.4-alpine
 
 WORKDIR /usr/app
-COPY package*.json ./
-COPY yarn.lock .
+ADD package.json .
+ADD package-lock.json .
+ADD yarn.lock .
 
 RUN \
   apk update && \
