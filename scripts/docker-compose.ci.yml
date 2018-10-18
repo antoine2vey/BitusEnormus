@@ -2,6 +2,8 @@ version: "3"
 services:
   bot:
     command: tail -f /usr/app/yarn.lock
+    env_file:
+      - '.ci.env'
     environment:
       - "NODE_ENV=development"
       - "DISCORD_TOKEN=${DISCORD_TOKEN}"
