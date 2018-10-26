@@ -1,7 +1,13 @@
-import Commando from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
+import Rob from '../../modules/rob';
+import { MessageMentions, User } from 'discord.js';
+import { EventEmitter } from 'events';
 
 class RobCommand extends Commando.Command {
-  constructor(client) {
+  rob: Rob
+  event: EventEmitter
+
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'rob',
       aliases: ['rob'],
@@ -20,9 +26,22 @@ class RobCommand extends Commando.Command {
         },
       ],
     })
+
+    this.rob = new Rob()
+    this.event = new EventEmitter()
   }
 
-  async run(): Promise<any> {}
+  private getIdFromMentions(user: MessageMentions): User {
+    return user.users.first()
+  }
+
+  run(message: CommandMessage): any {
+    // const { guild, author } = message
+    // const target = this.getIdFromMentions(author.lastMessage.mentions)
+
+    // this.rob.start(guild.id, author.id, target.id, message.channel)
+    return message.channel.send('Soon ...')
+  }
 }
 
 module.exports = RobCommand

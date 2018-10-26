@@ -5,7 +5,6 @@ import Helpers from './modules/helpers'
 import User from './modules/user'
 import Server from './modules/server'
 import Bank from './database/models/bank'
-import { dBank } from './types/data';
 
 class Bot extends Helpers {
   client: CommandoClient
@@ -15,7 +14,7 @@ class Bot extends Helpers {
   constructor() {
     super()
 
-    this.client = new Commando.CommandoClient({ owner: process.env.OWNER_ID })
+    this.client = new Commando.CommandoClient({ owner: process.env.OWNER_ID, unknownCommandResponse: false })
     this.user = new User()
     this.server = new Server()
 

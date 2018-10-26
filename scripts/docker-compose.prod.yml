@@ -5,7 +5,7 @@ services:
     env_file:
       - .env
     # always restart container on production
-    restart: true
+    restart: always
 
   mongo:
     ports:

@@ -1,4 +1,4 @@
-import { User, Guild, GuildMember } from 'discord.js'
+import { User, Guild, GuildMember, Channel, TextChannel } from 'discord.js'
 import { EventEmitter } from 'events'
 import { dUser } from '../types/data'
 import DiscordUser from '../modules/user'
@@ -11,7 +11,8 @@ type WorkerElement = {
 
 type WorkerSocket = {
   authorId: string,
-  guildId: string
+  guildId: string,
+  channel: TextChannel
 }
 
 const user = new DiscordUser()
@@ -20,13 +21,18 @@ class Rob {
   guilds: Map<string, Map<string, WorkerElement>>
   event: EventEmitter
   DEFAULT_ROB_TIME: number
+  ROB_DONE: string
+  ROB_STOPPED: string
 
   constructor() {
     this.guilds = new Map()
-    this.DEFAULT_ROB_TIME = 5 * 60 * 1000
+    // this.DEFAULT_ROB_TIME = 5 * 60 * 1000
+    this.DEFAULT_ROB_TIME = 2000
     this.event = new EventEmitter()
+    this.ROB_DONE = 'ROB_DONE'
+    this.ROB_STOPPED = 'ROB_STOPPED'
 
-    this.event.on('clear_timer', ({ authorId, guildId }: WorkerSocket) => {
+    this.event.on(this.ROB_DONE, ({ authorId, guildId, channel }: WorkerSocket) => {
       const worker = this.getGuild(guildId).get(authorId)
 
       this.deleteWorker(guildId, authorId)
@@ -34,7 +40,7 @@ class Rob {
     })
   }
 
-  public createWorker(guildId: string, authorId: string, targetId: string): void {
+  public createWorker(guildId: string, authorId: string, targetId: string, channel: any): void {
     let guild = this.getGuild(guildId)
 
     guild.set(authorId, {
@@ -42,7 +48,7 @@ class Rob {
       to: targetId,
       timer: setTimeout(() => {
         // clear timer itself
-        this.event.emit('clear_timer', { authorId, guildId })
+        this.event.emit(this.ROB_DONE, { authorId, guildId, channel })
       }, this.DEFAULT_ROB_TIME)
     })
   }
@@ -68,8 +74,8 @@ class Rob {
     return user.exchange(fromUser, guild, target, amount)
   }
 
-  public start(guildId: string, authorId: string, targetId: string): void {
-    this.createWorker(guildId, authorId, targetId)
+  public start(guildId: string, authorId: string, targetId: string, channel: any): void {
+    this.createWorker(guildId, authorId, targetId, channel)
   }
 
   public stop(guildId: string, targetId: string): void {
