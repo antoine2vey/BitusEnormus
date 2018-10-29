@@ -69,6 +69,15 @@ class DiscordUser extends DiscordBank {
       .catch(() => Promise.reject(null))
   }
 
+  public async bankExchange(user: User, guild: Guild, target: User, amount: number): Promise<any> {
+    const t = await this.get(target, guild)
+
+    return this.removeFromBank(t, amount)
+      .then(async (bank) => {
+        await discordUser.pay(user, guild.id, amount)
+      })
+  } 
+
   public getInteractionValue(message: CommandMessage): number {
     const { mentions, content, attachments } = message
 
@@ -101,6 +110,14 @@ class DiscordUser extends DiscordBank {
     }
 
     return discordUser.updateByDiscordId(author, guild.id, query)
+  }
+
+  public setRobDate(user: User, guild: Guild): Promise<dUser> {
+    return discordUser.updateByDiscordId(user, guild.id, {
+      $set: {
+        robbed_at: new Date()
+      }
+    })
   }
 }
 

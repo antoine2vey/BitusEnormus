@@ -17,10 +17,6 @@ const userSchema = new mongoose.Schema(
       type: ObjectId,
       ref: 'bank',
     },
-    is_getting_rob: {
-      type: Boolean,
-      default: false,
-    },
     robbed_at: Date,
     first_count: {
       type: Number,

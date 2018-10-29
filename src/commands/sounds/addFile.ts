@@ -57,8 +57,11 @@ class AddFileCommand extends Commando.Command {
       return message.channel.sendEmbed(this.messages.get(message))
     }
 
-    // TODO: Check mimetype
-    console.time('write')
+    const p = path.join(__dirname, 'sounds')
+    if (!fs.existsSync(p)) {
+      fs.mkdirSync(p)
+    }
+
     await request
       .get(url)
       .on('error', () => {
