@@ -52,6 +52,10 @@ class Bank {
     return Promise.reject(null)
   }
 
+  public async removeFromBank(user: dUser, amount: number): Promise<dBank> {
+    return UserBank.withdrawById(user.bank.id, amount)
+  }
+
   public canWithdraw(amount: number, available: number): boolean {
     return available >= amount
   }

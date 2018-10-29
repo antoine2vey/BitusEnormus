@@ -1,15 +1,24 @@
 import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
-import Rob from '../../modules/rob';
-import { MessageMentions, User } from 'discord.js';
-import { EventEmitter } from 'events';
+import rob from '../../modules/rob';
+import { MessageMentions, User, TextChannel, GroupDMChannel, DMChannel, Guild } from 'discord.js';
+import { pubSub } from '../../modules/pubsub';
+import DiscordUser from '../../modules/user';
+import Messages from '../../modules/messages';
+
+interface PubSubData {
+  author: User,
+  guild: Guild,
+  target: User,
+  message: CommandMessage
+}
 
 class RobCommand extends Commando.Command {
-  rob: Rob
-  event: EventEmitter
+  user: DiscordUser
+  messages: Messages
 
   constructor(client: CommandoClient) {
     super(client, {
-      name: 'rob',
+      name: 'rob', 
       aliases: ['rob'],
       group: 'rob',
       memberName: 'rob',
@@ -27,8 +36,17 @@ class RobCommand extends Commando.Command {
       ],
     })
 
-    this.rob = new Rob()
-    this.event = new EventEmitter()
+    this.user = new DiscordUser()
+    this.messages = new Messages()
+
+    pubSub.on(rob.ROB_DONE, async ({ author, target, message }: PubSubData) => {
+      this.messages.addValid({
+        name: 'Vol',
+        value: `<@${author.id}> à volé <@${target.id}> :smiling_imp:`
+      })
+
+      message.channel.sendEmbed(this.messages.get(message))
+    })
   }
 
   private getIdFromMentions(user: MessageMentions): User {
@@ -36,11 +54,21 @@ class RobCommand extends Commando.Command {
   }
 
   run(message: CommandMessage): any {
-    // const { guild, author } = message
-    // const target = this.getIdFromMentions(author.lastMessage.mentions)
+    const name = 'Vol'
+    const { guild, author, channel } = message
+    const target = this.getIdFromMentions(author.lastMessage.mentions)
 
-    // this.rob.start(guild.id, author.id, target.id, message.channel)
-    return message.channel.send('Soon ...')
+    rob.start(guild, author, target, message)
+      .then(value => {
+        this.messages.addValid({ name, value })
+        
+        channel.sendEmbed(this.messages.get(message))
+      })
+      .catch(value => {
+        this.messages.addError({ name, value })
+
+        channel.sendEmbed(this.messages.get(message))
+      })
   }
 }
 
