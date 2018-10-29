@@ -101,33 +101,37 @@ class Rob {
    */
   public start(guild: Guild, author: User, target: User, message: CommandMessage): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      const [initiator, targettedUser] = await Promise.all([
-        this.user.get(author, guild),
-        this.user.get(target, guild)
-      ])
-
-      if (this.isTooLate()) {
-        return reject('Tu ne peut pas voler entre 1h00 et 9h00. :smiling_imp:')
-      }
-
-      // If target ourself or bot
-      if (target.id === author.id || target.bot) {
-        return reject('Cible invalide.')
-      }
-
-      // If in cooldown
-      if (this.isInCooldown(initiator.robbed_at)) {
-        return reject('Tu dois encore attendre pour voler.')
-      }
-
-      // If target has more than 1000 money in bank, we can proceed stealing
-      if (targettedUser.bank.amount >= 500) {
-        await this.user.setRobDate(author, guild)
-        this.createWorker(guild, author, target, message)
-
-        resolve(`<@${author.id}> est en train de voler <@${target.id}> :smiling_imp:`)
-      } else {
-        reject(`<@${author.username}> n'a pas assez d'argent`)
+      try {
+        const [initiator, targettedUser] = await Promise.all([
+          this.user.get(author, guild),
+          this.user.get(target, guild)
+        ])
+  
+        if (this.isTooLate()) {
+          return reject('Tu ne peut pas voler entre 1h00 et 9h00. :smiling_imp:')
+        }
+  
+        // If target ourself or bot
+        if (target.id === author.id || target.bot) {
+          return reject('Cible invalide.')
+        }
+  
+        // If in cooldown
+        if (this.isInCooldown(initiator.robbed_at)) {
+          return reject('Tu dois encore attendre pour voler.')
+        }
+  
+        // If target has more than 1000 money in bank, we can proceed stealing
+        if (targettedUser.bank.amount >= 1000) {
+          await this.user.setRobDate(author, guild)
+          this.createWorker(guild, author, target, message)
+  
+          resolve(`<@${author.id}> est en train de voler <@${target.id}> :smiling_imp:`)
+        } else {
+          reject(`<@${author.username}> n'a pas assez d'argent`)
+        }
+      } catch (error) {
+        reject(`Utilisateur inconnu ...`)
       }
     })
   }

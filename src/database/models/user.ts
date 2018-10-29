@@ -17,7 +17,10 @@ const userSchema = new mongoose.Schema(
       type: ObjectId,
       ref: 'bank',
     },
-    robbed_at: Date,
+    robbed_at: {
+      type: Date,
+      default: new Date()
+    },
     first_count: {
       type: Number,
       default: 0,
