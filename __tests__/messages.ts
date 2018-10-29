@@ -1,6 +1,5 @@
 /* eslint-env node, jest */
 import Messages from '../src/modules/messages'
-import { Message } from 'discord.js'
 
 const messages = new Messages()
 const message = {

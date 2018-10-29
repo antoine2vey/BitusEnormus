@@ -1,11 +1,14 @@
 /* eslint-env node, jest */
 import expect from 'expect'
 import Helpers from '../src/modules/helpers'
+import mongoose from 'mongoose';
 
 const helpers = new Helpers()
 
-describe('Checks for helpers', () => {
+describe('Checks for helpers', () => {  
   describe('Checks for crontasks', () => {
+    afterAll(done => mongoose.disconnect(done))
+
     it('expect method to be defined', () => {
       expect(helpers.makeTask).toBeDefined()
     })
@@ -21,6 +24,8 @@ describe('Checks for helpers', () => {
       task.start()
 
       expect(task.running).toBe(true)
+
+      task.stop()
     })
 
     it('expect to return a database connector', () => {
@@ -83,6 +88,8 @@ describe('Checks for helpers', () => {
   })
 
   describe('database check connection method', () => {
+    afterAll(done => mongoose.disconnect(done))
+
     it('expect method to exist', () => {
       expect(helpers.bootDatabase).toBeDefined()
     })
