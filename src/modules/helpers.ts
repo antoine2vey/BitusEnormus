@@ -18,10 +18,10 @@ class Helpers {
   }
 
   getMoneyEmoji(client: CommandoClient): string {
-    const emoji = client.emojis.find('name', 'kebab').id
+    const emoji = client.emojis.find('name', 'kebab')
 
     if (emoji) {
-      return `<:kebab:${emoji}>`
+      return `<:kebab:${emoji.id}>`
     } else {
       return `:moneybag:`
     }
