@@ -5,32 +5,32 @@ const FirstSchema = new mongoose.Schema({
   guild_id: String,
   has_done_first: {
     type: Boolean,
-    default: false,
-  },
+    default: false
+  }
 })
 
 FirstSchema.statics = {
-  findByGuildId(guildId) {
+  findByGuildId(guildId: string) {
     return this.findOneAndUpdate(
       { guild_id: guildId },
       {},
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     )
   },
-  setFirst(guildId) {
+  setFirst(guildId: string) {
     return this.findOneAndUpdate(
       { guild_id: guildId },
       { has_done_first: true },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     )
   },
   resetAll() {
     return this.update(
       {},
       { has_done_first: false },
-      { multi: true, new: true },
+      { multi: true, new: true }
     )
-  },
+  }
 }
 
 export interface IFirst extends Document {}
@@ -43,7 +43,7 @@ export interface IFirstModel extends Model<IFirst> {
 
 const First: IFirstModel = mongoose.model<IFirst, IFirstModel>(
   'first',
-  FirstSchema,
+  FirstSchema
 )
 
 export default First

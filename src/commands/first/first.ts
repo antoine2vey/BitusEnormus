@@ -1,5 +1,5 @@
 import { Message } from 'discord.js'
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import User from '../../modules/user'
 import Server from '../../modules/server'
 import Messages from '../../modules/messages'
@@ -10,7 +10,7 @@ class FirstCommand extends Commando.Command {
   private message: Messages
   private readonly embedTitle: string
 
-  constructor(client: any) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'first',
       aliases: ['first'],
@@ -19,7 +19,7 @@ class FirstCommand extends Commando.Command {
       description: 'MAIS FIRST PUTAIN',
       details: 'FIRST BORDEL LA',
       examples: ['!first'],
-      argsCount: 0,
+      argsCount: 0
     })
 
     this.server = new Server()
@@ -36,7 +36,7 @@ class FirstCommand extends Commando.Command {
     if (discordGuild.has_done_first) {
       this.message.addError({
         name: this.embedTitle,
-        value: 'Le first est déjà fait',
+        value: 'Le first est déjà fait'
       })
     } else {
       await this.user.doFirst(author, guild)
@@ -44,7 +44,7 @@ class FirstCommand extends Commando.Command {
 
       this.message.addValid({
         name: this.embedTitle,
-        value: 'Bien joué pour le first!',
+        value: 'Bien joué pour le first!'
       })
     }
 

@@ -1,10 +1,8 @@
-import {
-  User, Guild, TextChannel, DMChannel, GroupDMChannel,
-} from 'discord.js'
+import { User, Guild } from 'discord.js'
 import { EventEmitter } from 'events'
 import DiscordUser from '../modules/user'
-import {pubSub} from './pubsub'
-import { CommandMessage } from 'discord.js-commando';
+import { pubSub } from './pubsub'
+import { CommandMessage } from 'discord.js-commando'
 
 type WorkerElement = {
   from: string
@@ -39,7 +37,12 @@ class Rob {
    * @param target User
    * @param channel TextChannel
    */
-  public createWorker(guild: Guild, author: User, target: User, message: CommandMessage): void {
+  public createWorker(
+    guild: Guild,
+    author: User,
+    target: User,
+    message: CommandMessage
+  ): void {
     const guildMap = this.getGuild(guild.id)
 
     guildMap.set(target.id, {
@@ -49,14 +52,14 @@ class Rob {
         /**
          * We enter only here if the timer has come to his own end,
          * so that mean we do not have to clear it.
-         * 
+         *
          * Here we do:
          *  - User steal from target bank
          *  - Emit to pubsub that rob has been done so we can send an alert to channel
          */
         const t = await this.user.get(target, guild)
         const bank = t.bank.amount
-        const amount = Math.round(bank / 100 * 5) // Get 5% from bank
+        const amount = Math.round((bank / 100) * 5) // Get 5% from bank
 
         await this.user.bankExchange(author, guild, target, amount)
         pubSub.emit(this.ROB_DONE, { author, guild, target, message })
@@ -83,8 +86,10 @@ class Rob {
     const guild = this.getGuild(guildId)
     const user = guild.get(authorId)
 
-    clearTimeout(user.timer)
-    guild.delete(authorId)
+    if (user) {
+      clearTimeout(user.timer)
+      guild.delete(authorId)
+    }
   }
 
   /**
@@ -93,40 +98,51 @@ class Rob {
    *  - If target is ourself or a bot
    *  - If we are in cooldown (3 hours)
    *  - If user has more than 500 in his bank
-   * Else steals 5% of his bank. 
+   * Else steals 5% of his bank.
    * @param guild Guild
    * @param author User
    * @param target User
    * @param channel TextChannel
    */
-  public start(guild: Guild, author: User, target: User, message: CommandMessage): Promise<string> {
+  public start(
+    guild: Guild,
+    author: User,
+    target: User,
+    message: CommandMessage
+  ): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
         const [initiator, targettedUser] = await Promise.all([
           this.user.get(author, guild),
           this.user.get(target, guild)
         ])
-  
+
         if (this.isTooLate()) {
-          return reject('Tu ne peut pas voler entre 1h00 et 9h00. :smiling_imp:')
+          return reject(
+            'Tu ne peut pas voler entre 1h00 et 9h00. :smiling_imp:'
+          )
         }
-  
+
         // If target ourself or bot
-        if (target.id === author.id || target.bot) {
+        if (target.id === author.id || target.bot) {
           return reject('Cible invalide.')
         }
-  
+
         // If in cooldown
         if (this.isInCooldown(initiator.robbed_at)) {
           return reject('Tu dois encore attendre pour voler.')
         }
-  
+
         // If target has more than 1000 money in bank, we can proceed stealing
         if (targettedUser.bank.amount >= 1000) {
           await this.user.setRobDate(author, guild)
           this.createWorker(guild, author, target, message)
-  
-          resolve(`<@${author.id}> est en train de voler <@${target.id}> :smiling_imp:`)
+
+          resolve(
+            `<@${author.id}> est en train de voler <@${
+              target.id
+            }> :smiling_imp:`
+          )
         } else {
           reject(`<@${target.id}> n'a pas assez d'argent`)
         }
@@ -164,7 +180,7 @@ class Rob {
       this.guilds.set(guildId, new Map())
     }
 
-    return this.guilds.get(guildId)
+    return <Map<string, WorkerElement>>this.guilds.get(guildId)
   }
 
   /**

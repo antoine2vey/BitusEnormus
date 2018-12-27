@@ -1,8 +1,8 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import music from '../../modules/music'
 
 class NextCommand extends Commando.Command {
-  constructor(client: any) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'next',
       aliases: ['next', 'skip'],
@@ -11,7 +11,7 @@ class NextCommand extends Commando.Command {
       description: 'Next music in queue',
       details: 'Next bot music',
       examples: ['!next', '!skip'],
-      argsCount: 0,
+      argsCount: 0
     })
   }
 
@@ -24,9 +24,13 @@ class NextCommand extends Commando.Command {
         const song = music.getNextMusic(guild.id)
 
         if (song) {
-          message.channel.send(`Prochaine musique : ${song.title} - ${song.channelTitle}`)
+          message.channel.send(
+            `Prochaine musique : ${song.title} - ${song.channelTitle}`
+          )
         } else {
-          message.reply('Arrêt de la musique ... (plus de musique dans la playlist)')
+          message.reply(
+            'Arrêt de la musique ... (plus de musique dans la playlist)'
+          )
         }
 
         member.voiceChannel.connection.dispatcher.end()

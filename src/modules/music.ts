@@ -14,7 +14,10 @@ class Music {
    * @param guildId Snowflake
    * @param queue YoutubeSearchResults[]
    */
-  private replaceQueue(guildId: Snowflake, queue: Array<YouTubeSearchResults>): void {
+  private replaceQueue(
+    guildId: Snowflake,
+    queue: Array<YouTubeSearchResults>
+  ): void {
     this.queues.set(guildId, queue)
   }
 
@@ -31,7 +34,10 @@ class Music {
    * @param guildId Snowflake
    * @param ytPayload YoutubeSearchResults
    */
-  public enqueue(guildId: Snowflake, ytPayload: YouTubeSearchResults): Array<YouTubeSearchResults> {
+  public enqueue(
+    guildId: Snowflake,
+    ytPayload: YouTubeSearchResults
+  ): Array<YouTubeSearchResults> {
     const queueArray = this.getQueue(guildId)
     const queue = [...queueArray, ytPayload]
 
@@ -56,19 +62,22 @@ class Music {
   /**
    * Add multiple musics to queue
    * @param guildId Snowflake
-   * @param playlist 
+   * @param playlist
    */
   public multipleEnqueue(
     guildId: Snowflake,
-    playlist: Array<any>,
+    playlist: Array<any>
   ): Array<YouTubeSearchResults> {
     const queue = this.getQueue(guildId)
-    const newQueue = [...queue, ...playlist.map(song => {
-      return {
-        ...song,
-        link: `https://www.youtube.com/watch?v=${song.resourceId.videoId}`
-      }
-    })]
+    const newQueue = [
+      ...queue,
+      ...playlist.map(song => {
+        return {
+          ...song,
+          link: `https://www.youtube.com/watch?v=${song.resourceId.videoId}`
+        }
+      })
+    ]
 
     this.replaceQueue(guildId, newQueue)
 

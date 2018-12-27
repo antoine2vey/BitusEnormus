@@ -11,11 +11,11 @@ const userSchema = new mongoose.Schema(
     username: String,
     money: {
       type: Number,
-      default: 500,
+      default: 500
     },
     bank: {
       type: ObjectId,
-      ref: 'bank',
+      ref: 'bank'
     },
     robbed_at: {
       type: Date,
@@ -23,14 +23,14 @@ const userSchema = new mongoose.Schema(
     },
     first_count: {
       type: Number,
-      default: 0,
+      default: 0
     },
     social_score: {
       type: Number,
-      default: 0,
-    },
+      default: 0
+    }
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
 
 userSchema.statics = {
@@ -38,7 +38,7 @@ userSchema.statics = {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: author.id, username: author.username },
       {},
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },
   findByGuild(guildId: string, query: {}) {
@@ -48,7 +48,7 @@ userSchema.statics = {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: author.id, username: author.username },
       query,
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },
   pay(author: User, guildId: string, amount: number) {
@@ -56,10 +56,10 @@ userSchema.statics = {
       { guild_id: guildId, user_id: author.id, username: author.username },
       {
         $inc: {
-          money: amount,
-        },
+          money: amount
+        }
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },
   withdraw(author: User, guildId: string, amount: number) {
@@ -67,17 +67,17 @@ userSchema.statics = {
       { guild_id: guildId, user_id: author.id, username: author.username },
       {
         $inc: {
-          money: -amount,
-        },
+          money: -amount
+        }
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     ).populate('bank')
   },
   didFirst(author: User, guildId: string) {
     return this.findOneAndUpdate(
       { guild_id: guildId, user_id: author.id, username: author.username },
       { $inc: { first_count: 1, money: 1000 } },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     )
   },
   findAll() {
@@ -90,7 +90,11 @@ export interface IUser extends Document {}
 export interface IUserModel extends Model<IUser> {
   findByDiscordId(author: User, guildId: string): Promise<dUser>
   findByGuild(guildId: string, query: {}): Promise<dUser[]>
-  updateByDiscordId(author: User, guildId: string, query: Object): Promise<dUser>
+  updateByDiscordId(
+    author: User,
+    guildId: string,
+    query: Object
+  ): Promise<dUser>
   pay(author: User, guildId: string, amount: number): Promise<dUser>
   withdraw(author: User, guildId: string, amount: number): Promise<dUser>
   didFirst(author: User, guildId: string): Promise<dUser>

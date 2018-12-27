@@ -1,10 +1,10 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import Music from '../../modules/music'
 
 class ClearCommand extends Commando.Command {
-  music
+  music: typeof Music
 
-  constructor(client: any) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'clear',
       aliases: ['clear'],
@@ -13,7 +13,7 @@ class ClearCommand extends Commando.Command {
       description: 'Clear musics',
       details: 'Clear bot musics',
       examples: ['!clear'],
-      argsCount: 0,
+      argsCount: 0
     })
 
     this.music = Music

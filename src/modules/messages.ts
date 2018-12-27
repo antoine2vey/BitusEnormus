@@ -8,9 +8,7 @@ type QueueMessage = {
 
 class Messages {
   ERROR_COLOR: number
-
   SUCCESS_COLOR: number
-
   queue: {
     errors: Array<QueueMessage>
     valid: Array<QueueMessage>
@@ -19,7 +17,7 @@ class Messages {
   constructor() {
     this.queue = {
       errors: [],
-      valid: [],
+      valid: []
     }
     this.ERROR_COLOR = 16711680
     this.SUCCESS_COLOR = 65280
@@ -36,7 +34,7 @@ class Messages {
   clearQueue(): void {
     this.queue = {
       errors: [],
-      valid: [],
+      valid: []
     }
   }
 
@@ -44,21 +42,25 @@ class Messages {
     return this.queue.errors.length > 0
   }
 
-  default(message: CommandMessage, fields: Array<QueueMessage>, isError: boolean): RichEmbed | any {
+  default(
+    message: CommandMessage,
+    fields: Array<QueueMessage>,
+    isError: boolean
+  ): RichEmbed | any {
     this.clearQueue()
 
     return {
       color: isError ? this.ERROR_COLOR : this.SUCCESS_COLOR,
       author: {
         name: message.author.username,
-        icon_url: message.author.avatarURL,
+        icon_url: message.author.avatarURL
       },
       title: '',
       fields,
       footer: {
         icon_url: message.client.user.avatarURL,
-        text: `- ${message.client.user.username}`,
-      },
+        text: `- ${message.client.user.username}`
+      }
     }
   }
 
@@ -67,13 +69,13 @@ class Messages {
       color: this.SUCCESS_COLOR,
       author: {
         name: message.client.user.username,
-        icon_url: message.client.user.avatarURL,
+        icon_url: message.client.user.avatarURL
       },
       title: '',
       fields: [],
       image: {
-        url: link,
-      },
+        url: link
+      }
     }
   }
 

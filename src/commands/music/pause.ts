@@ -1,7 +1,7 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 
 class PauseCommand extends Commando.Command {
-  constructor(client: any) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'pause',
       aliases: ['pause'],
@@ -10,7 +10,7 @@ class PauseCommand extends Commando.Command {
       description: 'Pause current music in queue',
       details: 'Pause bot music',
       examples: ['!pause'],
-      argsCount: 0,
+      argsCount: 0
     })
   }
 

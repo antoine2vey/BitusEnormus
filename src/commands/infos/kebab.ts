@@ -1,4 +1,4 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import DiscordUser from '../../modules/user'
 import Messages from '../../modules/messages'
 import Helpers from '../../modules/helpers'
@@ -8,7 +8,7 @@ class KebabCommand extends Commando.Command {
   private messages: Messages
   private helpers: Helpers
 
-  constructor(client) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'kebab',
       aliases: ['kebab'],

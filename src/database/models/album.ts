@@ -2,7 +2,7 @@ import mongoose, { Model, Document } from 'mongoose'
 import { Photo } from '../../types/data'
 
 const photoSchema = new mongoose.Schema({
-  link: String,
+  link: String
 })
 
 photoSchema.statics = {
@@ -12,7 +12,7 @@ photoSchema.statics = {
   },
   getTotalPictures() {
     return this.countDocuments()
-  },
+  }
 }
 
 export interface IAlbum extends Document {}
@@ -23,7 +23,7 @@ export interface IAlbumModel extends Model<IAlbum> {
 
 const Album: IAlbumModel = mongoose.model<IAlbum, IAlbumModel>(
   'photos',
-  photoSchema,
+  photoSchema
 )
 
 export default Album

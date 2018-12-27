@@ -1,14 +1,14 @@
 import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
-import rob from '../../modules/rob';
-import { MessageMentions, User, TextChannel, GroupDMChannel, DMChannel, Guild } from 'discord.js';
-import { pubSub } from '../../modules/pubsub';
-import DiscordUser from '../../modules/user';
-import Messages from '../../modules/messages';
+import rob from '../../modules/rob'
+import { MessageMentions, User, Guild } from 'discord.js'
+import { pubSub } from '../../modules/pubsub'
+import DiscordUser from '../../modules/user'
+import Messages from '../../modules/messages'
 
-interface PubSubData {
-  author: User,
-  guild: Guild,
-  target: User,
+type PubSubData = {
+  author: User
+  guild: Guild
+  target: User
   message: CommandMessage
 }
 
@@ -18,7 +18,7 @@ class RobCommand extends Commando.Command {
 
   constructor(client: CommandoClient) {
     super(client, {
-      name: 'rob', 
+      name: 'rob',
       aliases: ['rob'],
       group: 'rob',
       memberName: 'rob',
@@ -31,9 +31,9 @@ class RobCommand extends Commando.Command {
           key: 'userId',
           label: 'User',
           prompt: 'Quel utilisateur voler?',
-          type: 'string',
-        },
-      ],
+          type: 'string'
+        }
+      ]
     })
 
     this.user = new DiscordUser()
@@ -59,10 +59,11 @@ class RobCommand extends Commando.Command {
     const { guild, author, channel } = message
     const target = this.getIdFromMentions(author.lastMessage.mentions)
 
-    rob.start(guild, author, target, message)
+    rob
+      .start(guild, author, target, message)
       .then(value => {
         this.messages.addValid({ name, value })
-        
+
         channel.sendEmbed(this.messages.get(message))
       })
       .catch(value => {

@@ -1,7 +1,7 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 
 class ResumeCommand extends Commando.Command {
-  constructor(client: any) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'resume',
       aliases: ['resume'],
@@ -10,7 +10,7 @@ class ResumeCommand extends Commando.Command {
       description: 'Resume music in queue',
       details: 'Resume bot music',
       examples: ['!resume'],
-      argsCount: 0,
+      argsCount: 0
     })
   }
 

@@ -1,9 +1,13 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import path from 'path'
 import fs from 'fs'
 
+type Kwargs = {
+  soundKey: string
+}
+
 class PlayCommand extends Commando.Command {
-  constructor(client) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'sound',
       aliases: ['sound'],
@@ -25,20 +29,20 @@ class PlayCommand extends Commando.Command {
     })
   }
 
-  async run(message: CommandMessage, { soundKey }): Promise<any> {
+  async run(message: CommandMessage, { soundKey }: Kwargs): Promise<any> {
     const soundDir = path.join(__dirname, 'sounds')
     const { voiceChannel } = message.member
 
     // Commands are based on striped filenames minus mp3 extension
     const availableCommands = fs
       .readdirSync(soundDir)
-      .map(sound => sound.slice(0, -4));
+      .map(sound => sound.slice(0, -4))
 
     /**
      * @description If not in a voice channel
      */
     if (!voiceChannel) {
-      return await message.reply('tu dois rejoindre un channel :triumph:');
+      return await message.reply('tu dois rejoindre un channel :triumph:')
     }
 
     /**
@@ -48,8 +52,8 @@ class PlayCommand extends Commando.Command {
       return await message.reply(
         `ce son n'existe pas, mais voici ceux disponibles :
         ${availableCommands.map(command => `\n**${command}**`)}
-      `,
-      );
+      `
+      )
     }
 
     /**
@@ -60,13 +64,13 @@ class PlayCommand extends Commando.Command {
       .then(connection => {
         const dispatcher = connection.playFile(
           path.join(__dirname, 'sounds', `${soundKey}.mp3`)
-        );
-        dispatcher.setVolume(0.5);
+        )
+        dispatcher.setVolume(0.5)
         dispatcher.on('end', () => {
-          voiceChannel.leave();
-        });
+          voiceChannel.leave()
+        })
       })
-      .catch(console.error);
+      .catch(console.error)
   }
 }
 

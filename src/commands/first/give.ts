@@ -1,8 +1,13 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import DiscordUser from '../../modules/user'
 import Messages from '../../modules/messages'
 import NumberValidation from '../../modules/number'
 import Helpers from '../../modules/helpers'
+
+type Kwargs = {
+  userId: string
+  value: string
+}
 
 class GiveCommand extends Commando.Command {
   private readonly user: DiscordUser
@@ -11,7 +16,7 @@ class GiveCommand extends Commando.Command {
   private readonly title: string
   private readonly helpers: Helpers
 
-  constructor(client) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'give',
       aliases: ['give'],
@@ -44,7 +49,7 @@ class GiveCommand extends Commando.Command {
     this.title = 'Kebabs'
   }
 
-  async run(message: CommandMessage, { value }) {
+  async run(message: CommandMessage, { value }: Kwargs) {
     const { author, guild, mentions, channel, client } = message
     const target = mentions.members.first()
     const emoji = this.helpers.getMoneyEmoji(client)

@@ -1,10 +1,10 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import Album, { IAlbumModel } from '../../database/models/album'
 
 class AlbumCommand extends Commando.Command {
   private readonly album: IAlbumModel
 
-  constructor(client) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'album',
       aliases: ['mappa', 'album'],

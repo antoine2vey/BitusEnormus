@@ -14,7 +14,10 @@ class Bot extends Helpers {
   constructor() {
     super()
 
-    this.client = new Commando.CommandoClient({ owner: process.env.OWNER_ID, unknownCommandResponse: false })
+    this.client = new Commando.CommandoClient({
+      owner: process.env.OWNER_ID,
+      unknownCommandResponse: false
+    })
     this.user = new User()
     this.server = new Server()
 
@@ -34,7 +37,10 @@ class Bot extends Helpers {
             for (let user of await this.user.getAll()) {
               if (user.bank) {
                 // Win 0.25 of his bank per day, divided by 12 for 1 tick per 2 hours
-                await Bank.increaseById(user.bank.id, Math.floor(user.bank.amount * (0.25 / 12)) || 10)
+                await Bank.increaseById(
+                  user.bank.id,
+                  Math.floor(user.bank.amount * (0.25 / 12)) || 10
+                )
               }
             }
           })

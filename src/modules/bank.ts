@@ -19,14 +19,14 @@ class Bank {
         }
 
         return Promise.resolve(client.bank)
-      },
+      }
     )
   }
 
   public checkIfCanWithdraw(
     author: User,
     guild: Guild,
-    amount: number,
+    amount: number
   ): Promise<dBank> {
     return this.checkBankExists(author, guild.id).then(async bank => {
       if (this.canWithdraw(amount, bank.amount)) {

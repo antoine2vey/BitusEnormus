@@ -1,9 +1,12 @@
-import Commando, { CommandMessage } from 'discord.js-commando'
+import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import DiscordUser from '../../modules/user'
 import Messages from '../../modules/messages'
 import NumberValidation from '../../modules/number'
 import Helpers from '../../modules/helpers'
-import Bank from '../../database/models/bank'
+
+type Kwargs = {
+  value: string
+}
 
 class BankGetCommand extends Commando.Command {
   private user: DiscordUser
@@ -11,7 +14,7 @@ class BankGetCommand extends Commando.Command {
   private numberValidation: NumberValidation
   private helpers: Helpers
 
-  constructor(client) {
+  constructor(client: CommandoClient) {
     super(client, {
       name: 'bank take',
       aliases: ['bank-take', 'bank-get'],
@@ -37,7 +40,7 @@ class BankGetCommand extends Commando.Command {
     this.numberValidation = new NumberValidation()
   }
 
-  async run(message: CommandMessage, { value }): Promise<any> {
+  async run(message: CommandMessage, { value }: Kwargs): Promise<any> {
     const { author, guild, client } = message
     const kebabs = this.helpers.getRoundedValue(value)
     const emoji = this.helpers.getMoneyEmoji(client)
