@@ -128,7 +128,7 @@ class Rob {
   
           resolve(`<@${author.id}> est en train de voler <@${target.id}> :smiling_imp:`)
         } else {
-          reject(`<@${author.id}> n'a pas assez d'argent`)
+          reject(`<@${target.id}> n'a pas assez d'argent`)
         }
       } catch (error) {
         reject(`Utilisateur inconnu ...`)
