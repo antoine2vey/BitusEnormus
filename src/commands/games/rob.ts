@@ -45,6 +45,7 @@ class RobCommand extends Commando.Command {
         value: `<@${author.id}> à volé <@${target.id}> :smiling_imp:`
       })
 
+      rob.deleteWorker(message.guild.id, author.id)
       message.channel.sendEmbed(this.messages.get(message))
     })
   }

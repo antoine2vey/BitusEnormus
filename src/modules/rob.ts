@@ -128,7 +128,7 @@ class Rob {
   
           resolve(`<@${author.id}> est en train de voler <@${target.id}> :smiling_imp:`)
         } else {
-          reject(`<@${author.username}> n'a pas assez d'argent`)
+          reject(`<@${author.id}> n'a pas assez d'argent`)
         }
       } catch (error) {
         reject(`Utilisateur inconnu ...`)
@@ -146,7 +146,7 @@ class Rob {
       if (this.isInWorker(guildId, userId)) {
         this.deleteWorker(guildId, userId)
 
-        resolve('Vol stoppé :ok:')
+        resolve('Vol stoppé')
       } else {
         reject('Tu ne subis actuellement aucun vol')
       }
