@@ -10,3 +10,4 @@ src/.swp
 build
 .vscode
 coverage/
+mongo-backup/
