@@ -26,6 +26,10 @@ class RollCommands extends Commando.Command {
       description: 'Roll',
       details: 'Roll, plus la fourchette est petite, plus tu gagne de fric',
       examples: ['!roll 100 0-50'],
+      throttling: {
+        usages: 5,
+        duration: 60
+      },
       argsCount: 2,
       args: [
         {

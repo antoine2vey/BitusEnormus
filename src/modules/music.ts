@@ -109,6 +109,27 @@ class Music {
   public isQueueEmpty(guildId: Snowflake): boolean {
     return this.getQueue(guildId).length === 0
   }
+
+  /**
+   * Shuffles an array of musics
+   * @param a Array<YouTubeSearchResults>
+   */
+  private shufflr(a: Array<YouTubeSearchResults>): Array<YouTubeSearchResults> {
+      for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a
+  }
+
+  /**
+   * Shuffles queue for a given guild
+   * @param guildId Guild ID
+   */
+  public shuffleQueue(guildId: Snowflake): void {
+    const randomQueue = this.shufflr(this.getQueue(guildId))
+    this.replaceQueue(guildId, randomQueue)
+  }
 }
 
 export default new Music()

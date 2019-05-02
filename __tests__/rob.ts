@@ -7,7 +7,7 @@ import { GuildMember, User, Guild } from 'discord.js'
 
 jest.useFakeTimers()
 
-const rob = new Rob()
+const rob = Rob
 const user = new DiscordUser()
 const author = <User>{
   id: '1',
@@ -47,7 +47,7 @@ describe('Rob module', () => {
     it('expect to create a worker', () => {
       expect(rob.createWorker).toBeDefined()
 
-      rob.createWorker(guild.id, author.id, '2')
+      rob.createWorker(guild, author, author2, null)
       const worker = rob.getWorker(guild.id, author.id)
 
       expect(worker.from).toEqual(author.id)
@@ -62,21 +62,6 @@ describe('Rob module', () => {
       const worker = rob.getWorker(guild.id, author.id)
 
       expect(worker).toBe(null)
-    })
-
-    it('expect to check if worker exists', () => {
-      expect(rob.workerExists).toBeDefined()
-      const isInWorker = rob.workerExists(guild.id, author.id)
-      expect(isInWorker).toBe(false)
-      const workerExists = rob.workerExists('5', author.id)
-      expect(workerExists).toBe(false)
-
-      rob.createWorker(guild.id, author.id, '2')
-      const shouldBeInWorker = rob.workerExists(guild.id, author.id)
-      expect(shouldBeInWorker).toBe(true)
-
-      const noGuildWorker = rob.workerExists('2', author.id)
-      expect(noGuildWorker).toBe(false)
     })
 
     it('expect to get all workers inside a guild', () => {
@@ -114,12 +99,12 @@ describe('Rob module', () => {
     })
 
     it('expect to steal someone from bank', async () => {
-      expect(rob.steal).toBeDefined()
+      expect(rob.start).toBeDefined()
 
       await user.get(author, guild)
       await user.get(author2, guild)
 
-      return rob.steal(author, guild, target, 400).then(client => {
+      return rob.start(guild, author, author2, null).then(client => {
         expect(client.money).toBe(900)
         expect(client.bank.amount).toBe(1000)
       })
