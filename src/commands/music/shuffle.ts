@@ -24,8 +24,9 @@ class ShuffleCommand extends Commando.Command {
   }
 
   async run(message: CommandMessage): Promise<any> {
-    const { guild } = message
+    const { guild, member } = message
     const { id } = guild
+    const { voiceChannel } = member
 
     if (this.music.isQueueEmpty(id)) {
       this.messages.addError({
@@ -36,10 +37,19 @@ class ShuffleCommand extends Commando.Command {
       return message.channel.sendEmbed(this.messages.get(message))
     }
 
-    if (!message.member.voiceChannel) {
+    if (!voiceChannel) {
       this.messages.addError({
         name: 'Musique',
         value: 'Rejoinds un channel'
+      })
+
+      return message.channel.sendEmbed(this.messages.get(message))
+    }
+
+    if (!voiceChannel.connection) {
+      this.messages.addError({
+        name: 'Musique',
+        value: 'Le bot n\'a pas démarré'
       })
 
       return message.channel.sendEmbed(this.messages.get(message))

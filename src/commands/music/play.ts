@@ -1,13 +1,15 @@
 import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
+import { VoiceConnection, Snowflake } from 'discord.js'
 import search, { YouTubeSearchResults } from 'youtube-search'
 import ytdl from 'ytdl-core'
 import ypi from 'youtube-playlist-info'
 import music from '../../modules/music'
-import { VoiceConnection, Snowflake } from 'discord.js'
+import Messages from '../../modules/messages'
 
 class PlayCommand extends Commando.Command {
   opts: search.YouTubeSearchOptions
   isPlaying: boolean
+  messages: Messages
 
   constructor(client: CommandoClient) {
     super(client, {
@@ -35,6 +37,7 @@ class PlayCommand extends Commando.Command {
     }
 
     this.isPlaying = false
+    this.messages = new Messages()
   }
 
   private getPlaylistId(term: string): string {
@@ -98,7 +101,12 @@ class PlayCommand extends Commando.Command {
       video = this.tryGetVideo(results)
 
       if (!results.length || !video) {
-        return message.reply('Musique inconnue')
+        this.messages.addError({
+          name: 'Musique',
+          value: 'Musique inconnue'
+        })
+
+        return message.channel.sendEmbed(this.messages.get(message))
       }
     }
 
@@ -127,7 +135,12 @@ class PlayCommand extends Commando.Command {
           })
           .catch(console.error)
       } else {
-        return message.reply('Tu dois rejoindre un channel')
+        this.messages.addError({
+          name: 'Musique',
+          value: 'Tu dois rejoindre un channel'
+        })
+
+        return message.channel.sendEmbed(this.messages.get(message))
       }
     } else {
       // Queue is already bound, just append to playlist
@@ -147,19 +160,22 @@ class PlayCommand extends Commando.Command {
     if (this.isPlaylist(term)) {
       const queue = music.getQueue(id)
 
-      return message.channel.send(
-        `Contenu de la playlist ajouté ! (${
-          queue.length
-        } éléments dans la liste)`
-      )
+      this.messages.addValid({
+        name: 'Musique',
+        value: `Contenu de la playlist ajouté ! (${queue.length} éléments dans la liste)`
+      })
+
+      return message.channel.sendEmbed(this.messages.get(message))
     }
 
-    return (
-      video &&
-      message.channel.send(
-        `${video.title} (by ${video.channelTitle}) ajouté à la playlist`
-      )
-    )
+    if (video) {
+      this.messages.addValid({
+        name: 'Musique',
+        value: `${video.title} (by ${video.channelTitle}) ajouté à la playlist`
+      })
+  
+      return message.channel.sendEmbed(this.messages.get(message))
+    }
   }
 }
 

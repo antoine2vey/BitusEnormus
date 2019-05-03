@@ -1,7 +1,10 @@
 import Commando, { CommandMessage, CommandoClient } from 'discord.js-commando'
 import music from '../../modules/music'
+import Messages from '../../modules/messages'
 
 class NextCommand extends Commando.Command {
+  messages: Messages
+
   constructor(client: CommandoClient) {
     super(client, {
       name: 'next',
@@ -13,31 +16,49 @@ class NextCommand extends Commando.Command {
       examples: ['!next', '!skip'],
       argsCount: 0
     })
+
+    this.messages = new Messages()
   }
 
   async run(message: CommandMessage): Promise<any> {
     const { member, guild } = message
+    const { voiceChannel } = message.member
 
-    if (member.voiceChannel) {
+    if (voiceChannel) {
       // Send event to dispatcher in play.ts
-      if (member.voiceChannel.connection.dispatcher) {
+      if (voiceChannel.connection) {
         const song = music.getNextMusic(guild.id)
 
         if (song) {
-          message.channel.send(
-            `Prochaine musique : ${song.title} - ${song.channelTitle}`
-          )
+          // If we have another song to play
+          this.messages.addValid({
+            name: 'Musique',
+            value: `Prochaine musique : ${song.title} - ${song.channelTitle}`
+          })
         } else {
-          message.reply(
-            'Arrêt de la musique ... (plus de musique dans la playlist)'
-          )
+          // No songs to play anymore
+          this.messages.addError({
+            name: 'Musique',
+            value: 'Plus de musique dans la playlist'
+          })
         }
 
-        member.voiceChannel.connection.dispatcher.end()
+        voiceChannel.connection.dispatcher.end()
       } else {
-        message.reply('Plus de musique dans la playlist')
+        // Bot not in channel
+        this.messages.addError({
+          name: 'Musique',
+          value: 'Le bot n\'a pas démarré'
+        })
       }
+    } else {
+      this.messages.addError({
+        name: 'Musique',
+        value: 'Rejoinds un channel'
+      })
     }
+
+    return message.channel.sendEmbed(this.messages.get(message))
   }
 }
 
